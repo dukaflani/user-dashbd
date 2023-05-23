@@ -7,6 +7,8 @@ const roboto = Roboto({ weight: ["100", "300", "400", "500", "700", "900"], subs
 
 // MUI Imports
 import {  CssBaseline } from '@mui/material'
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 
 // TanStack/React-Query
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -36,7 +38,9 @@ export default function RootLayout({ children }) {
           <>
             <QueryClientProvider client={queryClient}>
               <Provider store={store}>
-                {children}  
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  {children}  
+                </LocalizationProvider>
               </Provider>
               <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>

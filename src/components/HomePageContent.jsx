@@ -4,6 +4,10 @@ import Image from 'next/image';
 // MUI Imports
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Grid, Stack, Typography } from "@mui/material"
 
+// NPM Imports
+import { useSelector } from 'react-redux';
+import numeral from "numeral";
+
 
 const HomePageContent = () => {
     const userProfile = useSelector((state) => state.auth.profileInfo) 
@@ -22,7 +26,7 @@ const HomePageContent = () => {
                                     <CardContent>
                                         <Stack>
                                             <Typography variant="h6">Videos</Typography>
-                                            <Typography variant="body2">{userProfile?.video_count}</Typography>
+                                            <Typography variant="body2">{userProfile?.video_count < 1000 || userProfile?.video_count % 10 === 0 ? numeral(userProfile?.video_count).format('0a') : numeral(userProfile?.video_count).format('0.0a')}</Typography>
                                         </Stack>
                                     </CardContent>
                                 </Card>
@@ -32,7 +36,7 @@ const HomePageContent = () => {
                                     <CardContent>
                                         <Stack>
                                             <Typography variant="h6">Products</Typography>
-                                            <Typography variant="body2">{userProfile?.product_count}</Typography>
+                                            <Typography variant="body2">{ userProfile?.product_count < 1000 || userProfile?.product_count % 10 === 0 ? numeral(userProfile?.product_count).format('0a') : numeral(userProfile?.product_count).format('0.0a')}</Typography>
                                         </Stack>
                                     </CardContent>
                                 </Card>
@@ -42,7 +46,7 @@ const HomePageContent = () => {
                                     <CardContent>
                                         <Stack>
                                             <Typography variant="h6">Events</Typography>
-                                            <Typography variant="body2">{userProfile?.events_count}</Typography>
+                                            <Typography variant="body2">{ userProfile?.events_count < 1000 || userProfile?.events_count % 10 === 0 ? numeral(userProfile?.events_count).format('0a') : numeral(userProfile?.events_count).format('0.0a')}</Typography>
                                         </Stack>
                                     </CardContent>
                                 </Card>
@@ -52,7 +56,7 @@ const HomePageContent = () => {
                                     <CardContent>
                                         <Stack>
                                             <Typography variant="h6">Media Tours</Typography>
-                                            <Typography variant="body2">{userProfile?.media_tours_count}</Typography>
+                                            <Typography variant="body2">{userProfile?.media_tours_count < 1000 || userProfile?.media_tours_count % 10 === 0 ? numeral(userProfile?.media_tours_count).format('0a') : numeral(userProfile?.media_tours_count).format('0.0a')}</Typography>
                                         </Stack>
                                     </CardContent>
                                 </Card>

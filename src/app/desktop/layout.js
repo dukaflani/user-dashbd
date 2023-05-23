@@ -213,7 +213,7 @@ export default function MainNavbar({ children }) {
     {
       label: 'Media Tours',
       icon: <RadioOutlined />,
-      link: '/media'
+      link: '/media-tours'
     },
   ]
 
@@ -221,7 +221,7 @@ export default function MainNavbar({ children }) {
     {
       label: 'Streaming Links',
       icon: <LinkSharp />,
-      link: '/links'
+      link: '/streaming-links'
     },
     {
       label: 'Lyrics',
@@ -231,12 +231,12 @@ export default function MainNavbar({ children }) {
     {
       label: 'Skiza Tunes',
       icon: <PhonelinkRing />,
-      link: '/skiza'
+      link: '/skiza-tunes'
     },
     {
       label: 'Music Collections',
       icon: <LibraryMusic />,
-      link: '/albums'
+      link: '/music-collections'
     }
   ]
 

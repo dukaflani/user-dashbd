@@ -3,6 +3,9 @@
 // React Import
 import { useState } from 'react';
 
+// NextJS Imports
+import { usePathname, useRouter } from 'next/navigation';
+
 // MUI Imports
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -20,18 +23,72 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
 // Icons
-import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Category, ConfirmationNumber, KeyboardVoice, LibraryMusic, LinkSharp, PhonelinkRing, RadioOutlined, SpaceDashboard, VideoLibrary } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
 function MobileNavbar(props) {
+  const router = useRouter()
+  const pathname = usePathname()
   const { window, children } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const navItems1 = [
+    {
+      label: 'Dashboard',
+      icon: <SpaceDashboard />,
+      link: '/'
+    },
+    {
+      label: 'Videos',
+      icon: <VideoLibrary />,
+      link: '/videos'
+    },
+    {
+      label: 'Products',
+      icon: <Category />,
+      link: '/products'
+    },
+    {
+      label: 'Events',
+      icon: <ConfirmationNumber />,
+      link: '/events'
+    },
+    {
+      label: 'Media Tours',
+      icon: <RadioOutlined />,
+      link: '/media-tours'
+    },
+  ]
+
+  const navItems2 = [
+    {
+      label: 'Streaming Links',
+      icon: <LinkSharp />,
+      link: '/streaming-links'
+    },
+    {
+      label: 'Lyrics',
+      icon: <KeyboardVoice />,
+      link: '/lyrics'
+    },
+    {
+      label: 'Skiza Tunes',
+      icon: <PhonelinkRing />,
+      link: '/skiza-tunes'
+    },
+    {
+      label: 'Music Collections',
+      icon: <LibraryMusic />,
+      link: '/music-collections'
+    }
+  ]
+
+
 
   const drawer = (
     <div>
@@ -42,26 +99,32 @@ function MobileNavbar(props) {
       </Toolbar>
       <Divider />
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
+        {navItems1?.map((navItem, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton
+              onClick={() => router.push(`${navItem.link}`)}
+              selected={pathname === navItem.link}
+            >
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                {navItem.icon}
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={navItem.label} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
       <Divider />
       <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
+        {navItems2?.map((navItem, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton
+              onClick={() => router.push(`${navItem.link}`)}
+              selected={pathname === navItem.link}
+            >
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                {navItem.icon}
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={navItem.label} />
             </ListItemButton>
           </ListItem>
         ))}

@@ -1,20 +1,17 @@
 "use client"
 
 // React Imports
-import { useState, useEffect,forwardRef } from "react"
+import { useState } from "react"
 
 // MUI Imports
 import { Autocomplete, Box, Button, Card, CardContent, Grid, 
     Stack, TextField, Typography, colors, Chip } from "@mui/material"
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
 
 // NPM Imports
 import { useSelector } from "react-redux"
 import {  useFormik } from "formik"
 import * as Yup from 'yup'
 import slugify from 'slugify'
-import { nanoid } from 'nanoid'
 
 // Tanstack Query
 import { useMutation, useQuery } from "@tanstack/react-query"
@@ -22,41 +19,20 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
 import MyTextArea from "./formComponents/MyTextArea"
-import { addVideo, getUserLyrics, getUserMusicCollections, 
-  getUserProducts, getUserSkizaTunes, getUserStreamingLinks } from "@/axios/axios"
+import { editVideo, getUserLyrics, getUserMusicCollections, 
+    getUserProducts, getUserSkizaTunes, getUserStreamingLinks } from "@/axios/axios"
 
 
-const Alert = forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  });
-
-
-const AddVideoCard = () => {
+const EditVideoCard = ({ editVideoObject }) => {
     const accessToken = useSelector((state) => state.auth.token)
-    const user_profile = useSelector((state) => state.auth.profileInfo)
     const currentUser = useSelector((state) => state.auth.userInfo) 
 
-    const [nanoID, setNanoID] = useState("")
-    const [streamingLink, setStreamingLink] = useState(null)
-    const [videoProduct, setVideoProduct] = useState(null)
-    const [videoLyrics, setVideoLyrics] = useState(null)
-    const [videoSkizaTunes, setVideoSkizaTunes] = useState(null)
-    const [videoAlbum, setVideoAlbum] = useState(null)
-    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
-
-    
-
-    const handleCloseMuiSnackbar = (event, reason) => {
-        if (reason === 'clickaway') {
-          return;
-        }
-    
-        setOpenMuiSnackbar(false);
-      };
-
-    useEffect(() => {
-        setNanoID(nanoid(16))
-    }, [])
+    const [nanoID, setNanoID] = useState(editVideoObject?.url_id)
+    const [streamingLink, setStreamingLink] = useState({ id: editVideoObject?.links, label: editVideoObject?.links_title })
+    const [videoProduct, setVideoProduct] = useState({ id: editVideoObject?.product,  label:editVideoObject?.product_title })
+    const [videoLyrics, setVideoLyrics] = useState({ id: editVideoObject?.lyrics,  label:editVideoObject?.lyrics_title })
+    const [videoSkizaTunes, setVideoSkizaTunes] = useState({ id: editVideoObject?.skiza,  label:editVideoObject?.skiza_title })
+    const [videoAlbum, setVideoAlbum] = useState({ id: editVideoObject?.album,  label:editVideoObject?.album_title })
 
 
     const textFieldConfig = {
@@ -78,26 +54,24 @@ const AddVideoCard = () => {
     ];
 
 
-    const { mutate: addNewVideo } = useMutation(addVideo, {
+    const { mutate: editMyVideo } = useMutation(editVideo, {
         onSuccess: (data, _variables, _context) => {
-            console.log("video added success:", data)
-            setOpenMuiSnackbar(true)
+            console.log("video edited success:", data)
         },
         onError: (error, _variables, _context) => {
-            console.log("video added error:", error?.response?.data?.detail)
+            console.log("video edited error:", error?.response?.data?.detail)
         }
     })
 
 
     const formik = useFormik({
         initialValues: {
-            title: '',
-            song_title: '',
-            youtube_id: '',
-            description: '',
+            title: editVideoObject?.title,
+            song_title: editVideoObject?.song_title,
+            youtube_id: editVideoObject?.youtube_id,
+            description: editVideoObject?.description,
             thumbnail: '',
-            links: null,
-            genre: "",
+            genre: editVideoObject?.genre,
         },
         validationSchema: Yup.object({
             title: Yup.string().required("Required"),
@@ -115,28 +89,28 @@ const AddVideoCard = () => {
                     "fileFormat",
                     "Unsupported Format! Use png, jpg or jpeg",
                     value => value && SUPPORTED_FORMATS.includes(value.type)
-                )
-                .required("Required"),
+                ),
                 genre: Yup.string().required("Required"),
         }),
         onSubmit: () => {
-            console.log("handle submit from formik:", {
+            console.log("handle edit submit from formik:", {
                 accessToken,
-                title: formik.values?.title,
-                song_title: formik.values?.song_title,
+                id: editVideoObject?.id,
+                title: formik.values.title,
+                song_title: formik.values.song_title,
                 url_id: nanoID,
-                youtube_id: formik.values?.youtube_id,
-                youtube_embed_link: `https://www.youtube.com/embed/${formik.values?.youtube_id}`,
+                youtube_id: formik.values.youtube_id,
+                youtube_embed_link: `https://youtube.com/embed/${formik.values.youtube_id}`,
                 description: formik.values.description,
-                slug: slugify(formik.values?.title, {lower: true}),
-                thumbnail: formik.values?.thumbnail,
-                links: streamingLink === null ? 1 : streamingLink?.id,
-                product: videoProduct === null ? 1 : videoProduct?.id,
-                album: videoAlbum === null ? 1 : videoAlbum?.id,
-                lyrics: videoLyrics === null ? 1 : videoLyrics?.id,
-                skiza: videoSkizaTunes === null ? 1 : videoSkizaTunes?.id,
-                genre: formik.values?.genre,
-                customuserprofile: user_profile?.id,
+                slug: slugify(formik.values.title, {lower: true}),
+                thumbnail: formik.values.thumbnail,
+                links: streamingLink?.id,
+                product: videoProduct?.id,
+                album: videoAlbum?.id,
+                lyrics: videoLyrics?.id,
+                skiza: videoSkizaTunes?.id,
+                genre: formik.values.genre,
+                customuserprofile: editVideoObject?.customuserprofile,
             })
         }
     })
@@ -179,19 +153,17 @@ const AddVideoCard = () => {
         id: option.id,
         label: option.title
     }))
-
     
 
 
     
   return (
-    <>
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
             <Box>
                 <Card variant="outlined">
                     <CardContent>
                         <Stack>
-                            <Typography sx={{color: colors.grey[300]}} gutterBottom variant="h6">New Video Form</Typography>
+                            <Typography sx={{color: colors.grey[300]}} gutterBottom variant="h6">Edit Video Form</Typography>
                             <Box>
                                     <Box>
                                         <Grid container spacing={2}>
@@ -400,7 +372,7 @@ const AddVideoCard = () => {
                                                 </Stack>
                                             </Grid>
                                             <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Add Video</Button>
+                                                <Button  fullWidth variant="contained" size="small" type="submit">Edit Video</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -410,19 +382,7 @@ const AddVideoCard = () => {
                 </Card>
             </Box>
         </form>
-
-        {/* Mui Success Snackbar */} 
-        <Snackbar 
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
-            open={openMuiSnackbar} autoHideDuration={6000} 
-            onClose={handleCloseMuiSnackbar}
-            >
-            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
-                Video Added Successfully!
-            </Alert>
-      </Snackbar>
-    </>
   )
 }
 
-export default AddVideoCard
+export default EditVideoCard

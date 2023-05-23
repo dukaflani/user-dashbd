@@ -1,7 +1,7 @@
 "use client"
 
 // React Imports
-import React, { useState, forwardRef, useMemo, useCallback } from "react";
+import { useState, forwardRef, useMemo, useCallback } from "react";
 
 // MUI Imports
 import { AppBar, Avatar, Box, Button, Container, Dialog, 
@@ -22,11 +22,11 @@ import { useQuery } from '@tanstack/react-query';
 import {  CloseSharp, VideoCall } from "@mui/icons-material"
 
 // Project Imports
+import { getUserVideos } from "@/axios/axios";
 import AddVideoCard from "./AddVideoCard";
 import VideoActions from "./VideoActions";
-import EditVideoForm from "./EditVideoForm";
 import ViewVideoCard from "./ViewVideoCard";
-import { getUserVideos } from "@/axios/axios";
+import EditVideoCard from "./EditVideoCard";
 
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -35,10 +35,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 
 
 const VideoPageContent = () => {
-  const userProfile = useSelector((state) => state.auth.profileInfo) 
-  const currentUser = useSelector((state) => state.auth.userInfo) 
-  console.log("user profile video component:", userProfile)
-  console.log("user info video component:", currentUser)
+    const currentUser = useSelector((state) => state.auth.userInfo) 
     const [pageSize, setPageSize] = useState(5)
     
     // Add Video 
@@ -194,6 +191,20 @@ const VideoPageContent = () => {
               editable: false
             },
             {
+              field: 'like_count',
+              headerName: 'Likes',
+            //   width: 175,
+              sortable: true,
+              editable: false
+            },
+            {
+              field: 'dislike_count',
+              headerName: 'Dislikes',
+            //   width: 175,
+              sortable: true,
+              editable: false
+            },
+            {
               field: 'product',
               headerName: 'Product',
             //   width: 175,
@@ -210,6 +221,13 @@ const VideoPageContent = () => {
             {
               field: 'youtube_id',
               headerName: 'YouTube ID',
+            //   width: 175,
+              sortable: true,
+              editable: false
+            },
+            {
+              field: 'url_id',
+              headerName: 'URL ID',
             //   width: 175,
               sortable: true,
               editable: false
@@ -241,7 +259,7 @@ const VideoPageContent = () => {
       const currentUserID = 1
       // const currentUserID = currentUser?.id ? currentUser?.id : 0
       const { data: videos, isLoading, isFetching } = useQuery(["current-user-videos", currentUserID], (currentUserID) => getUserVideos(currentUserID))
-      console.log("rows value:", videos)
+      
 
       const getRowSpacing = useCallback((params) => {
         return {
@@ -267,6 +285,9 @@ const VideoPageContent = () => {
                             id: false,
                             song_title: false,
                             youtube_id: false,
+                            url_id: false,
+                            like_count: false,
+                            dislike_count: false,
                             links: false,
                             product: false,
                             lyrics: false,
@@ -289,7 +310,7 @@ const VideoPageContent = () => {
                         // showColumnVerticalBorder
                         getRowSpacing={getRowSpacing}
                         localeText={{
-                          noRowsLabel: 'No videos found...'
+                          noRowsLabel: isLoading ? 'Loading videos...' : 'No videos found...'
                         }}
                         
                     />
@@ -349,11 +370,8 @@ const VideoPageContent = () => {
             </AppBar>
             <Box>
                 <Container maxWidth="md">
-                    <Box sx={{ width: '100%', paddingTop: 5 }}>
-                      <Stack spacing={1}>
-                        <Typography sx={{ ml: 2, flex: 1 }} variant="subtitle2" component="div">Edit Video form starts here</Typography>
-                        <EditVideoForm editVideoObject={editVideoObject} />
-                      </Stack>
+                    <Box sx={{ width: '100%', paddingY: 10 }}>
+                        <EditVideoCard  editVideoObject={editVideoObject}  />
                     </Box>
                 </Container>
             </Box>
@@ -382,11 +400,8 @@ const VideoPageContent = () => {
             </AppBar>
             <Box>
                 <Container maxWidth="md">
-                    <Box sx={{ width: '100%', paddingTop: 5 }}>
-                      <Stack spacing={1}>
-                        <Typography sx={{ ml: 2, flex: 1 }} variant="subtitle2" component="div">View Video card starts here</Typography>
+                    <Box sx={{ width: '100%', paddingY: 10 }}>
                         <ViewVideoCard viewVideoObject={viewVideoObject} />
-                      </Stack>
                     </Box>
                 </Container>
             </Box>
