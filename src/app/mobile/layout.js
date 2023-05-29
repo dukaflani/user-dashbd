@@ -147,7 +147,7 @@ function MobileNavbar(props) {
      palette: {
        mode: darkMode === "dark" || prefersDarkMode === true ? 'dark' : 'light'
      }
-   }), [darkMode])
+   }), [darkMode, prefersDarkMode])
 
 
 

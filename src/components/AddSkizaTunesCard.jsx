@@ -5,7 +5,7 @@ import { useState, forwardRef } from "react"
 
 // MUI Imports
 import { Box, Button, Card, CardContent, Grid, 
-    Stack, TextField, Typography, colors, CircularProgress } from "@mui/material"
+    Stack, TextField, Typography, colors, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
@@ -230,8 +230,8 @@ const AddSkizaTunesCard = () => {
                 </Box>
             </DialogContent>
             <DialogActions>
-            <Button onClick={handleAddSkizaTuneItem}>Add Skiza Tune</Button>
-            <Button color="error" onClick={() => setOpenSkizaTuneItemDialog(false)}>Cancel</Button>
+                <Button onClick={handleAddSkizaTuneItem}>Add Skiza Tune</Button>
+                <Button color="error" onClick={() => setOpenSkizaTuneItemDialog(false)}>Cancel</Button>
             </DialogActions>
         </Dialog>
 

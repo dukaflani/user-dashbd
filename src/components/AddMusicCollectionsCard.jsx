@@ -5,7 +5,7 @@ import { useState, useEffect, forwardRef } from "react"
 
 // MUI Imports
 import { Box, Button, Card, CardContent, Grid, CircularProgress,
-    Stack, TextField, Typography, colors, Autocomplete } from "@mui/material"
+    Stack, TextField, Typography, colors, Autocomplete, Dialog, DialogTitle, DialogContent, Chip, DialogActions } from "@mui/material"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
@@ -401,8 +401,8 @@ const AddMusicCollectionsCard = () => {
                 </Box>
             </DialogContent>
             <DialogActions>
-            <Button onClick={handleAddMusicCollection}>Add Track</Button>
-            <Button color="error" onClick={() => setOpenMusicCollectionDialog(false)}>Cancel</Button>
+                <Button onClick={handleAddMusicCollection}>Add Track</Button>
+                <Button color="error" onClick={() => setOpenMusicCollectionDialog(false)}>Cancel</Button>
             </DialogActions>
         </Dialog>
 

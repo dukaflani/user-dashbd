@@ -202,7 +202,7 @@ export default function MainNavbar({ children }) {
     palette: {
       mode: darkMode === "dark" || prefersDarkMode === true ? 'dark' : 'light'
     }
-  }), [darkMode])
+  }), [darkMode, prefersDarkMode])
   
   
   // Drawer
