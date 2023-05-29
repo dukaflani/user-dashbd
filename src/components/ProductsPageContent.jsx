@@ -4,8 +4,10 @@
 import { useState, forwardRef, useMemo, useCallback } from "react"
 
 // MUI Imports
-import { AppBar, Avatar, Box, Button, Container, Dialog, 
-    IconButton, Slide, Stack, Toolbar, Typography } from "@mui/material"
+import { AppBar, Avatar, Box, Button, Container, Dialog, CircularProgress,
+    IconButton, Slide, Stack, Toolbar, Typography, DialogTitle, DialogContent } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // Data Grid
 import { DataGrid } from '@mui/x-data-grid';
@@ -16,13 +18,13 @@ import { formatDistanceStrict } from "date-fns";
 import { useSelector } from "react-redux";
 
 // Tanstack Query
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 // Icons
 import {  CloseSharp, VideoCall } from "@mui/icons-material"
 
 // Project Imports
-import { getUserProducts } from "@/axios/axios"
+import { deleteProduct, getUserProducts } from "@/axios/axios"
 import AddProductCard from "./AddProductCard";
 import ProductActions from "./ProductActions";
 import ViewProductCard from "./ViewProductCard";
@@ -33,10 +35,14 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
+const Alert = forwardRef(function Alert(props, ref) {
+return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 
 const ProductsPageContent = () => {
     const currentUser = useSelector((state) => state.auth.userInfo) 
+    const accessToken = useSelector((state) => state.auth.token)
     const [pageSize, setPageSize] = useState(5)
 
     // Add Product 
@@ -79,6 +85,34 @@ const ProductsPageContent = () => {
       const handleCloseViewProduct = () => {
         setOpenViewProductDialog(false)
       }
+
+
+    // Delete Product
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+    const queryClient = useQueryClient()
+    const { mutate: deleteMyProduct, isLoading: deleteProductLoading } = useMutation(deleteProduct, {
+      onSuccess: (data, _variables, _context) => {
+        queryClient.invalidateQueries('current-user-products')
+        setOpenMuiSnackbar(true)
+      },
+      onError: (error, _variables, _context) => {
+          console.log("product deleted error:", error?.response?.data?.detail)
+      }
+  })
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      };
+
+    const handleDelete = (id) => {
+        deleteMyProduct({ id, accessToken })
+    }
+
+
 
     
     const columns = useMemo(
@@ -232,13 +266,15 @@ const ProductsPageContent = () => {
             headerName: 'Actions',
             type: 'actions', 
             width: 150,
-            renderCell: (params) => <ProductActions {...{params, handleOpenEditProduct, handleOpenViewProduct}} />
+            renderCell: (params) => <ProductActions {...{params, handleOpenEditProduct, handleOpenViewProduct, handleDelete}} />
         }
         ], [])
 
     // const currentUserID = 1
-    const currentUserID = currentUser?.id ? currentUser?.id : 0
-    const { data: products, isLoading, isFetching } = useQuery(["current-user-products", currentUserID], (currentUserID) => getUserProducts(currentUserID))
+    const currentUserID = currentUser?.id
+    const { data: products, isLoading, isFetching } = useQuery(["current-user-products", currentUserID], (currentUserID) => getUserProducts(currentUserID), {
+        enabled: !!currentUserID,
+    })
 
     const getRowSpacing = useCallback((params) => {
         return {
@@ -323,12 +359,11 @@ const ProductsPageContent = () => {
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <AddProductCard/>
+                        <AddProductCard  setOpenAddProductDialogue={setOpenAddProductDialogue}  />
                     </Box>
                 </Container>
             </Box>
       </Dialog>
-
 
         {/*  Edit Product Dialog  */}
         <Dialog
@@ -353,12 +388,11 @@ const ProductsPageContent = () => {
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <EditProductCard  editProductObject={editProductObject}  />
+                        <EditProductCard  editProductObject={editProductObject} setOpenEditProductDialogue={setOpenEditProductDialogue}  />
                     </Box>
                 </Container>
             </Box>
       </Dialog>
-
 
          {/* View Product Dialog  */}
         <Dialog
@@ -388,6 +422,33 @@ const ProductsPageContent = () => {
                 </Container>
             </Box>
       </Dialog>
+
+      {/* Add Delete Loading Dialogue */}
+      <Dialog
+            open={deleteProductLoading}
+            aria-labelledby="alert-dialog-title"    
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle color="danger" id="alert-dialog-title">
+            {"Deleting Product..."}
+            </DialogTitle>
+            <DialogContent>
+                <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
+                    <CircularProgress/>
+                </Box>
+            </DialogContent>
+       </Dialog>
+
+      {/* Mui Success Snackbar */} 
+      <Snackbar 
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+              open={openMuiSnackbar} autoHideDuration={6000} 
+              onClose={handleCloseMuiSnackbar}
+              >
+              <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                  Product Deleted Successfully!
+              </Alert>
+      </Snackbar>
     </>
   )
 }

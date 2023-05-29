@@ -5,7 +5,7 @@ import { Box, IconButton, Stack, Tooltip } from "@mui/material"
 import { Delete, Edit, VisibilitySharp } from "@mui/icons-material"
 
 
-const LyricsActions = ({ params, handleOpenEditLyrics }) => {
+const LyricsActions = ({ params, handleOpenEditLyrics, handleDelete }) => {
 
   return (
     <Box sx={{paddingX: 3}}>
@@ -17,7 +17,7 @@ const LyricsActions = ({ params, handleOpenEditLyrics }) => {
                 </IconButton>
             </Tooltip>
             <Tooltip title="Delete Lyrics">
-                <IconButton>
+                <IconButton onClick={() =>handleDelete(params?.row?.id)}>
                     <Delete color="warning"/>
                 </IconButton>
             </Tooltip>

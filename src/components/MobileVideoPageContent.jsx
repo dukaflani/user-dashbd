@@ -40,7 +40,7 @@ const Alert = forwardRef(function Alert(props, ref) {
 });
 
 
-const VideoPageContent = () => {
+const MobileVideoPageContent = () => {
     const currentUser = useSelector((state) => state.auth.userInfo) 
     const accessToken = useSelector((state) => state.auth.token)
     const [pageSize, setPageSize] = useState(5)
@@ -311,7 +311,7 @@ const VideoPageContent = () => {
                     <Typography variant="h6">My Videos:</Typography>
                     <Button onClick={handleOpenAddVideo} startIcon={<VideoCall/>} size='small' variant="outlined">Add Video</Button>
                 </Stack>
-                <Box sx={{ height: 400, maxWidth: 1150 }}>
+                <Box sx={{ height: 400, width: {xs:340, sm: 560} }}>
                     <DataGrid
                         columns={columns}
                         rows={videos ? videos : []}
@@ -472,4 +472,4 @@ const VideoPageContent = () => {
   )
 }
 
-export default VideoPageContent
+export default MobileVideoPageContent

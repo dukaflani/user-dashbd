@@ -4,20 +4,15 @@
 import { Box } from '@mui/material'
 
 // Project Import
-import VideoPageContent from '@/components/VideoPageContent'
+import MobileVideoPageContent from '@/components/MobileVideoPageContent'
 
-
-export const metadata = {
-  title: 'Videos Dashboard',
-  description: 'Dukaflani Dashboard',
-}
 
 export default function VideosPage() {
 
 
   return (
       <Box component="main" >
-        <VideoPageContent/>
+        <MobileVideoPageContent/>
       </Box>
   )
 }

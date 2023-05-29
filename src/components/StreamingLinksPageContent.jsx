@@ -4,8 +4,10 @@
 import { useState, forwardRef, useMemo, useCallback } from "react"
 
 // MUI Imports
-import { AppBar, Box, Button, Container, Dialog, 
-    IconButton, Slide, Stack, Toolbar, Typography } from "@mui/material"
+import { AppBar, Box, Button, Container, Dialog, CircularProgress,
+    IconButton, Slide, Stack, Toolbar, Typography, DialogTitle, DialogContent } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // Data Grid
 import { DataGrid } from '@mui/x-data-grid';
@@ -15,13 +17,13 @@ import { formatDistanceStrict } from "date-fns";
 import { useSelector } from "react-redux";
 
 // Tanstack Query
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 // Icons
 import {  CloseSharp, VideoCall } from "@mui/icons-material"
 
 // Project Imports
-import { getUserStreamingLinks } from "@/axios/axios"
+import { deleteStreamingLinks, getUserStreamingLinks } from "@/axios/axios"
 import AddStreamingLinksCard from "./AddStreamingLinksCard";
 import StreamingLinksActions from "./StreamingLinksActions";
 import EditStreamingLinksCard from "./EditStreamingLinksCard";
@@ -31,10 +33,15 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
+const Alert = forwardRef(function Alert(props, ref) {
+return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 
 
 const StreamingLinksPageContent = () => {
     const currentUser = useSelector((state) => state.auth.userInfo) 
+    const accessToken = useSelector((state) => state.auth.token)
     const [pageSize, setPageSize] = useState(5)
 
     // Add Streaming Links 
@@ -63,6 +70,32 @@ const StreamingLinksPageContent = () => {
         setOpenEditStreamingLinksDialogue(false);
     };
 
+
+    // Delete Streaming Links
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+    const queryClient = useQueryClient()
+    const { mutate: deleteMyStreamingLinks, isLoading: deleteStreamingLinksLoading } = useMutation(deleteStreamingLinks, {
+      onSuccess: (data, _variables, _context) => {
+        queryClient.invalidateQueries('current-user-streamingLinks')
+        setOpenMuiSnackbar(true)
+      },
+      onError: (error, _variables, _context) => {
+          console.log("StreamingLinks deleted error:", error?.response?.data?.detail)
+      }
+  })
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      };
+
+    const handleDelete = (id) => {
+      deleteMyStreamingLinks({ id, accessToken })
+    }
+
     
     const columns = useMemo(
     () => [
@@ -86,13 +119,15 @@ const StreamingLinksPageContent = () => {
             headerName: 'Actions',
             type: 'actions', 
             width: 150,
-            renderCell: (params) => <StreamingLinksActions {...{params, handleOpenEditStreamingLinks}} />
+            renderCell: (params) => <StreamingLinksActions {...{params, handleOpenEditStreamingLinks, handleDelete }} />
         }
         ], [])
 
     // const currentUserID = 1
-    const currentUserID = currentUser?.id ? currentUser?.id : 0
-    const { data: streamingLinks, isLoading, isFetching } = useQuery(["current-user-streamingLinks", currentUserID], (currentUserID) => getUserStreamingLinks(currentUserID))
+    const currentUserID = currentUser?.id
+    const { data: streamingLinks, isLoading, isFetching } = useQuery(["current-user-streamingLinks", currentUserID], (currentUserID) => getUserStreamingLinks(currentUserID), {
+        enabled: !!currentUserID,
+    })
 
     const getRowSpacing = useCallback((params) => {
         return {
@@ -200,6 +235,33 @@ const StreamingLinksPageContent = () => {
             </Box>
       </Dialog>
 
+      
+       {/* Add Delete Loading Dialogue */}
+       <Dialog
+            open={deleteStreamingLinksLoading}
+            aria-labelledby="alert-dialog-title"    
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle color="danger" id="alert-dialog-title">
+            {"Deleting Streaming Links..."}
+            </DialogTitle>
+            <DialogContent>
+                <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
+                    <CircularProgress/>
+                </Box>
+            </DialogContent>
+       </Dialog>
+
+      {/* Mui Success Snackbar */} 
+      <Snackbar 
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+              open={openMuiSnackbar} autoHideDuration={6000} 
+              onClose={handleCloseMuiSnackbar}
+              >
+              <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                  Streaming Links Deleted Successfully!
+              </Alert>
+      </Snackbar>
     </>
   )
 }

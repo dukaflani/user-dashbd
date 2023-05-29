@@ -1,13 +1,15 @@
 "use client"
 
 // React Imports
-import { useState, useEffect } from "react"
+import { useState, useEffect, forwardRef } from "react"
 
 // MUI Imports
-import { Autocomplete, Box, Button, Card, CardContent, Grid, 
+import { Autocomplete, Box, Button, Card, CardContent, Grid, CircularProgress,
     Stack, TextField, Typography, colors, Chip } from "@mui/material"
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // NPM Imports
 import { useSelector } from "react-redux"
@@ -15,22 +17,39 @@ import {  useFormik } from "formik"
 import * as Yup from 'yup'
 import slugify from 'slugify'
 import { nanoid } from 'nanoid'
+import { format, formatISO9075 } from "date-fns";
 
 // Tanstack Query
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
 import { addMediaTour } from "@/axios/axios"
 
 
-const AddMediaTourCard = () => {
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+
+const AddMediaTourCard = ({ setOpenAddMediaTourDialogue }) => {
     const accessToken = useSelector((state) => state.auth.token)
+    const currentLoggedInUserProfile = useSelector((state) => state.auth.profileInfo) 
     const [nanoID, setNanoID] = useState("")
     const [mediumType, setMediumType] = useState(null)
     const [mediaTourDate, setMediaTourDate] = useState(null)
     const [mediaTourStartTime, setMediaTourStartTime] = useState(null)
-    const [mediaTourEndTime, setMediaTourEndTime] = useState(null)  
+    const [mediaTourEndTime, setMediaTourEndTime] = useState(null) 
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      }; 
 
 
     useEffect(() => {
@@ -57,9 +76,12 @@ const AddMediaTourCard = () => {
     ];
 
 
-    const { mutate: addNewMediaTour } = useMutation(addMediaTour, {
+    const queryClient = useQueryClient()
+    const { mutate: addNewMediaTour, isLoading: addMediaTourLoading } = useMutation(addMediaTour, {
         onSuccess: (data, _variables, _context) => {
-            console.log("media tour added success:", data)
+            queryClient.invalidateQueries('current-user-media-tours')
+            setOpenAddMediaTourDialogue(false)
+            setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
             console.log("media tour added error:", error?.response?.data?.detail)
@@ -96,7 +118,7 @@ const AddMediaTourCard = () => {
                 ),
         }),
         onSubmit: () => {
-            console.log("handle edit submit from formik:", {
+            addNewMediaTour({
                 accessToken,
                 title: formik.values?.title,
                 country: formik.values?.country,
@@ -104,9 +126,10 @@ const AddMediaTourCard = () => {
                 show_host: formik.values?.show_host,
                 show_title: formik.values?.show_title,
                 poster: formik.values?.poster,
-                date: mediaTourDate,
-                from_time: mediaTourStartTime,
-                to_time: mediaTourEndTime,
+
+                date: format(new Date(mediaTourDate), "yyyy-MM-dd"),
+                from_time: formatISO9075(new Date(mediaTourStartTime), { representation: 'time' }),
+                to_time: formatISO9075(new Date(mediaTourEndTime), { representation: 'time' }),
 
                 station_type: mediumType ? mediumType?.value : '',
                 station_type_id: mediumType ? mediumType?.id : '', 
@@ -114,6 +137,7 @@ const AddMediaTourCard = () => {
 
                 url_id: nanoID,
                 slug: slugify(formik.values?.title, {lower: true}),
+                customuserprofile: currentLoggedInUserProfile?.id
             })
         }
     })
@@ -137,6 +161,7 @@ const AddMediaTourCard = () => {
 
     
   return (
+    <>
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
             <Box>
                 <Card variant="outlined">
@@ -268,7 +293,7 @@ const AddMediaTourCard = () => {
                                                 </Stack>
                                             </Grid>
                                             <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Add Media Tour</Button>
+                                                <Button  fullWidth variant="contained" size="small" type="submit" startIcon={addMediaTourLoading && <CircularProgress color="inherit" size={25} />}>{addMediaTourLoading ? "Adding Media Tour..." : "Add Media Tour"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -278,6 +303,18 @@ const AddMediaTourCard = () => {
                 </Card>
             </Box>
         </form>
+
+         {/* Mui Success Snackbar */} 
+         <Snackbar 
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+            open={openMuiSnackbar} autoHideDuration={6000} 
+            onClose={handleCloseMuiSnackbar}
+            >
+            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                Media Tour Added Successfully!
+            </Alert>
+      </Snackbar>
+    </>
   )
 }
 

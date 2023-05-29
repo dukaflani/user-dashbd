@@ -24,11 +24,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {  CloseSharp, VideoCall } from "@mui/icons-material"
 
 // Project Imports
-import { deleteEvent, getUserEvents } from "@/axios/axios"
-import AddEventCard from "./AddEventCard";
-import EventsActions from "./EventsActions";
-import ViewEventCard from "./ViewEventCard";
-import EditEventCard from "./EditEventCard";
+import { deleteProduct, getUserProducts } from "@/axios/axios"
+import AddProductCard from "./AddProductCard";
+import ProductActions from "./ProductActions";
+import ViewProductCard from "./ViewProductCard";
+import EditProductCard from "./EditProductCard";
 
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -40,64 +40,63 @@ return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 
-
-const EventsPageContent = () => {
+const MobileProductsPageContent = () => {
     const currentUser = useSelector((state) => state.auth.userInfo) 
     const accessToken = useSelector((state) => state.auth.token)
     const [pageSize, setPageSize] = useState(5)
 
-    // Add Events 
-    const [openAddEventDialogue, setOpenAddEventDialogue] = useState(false)
+    // Add Product 
+    const [openAddProductDialogue, setOpenAddProductDialogue] = useState(false)
 
-    const handleOpenAddEvent = () => { 
-        setOpenAddEventDialogue(true);
+    const handleOpenAddProduct = () => { 
+        setOpenAddProductDialogue(true);
     };
     
-    const handleCloseAddEvent = () => {
-        setOpenAddEventDialogue(false);
+    const handleCloseAddProduct = () => {
+        setOpenAddProductDialogue(false);
     };
 
 
-    // Edit Events
-    const [openEditEventDialogue, setOpenEditEventDialogue] = useState(false)
-    const [editEventObject, setEditEventObject] = useState(null)
+    // Edit Product
+    const [openEditProductDialogue, setOpenEditProductDialogue] = useState(false)
+    const [editProductObject, setEditProductObject] = useState(null)
 
 
-    const handleOpenEditEvent = (event_object) => { 
-        setOpenEditEventDialogue(true);
-        setEditEventObject(event_object)
+    const handleOpenEditProduct = (product_object) => { 
+        setOpenEditProductDialogue(true);
+        setEditProductObject(product_object)
     };
     
-    const handleCloseEditEvent = () => {
-        setOpenEditEventDialogue(false);
+    const handleCloseEditProduct = () => {
+        setOpenEditProductDialogue(false);
     };
 
 
-    // View Events
-    const [openViewEventDialog, setOpenViewEventDialog] = useState(false)
-    const [viewEventObject, setViewEventObject] = useState(null)
+    // View Product
+    const [openViewProductDialog, setOpenViewProductDialog] = useState(false)
+    const [viewProductObject, setViewProductObject] = useState(null)
 
 
-    const handleOpenViewEvent = (event_object) => { 
-        setOpenViewEventDialog(true)
-        setViewEventObject(event_object)
+    const handleOpenViewProduct = (product_object) => { 
+        setOpenViewProductDialog(true)
+        setViewProductObject(product_object)
       }
   
-      const handleCloseViewEvent = () => {
-        setOpenViewEventDialog(false)
+      const handleCloseViewProduct = () => {
+        setOpenViewProductDialog(false)
       }
 
 
-    // Delete Video
+    // Delete Product
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
     const queryClient = useQueryClient()
-    const { mutate: deleteMyEvent, isLoading: deleteEventLoading } = useMutation(deleteEvent, {
-        onSuccess: (data, _variables, _context) => {
-            queryClient.invalidateQueries('current-user-events')
-            setOpenMuiSnackbar(true)
+    const { mutate: deleteMyProduct, isLoading: deleteProductLoading } = useMutation(deleteProduct, {
+      onSuccess: (data, _variables, _context) => {
+        queryClient.invalidateQueries('current-user-products')
+        setOpenMuiSnackbar(true)
       },
       onError: (error, _variables, _context) => {
-          console.log("event deleted error:", error?.response?.data?.detail)
+          console.log("product deleted error:", error?.response?.data?.detail)
       }
   })
 
@@ -110,79 +109,44 @@ const EventsPageContent = () => {
       };
 
     const handleDelete = (id) => {
-        deleteMyEvent({ id, accessToken })
+        deleteMyProduct({ id, accessToken })
     }
+
+
 
     
     const columns = useMemo(
     () => [
         { field: 'id', headerName: 'ID', sortable: false, filterable: false },
-        { field: 'event_category_id', headerName: 'Event Category ID', sortable: false, filterable: false },
-        { field: 'event_category_title', headerName: 'Event Category Title', sortable: false, filterable: false },
-        { field: 'event_ticket_info_id', headerName: 'Event Ticket Info ID', sortable: false, filterable: false },
-        { field: 'event_ticket_info_title', headerName: 'Event Ticket Info Title', sortable: false, filterable: false },
-        { field: 'local_currency_id', headerName: 'Currency ID', sortable: false, filterable: false },
-        { field: 'local_currency_title', headerName: 'Currency Title', sortable: false, filterable: false },
+        { field: 'local_currency_id', headerName: 'Local Currency ID', sortable: false, filterable: false },
+        { field: 'local_currency_title', headerName: 'Local Currency Title', sortable: false, filterable: false },
+        { field: 'product_status_id', headerName: 'Product Status ID', sortable: false, filterable: false },
+        { field: 'product_status_title', headerName: 'Product Status Title', sortable: false, filterable: false },
+        { field: 'product_category_id', headerName: 'Product Category ID', sortable: false, filterable: false },
+        { field: 'product_category_title', headerName: 'Product Category Title', sortable: false, filterable: false },
         {
-            field: 'poster',
-            headerName: 'Poster',
+            field: 'image',
+            headerName: 'Image',
             // width: 100,
-            renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.poster} />,
+            renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.image} />,
             sortable: false,
             filterable: false
             },
         {
             field: 'title',
-            headerName: 'Event Title',
+            headerName: 'Product Title',
             width: 250,
             sortable: true,
             editable: false
         },
         {
-            field: 'country',
-            headerName: 'Country',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'city',
-            headerName: 'City',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'event_category',
-            headerName: 'Category',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'event_organizer',
-            headerName: 'Organizer',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'event_ticket_info',
-            headerName: 'Ticket Info',
+            field: 'status_description',
+            headerName: 'Status',
         //   width: 100,
             sortable: true,
             editable: false
         },
         // Add Price + Currency in this column
-        // {
-        //     field: 'fullName',
-        //     headerName: 'Full name',
-        //     description: 'This column has a value getter and is not sortable.',
-        //     sortable: false,
-        //     width: 160,
-        //     valueGetter: (params) =>
-        //       `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-        //   },
         {
             field: 'local_price',
             headerName: 'Price',
@@ -193,20 +157,8 @@ const EventsPageContent = () => {
             editable: false
         },
         {
-            field: 'ticket_platform',
-            headerName: 'Ticketing Platform',
-        //   width: 175,
-            editable: false
-        },
-        {
-            field: 'local_currency',
-            headerName: 'Currency',
-        //   width: 175,
-            editable: false
-        },
-        {
-            field: 'date',
-            headerName: 'Date',
+            field: 'product_status',
+            headerName: 'Availability',
         //   width: 175,
             editable: false
         },
@@ -217,29 +169,57 @@ const EventsPageContent = () => {
             editable: false
         },
         {
-            field: 'venue',
-            headerName: 'Venue',
+            field: 'product_category',
+            headerName: 'Category',
         //   width: 175,
             editable: false
         },
         {
-            field: 'location',
-            headerName: 'Location',
-        //   width: 175,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'time',
-            headerName: 'Time',
+            field: 'dollar_price',
+            headerName: 'Dollar Price',
         //   width: 175,
             sortable: true,
             editable: false
         },
         {
-            field: 'ticket_link',
-            headerName: 'Ticket Link',
+            field: 'local_currency',
+            headerName: 'Currency',
+        //   width: 175,
+            sortable: true,
+            editable: false
+        },
+        {
+            field: 'whatsapp',
+            headerName: 'Order on Whatsapp',
             width: 175,
+            sortable: true,
+            editable: false
+        },
+        {
+            field: 'country',
+            headerName: 'Country',
+        //   width: 175,
+            sortable: true,
+            editable: false
+        },
+        {
+            field: 'slug',
+            headerName: 'Slug',
+        //   width: 175,
+            sortable: true,
+            editable: false
+        },
+        {
+            field: 'sold_by',
+            headerName: 'Vendor',
+        //   width: 175,
+            sortable: true,
+            editable: false
+        },
+        {
+            field: 'promoted_by',
+            headerName: 'Promoted by',
+        //   width: 175,
             sortable: true,
             editable: false
         },
@@ -251,15 +231,15 @@ const EventsPageContent = () => {
             editable: false
         },
         {
-            field: 'posted',
-            headerName: 'Posted',
+            field: 'date',
+            headerName: 'Added',
         //   width: 100,
-            renderCell: (params) => formatDistanceStrict(new Date(params.row.posted), new Date(), {addSuffix: true, }),
+            renderCell: (params) => formatDistanceStrict(new Date(params.row.date), new Date(), {addSuffix: true, }),
             editable: false
         },
         {
-            field: 'is_featured',
-            headerName: 'Featured',
+            field: 'is_active',
+            headerName: 'Active',
         //   width: 175,
             type: 'boolean',
             sortable: true,
@@ -275,7 +255,7 @@ const EventsPageContent = () => {
         },
         {
             field: 'is_global',
-            headerName: 'Global Event',
+            headerName: 'Global Product',
         //   width: 175,
             type: 'boolean',
             sortable: true,
@@ -286,14 +266,14 @@ const EventsPageContent = () => {
             headerName: 'Actions',
             type: 'actions', 
             width: 150,
-            renderCell: (params) => <EventsActions {...{params, handleOpenEditEvent, handleOpenViewEvent, handleDelete}} />
+            renderCell: (params) => <ProductActions {...{params, handleOpenEditProduct, handleOpenViewProduct, handleDelete}} />
         }
         ], [])
 
     // const currentUserID = 1
-    const currentUserID = currentUser?.id 
-    const { data: events, isLoading, isFetching } = useQuery(["current-user-events", currentUserID], (currentUserID) => getUserEvents(currentUserID), {
-        enabled: !!currentUserID
+    const currentUserID = currentUser?.id
+    const { data: products, isLoading, isFetching } = useQuery(["current-user-products", currentUserID], (currentUserID) => getUserProducts(currentUserID), {
+        enabled: !!currentUserID,
     })
 
     const getRowSpacing = useCallback((params) => {
@@ -309,31 +289,29 @@ const EventsPageContent = () => {
         <Box sx={{width: '100%'}}>
             <Stack rowGap={2} sx={{width: '100%'}}>
                 <Stack direction='row' sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                    <Typography variant="h6">My Events:</Typography>
-                    <Button onClick={handleOpenAddEvent} startIcon={<VideoCall/>} size='small' variant="outlined">Add Event</Button>
+                    <Typography variant="h6">My Products:</Typography>
+                    <Button onClick={handleOpenAddProduct} startIcon={<VideoCall/>} size='small' variant="outlined">Add Product</Button>
                 </Stack>
-                <Box sx={{ height: 400, maxWidth: 1150 }}>
+                <Box sx={{ height: 400, width: {xs:340, sm: 560} }}>
                     <DataGrid
                         columns={columns}
-                        rows={events ? events : []}
+                        rows={products ? products : []}
                         getRowId={(row) => row.id}
                         columnVisibilityModel={{
                             id: false,
-                            venue: false,
+                            dollar_price: false,
                             country: false,
-                            location: false,
+                            url_id: false,
+                            slug: false,
                             local_price: false,
                             local_currency: false,
-                            event_ticket_info: false,
-                            time: false,
-                            ticket_link: false,
-                            url_id: false,
-                            event_category_id: false,
-                            event_category_title: false,
-                            event_ticket_info_id: false,
-                            event_ticket_info_title: false,
                             local_currency_id: false,
                             local_currency_title: false,
+                            promoted_by: false,
+                            product_status_id: false,
+                            product_status_title: false,
+                            product_category_id: false,
+                            product_category_title: false,
                         }}
 
                         initialState={{
@@ -350,7 +328,7 @@ const EventsPageContent = () => {
                         // showColumnVerticalBorder
                         getRowSpacing={getRowSpacing}
                         localeText={{
-                          noRowsLabel: isLoading ? 'Loading events...' : 'No events found...'
+                          noRowsLabel: isLoading ? 'Loading products...' : 'No products found...'
                         }}
                         
                     />
@@ -358,11 +336,11 @@ const EventsPageContent = () => {
             </Stack>
         </Box>
 
-         {/* Add Event Dialog */}
+         {/* Add Product Dialog */}
         <Dialog
             fullScreen
-            open={openAddEventDialogue}
-            onClose={handleCloseAddEvent}
+            open={openAddProductDialogue}
+            onClose={handleCloseAddProduct}
             TransitionComponent={Transition}
         >
             <AppBar color='inherit' sx={{ position: 'fixed' }}>
@@ -374,25 +352,24 @@ const EventsPageContent = () => {
                       >
                         <VideoCall/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Add Event</Typography>
-                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseAddEvent}>Close</Button>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Add Product</Typography>
+                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseAddProduct}>Close</Button>
                 </Toolbar>
             </AppBar>
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <AddEventCard setOpenAddEventDialogue={setOpenAddEventDialogue} />
+                        <AddProductCard  setOpenAddProductDialogue={setOpenAddProductDialogue}  />
                     </Box>
                 </Container>
             </Box>
       </Dialog>
 
-
-        {/*  Edit Event Dialog  */}
+        {/*  Edit Product Dialog  */}
         <Dialog
             fullScreen
-            open={openEditEventDialogue}
-            onClose={handleCloseEditEvent}
+            open={openEditProductDialogue}
+            onClose={handleCloseEditProduct}
             TransitionComponent={Transition}
         >
             <AppBar color='inherit' sx={{ position: 'relative' }}>
@@ -404,25 +381,24 @@ const EventsPageContent = () => {
                       >
                         <VideoCall/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Edit Event</Typography>
-                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseEditEvent}>Close</Button>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Edit Product</Typography>
+                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseEditProduct}>Close</Button>
                 </Toolbar>
             </AppBar>
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <EditEventCard  editEventObject={editEventObject} setOpenEditEventDialogue={setOpenEditEventDialogue}  />
+                        <EditProductCard  editProductObject={editProductObject} setOpenEditProductDialogue={setOpenEditProductDialogue}  />
                     </Box>
                 </Container>
             </Box>
       </Dialog>
 
-
-         {/* View Event Dialog  */}
+         {/* View Product Dialog  */}
         <Dialog
             fullScreen
-            open={openViewEventDialog}   
-            onClose={handleCloseViewEvent}
+            open={openViewProductDialog}   
+            onClose={handleCloseViewProduct}
             TransitionComponent={Transition}
         >
             <AppBar color='inherit' sx={{ position: 'relative' }}>
@@ -434,14 +410,14 @@ const EventsPageContent = () => {
                       >
                         <VideoCall/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">View Event</Typography>
-                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseViewEvent}>Close</Button>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">View Product</Typography>
+                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseViewProduct}>Close</Button>
                 </Toolbar>
             </AppBar>
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <ViewEventCard viewEventObject={viewEventObject} />
+                        <ViewProductCard viewProductObject={viewProductObject} />
                     </Box>
                 </Container>
             </Box>
@@ -449,12 +425,12 @@ const EventsPageContent = () => {
 
       {/* Add Delete Loading Dialogue */}
       <Dialog
-            open={deleteEventLoading}
+            open={deleteProductLoading}
             aria-labelledby="alert-dialog-title"    
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle color="danger" id="alert-dialog-title">
-            {"Deleting Event..."}
+            {"Deleting Product..."}
             </DialogTitle>
             <DialogContent>
                 <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
@@ -470,11 +446,11 @@ const EventsPageContent = () => {
               onClose={handleCloseMuiSnackbar}
               >
               <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
-                  Event Deleted Successfully!
+                  Product Deleted Successfully!
               </Alert>
       </Snackbar>
     </>
   )
 }
 
-export default EventsPageContent
+export default MobileProductsPageContent

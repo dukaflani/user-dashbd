@@ -4,7 +4,7 @@
 import { useState, forwardRef, useMemo, useCallback } from "react"
 
 // MUI Imports
-import { AppBar, Avatar, Box, Button, Container, Dialog, CircularProgress,
+import { AppBar, Box, Button, Container, Dialog, CircularProgress,
     IconButton, Slide, Stack, Toolbar, Typography, DialogTitle, DialogContent } from "@mui/material"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -13,7 +13,6 @@ import MuiAlert from '@mui/material/Alert';
 import { DataGrid } from '@mui/x-data-grid';
 
 // NPM Imports
-import numeral from "numeral";
 import { formatDistanceStrict } from "date-fns";
 import { useSelector } from "react-redux";
 
@@ -24,10 +23,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {  CloseSharp, VideoCall } from "@mui/icons-material"
 
 // Project Imports
-import { deleteMusicCollection, getUserMusicCollections } from "@/axios/axios"
-import AddMusicCollectionsCard from "./AddMusicCollectionsCard";
-import MusicCollectionsActions from "./MusicCollectionsActions";
-import EditMusicCollectionsCard from "./EditMusicCollectionsCard";
+import { deleteStreamingLinks, getUserStreamingLinks } from "@/axios/axios"
+import AddStreamingLinksCard from "./AddStreamingLinksCard";
+import StreamingLinksActions from "./StreamingLinksActions";
+import EditStreamingLinksCard from "./EditStreamingLinksCard";
 
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -40,48 +39,48 @@ return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 
 
 
-const MusicCollectionPageContent = () => {
+const MobileStreamingLinksPageContent = () => {
     const currentUser = useSelector((state) => state.auth.userInfo) 
     const accessToken = useSelector((state) => state.auth.token)
     const [pageSize, setPageSize] = useState(5)
 
-    // Add Music Collection 
-    const [openAddMusicCollectionsDialogue, setOpenAddMusicCollectionsDialogue] = useState(false)
+    // Add Streaming Links 
+    const [openAddStreamingLinksDialogue, setOpenAddStreamingLinksDialogue] = useState(false)
 
-    const handleOpenAddMusicCollections = () => { 
-        setOpenAddMusicCollectionsDialogue(true);
+    const handleOpenAddStreamingLinks = () => { 
+        setOpenAddStreamingLinksDialogue(true);
     };
     
-    const handleCloseAddMusicCollections = () => {
-        setOpenAddMusicCollectionsDialogue(false);
+    const handleCloseAddStreamingLinks = () => {
+        setOpenAddStreamingLinksDialogue(false);
     };
 
 
-    // Edit Music Collection
-    const [openEditMusicCollectionsDialogue, setOpenEditMusicCollectionsDialogue] = useState(false)
-    const [editMusicCollectionsObject, setEditMusicCollectionsObject] = useState(null)
+    // Edit Streaming Links
+    const [openEditStreamingLinksDialogue, setOpenEditStreamingLinksDialogue] = useState(false)
+    const [editStreamingLinksObject, setEditStreamingLinksObject] = useState(null)
 
 
-    const handleOpenEditMusicCollections = (musicCollections_object) => { 
-        setOpenEditMusicCollectionsDialogue(true);
-        setEditMusicCollectionsObject(musicCollections_object)
+    const handleOpenEditStreamingLinks = (streamingLinks_object) => { 
+        setOpenEditStreamingLinksDialogue(true);
+        setEditStreamingLinksObject(streamingLinks_object)
     };
     
-    const handleCloseEditMusicCollections = () => {
-        setOpenEditMusicCollectionsDialogue(false);
+    const handleCloseEditStreamingLinks = () => {
+        setOpenEditStreamingLinksDialogue(false);
     };
 
 
-    // Delete Music Collection
+    // Delete Streaming Links
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
     const queryClient = useQueryClient()
-    const { mutate: deleteMyMusicCollection, isLoading: deleteMusicCollectionLoading } = useMutation(deleteMusicCollection, {
+    const { mutate: deleteMyStreamingLinks, isLoading: deleteStreamingLinksLoading } = useMutation(deleteStreamingLinks, {
       onSuccess: (data, _variables, _context) => {
-        queryClient.invalidateQueries('current-user-musicCollections')
+        queryClient.invalidateQueries('current-user-streamingLinks')
         setOpenMuiSnackbar(true)
       },
       onError: (error, _variables, _context) => {
-          console.log("MusicCollection deleted error:", error?.response?.data?.detail)
+          console.log("StreamingLinks deleted error:", error?.response?.data?.detail)
       }
   })
 
@@ -94,80 +93,18 @@ const MusicCollectionPageContent = () => {
       };
 
     const handleDelete = (id) => {
-      deleteMyMusicCollection({ id, accessToken })
+      deleteMyStreamingLinks({ id, accessToken })
     }
 
     
     const columns = useMemo(
     () => [
         { field: 'id', headerName: 'ID', sortable: false, filterable: false },
-        { field: 'album_type_title', headerName: 'Album Type Title', sortable: false, filterable: false },
-        { field: 'album_type_id', headerName: 'Album Type ID', sortable: false, filterable: false },
-        { field: 'option_type_title', headerName: 'Option Type Title', sortable: false, filterable: false },
-        { field: 'option_type_id', headerName: 'Option Type ID', sortable: false, filterable: false },
-        {
-            field: 'cover',
-            headerName: 'Album Cover',
-            // width: 100,
-            renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.cover} />,
-            sortable: false,
-            filterable: false
-        },
         {
             field: 'title',
-            headerName: 'Music Collection Title',
+            headerName: 'Lyrics Title',
             width: 250,
             sortable: true,
-            editable: false
-        },
-        {
-            field: 'album_type',
-            headerName: 'Collection Type',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'option_type',
-            headerName: 'Host Service',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'link_title',
-            headerName: 'Hosted On',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'link',
-            headerName: 'Link',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'url_id',
-            headerName: 'URL ID',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'track_count',
-            headerName: 'Track Count',
-        //   width: 175,
-            sortable: true,
-            renderCell: (params) => params.row.track_count < 1000 || params.row.track_count % 10 === 0 ? numeral(params.row.track_count).format('0a') : numeral(params.row.track_count).format('0.0a'),
-            editable: false
-        },
-        {
-            field: 'is_sponsored',
-            headerName: 'Sponsored',
-        //   width: 175,
-            type: 'boolean',
             editable: false
         },
         {
@@ -182,13 +119,13 @@ const MusicCollectionPageContent = () => {
             headerName: 'Actions',
             type: 'actions', 
             width: 150,
-            renderCell: (params) => <MusicCollectionsActions {...{params, handleOpenEditMusicCollections, handleDelete }} />
+            renderCell: (params) => <StreamingLinksActions {...{params, handleOpenEditStreamingLinks, handleDelete }} />
         }
         ], [])
 
     // const currentUserID = 1
     const currentUserID = currentUser?.id
-    const { data: musicCollections, isLoading, isFetching } = useQuery(["current-user-musicCollections", currentUserID], (currentUserID) => getUserMusicCollections(currentUserID), {
+    const { data: streamingLinks, isLoading, isFetching } = useQuery(["current-user-streamingLinks", currentUserID], (currentUserID) => getUserStreamingLinks(currentUserID), {
         enabled: !!currentUserID,
     })
 
@@ -205,22 +142,16 @@ const MusicCollectionPageContent = () => {
         <Box sx={{width: '100%'}}>
             <Stack rowGap={2} sx={{width: '100%'}}>
                 <Stack direction='row' sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                    <Typography variant="h6">My Music Collections:</Typography>
-                    <Button onClick={handleOpenAddMusicCollections} startIcon={<VideoCall/>} size='small' variant="outlined">Add Music Collection</Button>
+                    <Typography variant="h6">My Streaming Links:</Typography>
+                    <Button onClick={handleOpenAddStreamingLinks} startIcon={<VideoCall/>} size='small' variant="outlined">Add Streaming Links</Button>
                 </Stack>
-                <Box sx={{ height: 400, maxWidth: 1150 }}>
+                <Box sx={{ height: 400, width: {xs:340, sm: 560} }}>
                     <DataGrid
                         columns={columns}
-                        rows={musicCollections ? musicCollections : []}
+                        rows={streamingLinks ? streamingLinks : []}
                         getRowId={(row) => row.id}
                         columnVisibilityModel={{
                             id: false,
-                            url_id: false,
-                            link: false,
-                            album_type_title: false,
-                            album_type_id: false,
-                            option_type_title: false,
-                            option_type_id: false,
                         }}
 
                         initialState={{
@@ -237,7 +168,7 @@ const MusicCollectionPageContent = () => {
                         // showColumnVerticalBorder
                         getRowSpacing={getRowSpacing}
                         localeText={{
-                          noRowsLabel: isLoading ? 'Loading music collections' : 'No music collections found...'
+                          noRowsLabel: isLoading ? 'Loading streaming links...' : 'No streaming links found...'
                         }}
                         
                     />
@@ -245,11 +176,11 @@ const MusicCollectionPageContent = () => {
             </Stack>
         </Box>
 
-         {/* Add Music Collections Dialog */}
+         {/* Add Streaming Links Dialog */}
         <Dialog
             fullScreen
-            open={openAddMusicCollectionsDialogue}
-            onClose={handleCloseAddMusicCollections}
+            open={openAddStreamingLinksDialogue}
+            onClose={handleCloseAddStreamingLinks}
             TransitionComponent={Transition}
         >
             <AppBar color='inherit' sx={{ position: 'fixed' }}>
@@ -261,25 +192,25 @@ const MusicCollectionPageContent = () => {
                       >
                         <VideoCall/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Add Music Collection</Typography>
-                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseAddMusicCollections}>Close</Button>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Add Streaming Links</Typography>
+                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseAddStreamingLinks}>Close</Button>
                 </Toolbar>
             </AppBar>
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <AddMusicCollectionsCard/>
+                        <AddStreamingLinksCard/>
                     </Box>
                 </Container>
             </Box>
       </Dialog>
 
 
-        {/*  Edit Music Collection Dialog  */}
+        {/*  Edit Streaming Links Dialog  */}
         <Dialog
             fullScreen
-            open={openEditMusicCollectionsDialogue}
-            onClose={handleCloseEditMusicCollections}
+            open={openEditStreamingLinksDialogue}
+            onClose={handleCloseEditStreamingLinks}
             TransitionComponent={Transition}
         >
             <AppBar color='inherit' sx={{ position: 'relative' }}>
@@ -291,28 +222,28 @@ const MusicCollectionPageContent = () => {
                       >
                         <VideoCall/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Edit Music Collection</Typography>
-                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseEditMusicCollections}>Close</Button>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Edit Streaming Links</Typography>
+                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseEditStreamingLinks}>Close</Button>
                 </Toolbar>
             </AppBar>
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <EditMusicCollectionsCard  editMusicCollectionsObject={editMusicCollectionsObject}  />
+                        <EditStreamingLinksCard  editStreamingLinksObject={editStreamingLinksObject}  />
                     </Box>
                 </Container>
             </Box>
       </Dialog>
 
       
-      {/* Add Delete Loading Dialogue */}
-      <Dialog
-            open={deleteMusicCollectionLoading}
+       {/* Add Delete Loading Dialogue */}
+       <Dialog
+            open={deleteStreamingLinksLoading}
             aria-labelledby="alert-dialog-title"    
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle color="danger" id="alert-dialog-title">
-            {"Deleting Music Collection..."}
+            {"Deleting Streaming Links..."}
             </DialogTitle>
             <DialogContent>
                 <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
@@ -328,11 +259,11 @@ const MusicCollectionPageContent = () => {
               onClose={handleCloseMuiSnackbar}
               >
               <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
-                  Music Collection Deleted Successfully!
+                  Streaming Links Deleted Successfully!
               </Alert>
       </Snackbar>
     </>
   )
 }
 
-export default MusicCollectionPageContent
+export default MobileStreamingLinksPageContent

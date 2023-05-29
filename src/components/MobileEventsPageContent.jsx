@@ -41,7 +41,7 @@ return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 
 
 
-const EventsPageContent = () => {
+const MobileEventsPageContent = () => {
     const currentUser = useSelector((state) => state.auth.userInfo) 
     const accessToken = useSelector((state) => state.auth.token)
     const [pageSize, setPageSize] = useState(5)
@@ -312,7 +312,7 @@ const EventsPageContent = () => {
                     <Typography variant="h6">My Events:</Typography>
                     <Button onClick={handleOpenAddEvent} startIcon={<VideoCall/>} size='small' variant="outlined">Add Event</Button>
                 </Stack>
-                <Box sx={{ height: 400, maxWidth: 1150 }}>
+                <Box sx={{ height: 400, width: {xs:340, sm: 560} }}>
                     <DataGrid
                         columns={columns}
                         rows={events ? events : []}
@@ -477,4 +477,4 @@ const EventsPageContent = () => {
   )
 }
 
-export default EventsPageContent
+export default MobileEventsPageContent

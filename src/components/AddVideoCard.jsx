@@ -1,10 +1,10 @@
 "use client"
 
 // React Imports
-import { useState, useEffect,forwardRef } from "react"
+import { useState, useEffect, forwardRef } from "react"
 
 // MUI Imports
-import { Autocomplete, Box, Button, Card, CardContent, Grid, 
+import { Autocomplete, Box, Button, Card, CardContent, Grid, CircularProgress,
     Stack, TextField, Typography, colors, Chip } from "@mui/material"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -17,12 +17,12 @@ import slugify from 'slugify'
 import { nanoid } from 'nanoid'
 
 // Tanstack Query
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
 import MyTextArea from "./formComponents/MyTextArea"
-import { addVideo, getUserLyrics, getUserMusicCollections, 
+import { addVideo, getGenres, getUserLyrics, getUserMusicCollections, 
   getUserProducts, getUserSkizaTunes, getUserStreamingLinks } from "@/axios/axios"
 
 
@@ -31,7 +31,7 @@ const Alert = forwardRef(function Alert(props, ref) {
   });
 
 
-const AddVideoCard = () => {
+const AddVideoCard = ({ setOpenAddVideoDialogue }) => {
     const accessToken = useSelector((state) => state.auth.token)
     const user_profile = useSelector((state) => state.auth.profileInfo)
     const currentUser = useSelector((state) => state.auth.userInfo) 
@@ -42,6 +42,7 @@ const AddVideoCard = () => {
     const [videoLyrics, setVideoLyrics] = useState(null)
     const [videoSkizaTunes, setVideoSkizaTunes] = useState(null)
     const [videoAlbum, setVideoAlbum] = useState(null)
+    const [videoGenre, setVideoGenre] = useState(null)
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
 
     
@@ -78,9 +79,11 @@ const AddVideoCard = () => {
     ];
 
 
-    const { mutate: addNewVideo } = useMutation(addVideo, {
+    const queryClient = useQueryClient()
+    const { mutate: addNewVideo, isLoading: addNewVideoLoading } = useMutation(addVideo, {
         onSuccess: (data, _variables, _context) => {
-            console.log("video added success:", data)
+            queryClient.invalidateQueries('current-user-videos')
+            setOpenAddVideoDialogue(false)
             setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
@@ -96,8 +99,6 @@ const AddVideoCard = () => {
             youtube_id: '',
             description: '',
             thumbnail: '',
-            links: null,
-            genre: "",
         },
         validationSchema: Yup.object({
             title: Yup.string().required("Required"),
@@ -117,10 +118,9 @@ const AddVideoCard = () => {
                     value => value && SUPPORTED_FORMATS.includes(value.type)
                 )
                 .required("Required"),
-                genre: Yup.string().required("Required"),
         }),
         onSubmit: () => {
-            console.log("handle submit from formik:", {
+          addNewVideo({
                 accessToken,
                 title: formik.values?.title,
                 song_title: formik.values?.song_title,
@@ -135,7 +135,7 @@ const AddVideoCard = () => {
                 album: videoAlbum === null ? 1 : videoAlbum?.id,
                 lyrics: videoLyrics === null ? 1 : videoLyrics?.id,
                 skiza: videoSkizaTunes === null ? 1 : videoSkizaTunes?.id,
-                genre: formik.values?.genre,
+                genre: videoGenre === null ? 1 : videoGenre?.id,
                 customuserprofile: user_profile?.id,
             })
         }
@@ -143,44 +143,61 @@ const AddVideoCard = () => {
 
     // Current User ID
     // const currentUserID = 3
-    const currentUserID = currentUser?.id ? currentUser?.id : 0
+    const currentUserID = currentUser?.id
 
     // User Streaming Links
-    const { data: streamingLinks } = useQuery(["current-user-streamingLinks", currentUserID], (currentUserID) => getUserStreamingLinks(currentUserID))
+    const { data: streamingLinks } = useQuery(["current-user-streamingLinks", currentUserID], (currentUserID) => getUserStreamingLinks(currentUserID), {
+      enabled: !!currentUserID,
+    })
     const streamingServicesOptions = streamingLinks?.map((option, index) => ({
         id: option.id,
         label: option.title,
     }))
 
     // User Products
-    const { data: products } = useQuery(["current-user-products", currentUserID], (currentUserID) => getUserProducts(currentUserID))
+    const { data: products } = useQuery(["current-user-products", currentUserID], (currentUserID) => getUserProducts(currentUserID), {
+      enabled: !!currentUserID,
+    })
     const productDataOptions = products?.map((option, index) => ({
         id: option.id,
         label: option.title
     }))
 
     // User Lyrics
-    const { data: lyrics } = useQuery(["current-user-lyrics", currentUserID], (currentUserID) => getUserLyrics(currentUserID))
+    const { data: lyrics } = useQuery(["current-user-lyrics", currentUserID], (currentUserID) => getUserLyrics(currentUserID), {
+      enabled: !!currentUserID,
+    })
     const lyricsDataOptions = lyrics?.map((option, index) => ({
         id: option.id,
         label: option.title
     }))
 
   //  User Skiza Tunes
-    const { data: skizaTunes } = useQuery(["current-user-skizaTunes", currentUserID], (currentUserID) => getUserSkizaTunes(currentUserID))
+    const { data: skizaTunes } = useQuery(["current-user-skizaTunes", currentUserID], (currentUserID) => getUserSkizaTunes(currentUserID), {
+      enabled: !!currentUserID,
+    })
     const skizaDataOptions = skizaTunes?.map((option, index) => ({
         id: option.id,
         label: option.title
     }))
     
   //  User Music Collection
-    const { data: musicCollections, isLoading, isFetching } = useQuery(["current-user-musicCollections", currentUserID], (currentUserID) => getUserMusicCollections(currentUserID))
+    const { data: musicCollections, isLoading, isFetching } = useQuery(["current-user-musicCollections", currentUserID], (currentUserID) => getUserMusicCollections(currentUserID), {
+      enabled: !!currentUserID,
+    })
     const albumDataOptions = musicCollections?.map((option, index) => ({
         id: option.id,
         label: option.title
     }))
 
-    
+  
+  // Fetch Genres 
+  const { data: genres } = useQuery(["genres"], getGenres)
+  const genresOptions = genres?.map((option, index) => ({
+    id: option.id,
+    label: option.title
+  }))
+
 
 
     
@@ -223,15 +240,29 @@ const AddVideoCard = () => {
                                                 />
                                             </Grid>
                                             <Grid xs={12} md={6} item>
-                                                <MyTextField
-                                                    required
-                                                    name="genre" 
-                                                    label="Genre"
-                                                    helperText={formik.errors.genre && formik.touched.genre ? formik.errors.genre : null} 
-                                                    error={formik.errors.genre && formik.touched.genre ? true : false} 
-                                                    {...textFieldConfig} 
-                                                    {...formik.getFieldProps("genre")}
+                                            <Stack spacing={2}>
+                                                    <Autocomplete
+                                                        options={genresOptions ? genresOptions : []}
+                                                        value={videoGenre}
+                                                        size="small"
+                                                        onChange={(event, newValue) => setVideoGenre(newValue)}
+                                                        getOptionLabel={ (option) => option.label}
+                                                        renderOption={(props, option) => {
+                                                            return (
+                                                              <li {...props} key={option.id}>
+                                                                {option.label}
+                                                              </li>
+                                                            );
+                                                          }}
+                                                          renderTags={(tagValue, getTagProps) => {
+                                                            return tagValue.map((option, index) => (
+                                                              <Chip {...getTagProps({ index })} key={index} label={option} />
+                                                            ))
+                                                          }}
+                                                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                        renderInput={(params) => <TextField {...params} label="Genre" />}
                                                     />
+                                                </Stack>
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
@@ -399,8 +430,8 @@ const AddVideoCard = () => {
                                                 ) : null}
                                                 </Stack>
                                             </Grid>
-                                            <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Add Video</Button>
+                                            <Grid xs={12} sx={{paddingTop: 3}} item > 
+                                                <Button  fullWidth variant="contained" size="small" type="submit" startIcon={addNewVideoLoading && <CircularProgress color="inherit" size={25} />} >{addNewVideoLoading ? "Adding Video..." : "Add Video"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -413,14 +444,14 @@ const AddVideoCard = () => {
 
         {/* Mui Success Snackbar */} 
         <Snackbar 
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
-            open={openMuiSnackbar} autoHideDuration={6000} 
-            onClose={handleCloseMuiSnackbar}
-            >
-            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
-                Video Added Successfully!
-            </Alert>
-      </Snackbar>
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+              open={openMuiSnackbar} autoHideDuration={6000} 
+              onClose={handleCloseMuiSnackbar}
+              >
+              <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                  Video Added Successfully!
+              </Alert>
+        </Snackbar>
     </>
   )
 }

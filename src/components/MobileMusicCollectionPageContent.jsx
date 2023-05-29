@@ -40,7 +40,7 @@ return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 
 
 
-const MusicCollectionPageContent = () => {
+const MobileMusicCollectionPageContent = () => {
     const currentUser = useSelector((state) => state.auth.userInfo) 
     const accessToken = useSelector((state) => state.auth.token)
     const [pageSize, setPageSize] = useState(5)
@@ -208,7 +208,7 @@ const MusicCollectionPageContent = () => {
                     <Typography variant="h6">My Music Collections:</Typography>
                     <Button onClick={handleOpenAddMusicCollections} startIcon={<VideoCall/>} size='small' variant="outlined">Add Music Collection</Button>
                 </Stack>
-                <Box sx={{ height: 400, maxWidth: 1150 }}>
+                <Box sx={{ height: 400, width: {xs:340, sm: 560} }}>
                     <DataGrid
                         columns={columns}
                         rows={musicCollections ? musicCollections : []}
@@ -335,4 +335,4 @@ const MusicCollectionPageContent = () => {
   )
 }
 
-export default MusicCollectionPageContent
+export default MobileMusicCollectionPageContent

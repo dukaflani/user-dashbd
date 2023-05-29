@@ -1,8 +1,16 @@
+"use client"
 
+// MUI Imports
+import { Box } from '@mui/material'
+
+// Project Import
+import MobileLyricsPageContent from '@/components/MobileLyricsPageContent'
 
 const LyricsPage = () => {
   return (
-    <div>Lyrics page</div>
+      <Box component="main" >
+        <MobileLyricsPageContent/>
+      </Box>
   )
 }
 

@@ -1,11 +1,13 @@
 "use client"
 
 // React Imports
-import { useState, useEffect } from "react"
+import { useState, useEffect, forwardRef } from "react"
 
 // MUI Imports
-import { Box, Button, Card, CardContent, Grid, 
+import { Box, Button, Card, CardContent, Grid, CircularProgress,
     Stack, TextField, Typography, colors, Autocomplete } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // NPM Imports
 import { useSelector } from "react-redux"
@@ -15,12 +17,17 @@ import slugify from 'slugify'
 import { nanoid } from 'nanoid'
 
 // Tanstack Query
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
 import MyTextArea from "./formComponents/MyTextArea"
 import { addMusicCollection, addMusicCollectionItem, getUserVideos } from "@/axios/axios"
+
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
 
 
 const AddMusicCollectionsCard = () => {
@@ -36,6 +43,16 @@ const AddMusicCollectionsCard = () => {
     const [musicCollectionType, setMusicCollectionType] = useState(null)
     const [musicCollectionItemTitle, setMusicCollectionItemTitle] = useState('')
     const [albumStreamingOption, setAlbumStreamingOption] = useState(null)
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      }; 
 
     useEffect(() => {  
         setNanoID(nanoid(16))
@@ -61,9 +78,11 @@ const AddMusicCollectionsCard = () => {
     ];
 
 
-    const { mutate: addNewMusicCollection } = useMutation(addMusicCollection, {
+    const queryClient = useQueryClient()
+    const { mutate: addNewMusicCollection, isLoading: createAlbumLoading } = useMutation(addMusicCollection, {
         onSuccess: (data, _variables, _context) => {
-            console.log("music collection added success:", data)
+            queryClient.invalidateQueries('current-user-musicCollections')
+            setOpenMuiSnackbar(true)
             setShowMusicCollectionForm(false)
             setOpenMusicCollectionDialog(true)
             setMusicCollectionTitle(data.title)
@@ -74,10 +93,9 @@ const AddMusicCollectionsCard = () => {
         }
     })
 
-    const { mutate: addNewMusicCollectionItem } = useMutation(addMusicCollectionItem, {
+    const { mutate: addNewMusicCollectionItem, isLoading: addAlbumTrackLoading } = useMutation(addMusicCollectionItem, {
         onSuccess: (data, _variables, _context) => {
-            console.log("music collection item added success:", data)
-            setOpenMusicCollectionDialog(false)
+            setOpenMusicCollectionDialog(true)
         },
         onError: (error, _variables, _context) => {
             console.log("music collection item added error:", error?.response?.data?.detail)
@@ -110,7 +128,7 @@ const AddMusicCollectionsCard = () => {
             ).required("Required"),
         }),
         onSubmit: () => {
-            console.log("handle edit submit from formik:", {
+            addNewMusicCollection({
                 accessToken,
                 title: formik.values?.title,
                 cover: formik.values?.cover,
@@ -140,8 +158,8 @@ const AddMusicCollectionsCard = () => {
     }
 
     const handleAddMusicCollection = () => {
-        // do sumn here
-        console.log("new verse:", newMusicCollectionItem)
+        setOpenMusicCollectionDialog(false)
+        addNewMusicCollectionItem(newMusicCollectionItem)
     }
 
     const albumTypeArray = [
@@ -166,10 +184,10 @@ const AddMusicCollectionsCard = () => {
     ]
 
     // const currentUserID = 1
-    const currentUserID = currentUser?.id ? currentUser?.id : 0
-    const { data: videos, isLoading, isFetching } = useQuery(["current-user-videos", currentUserID], (currentUserID) => getUserVideos(currentUserID))
-
-    
+    const currentUserID = currentUser?.id
+    const { data: videos, isLoading, isFetching } = useQuery(["current-user-videos", currentUserID], (currentUserID) => getUserVideos(currentUserID), {
+        enabled: !!currentUserID,
+    }) 
     
     const userVideoOptions = videos?.map((option, index) => ({
         id: option.id,
@@ -311,8 +329,8 @@ const AddMusicCollectionsCard = () => {
                                                 ) : null}
                                                 </Stack>
                                             </Grid>
-                                            <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Add Collection</Button>
+                                            <Grid xs={12} sx={{paddingTop: 3}} item > 
+                                                <Button  fullWidth variant="contained" size="small" type="submit" startIcon={createAlbumLoading && <CircularProgress color="inherit" size={25} />} >{createAlbumLoading ? "Adding Collection..." : "Add Collection"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -323,7 +341,7 @@ const AddMusicCollectionsCard = () => {
             </Box>
         </form>
 
-            {/* Add Music Collection Dialogue */}
+        {/* Add Music Collection Dialogue */}
         <Dialog
             open={openMusicCollectionDialog}
             onClose={() => setOpenMusicCollectionDialog(false)} 
@@ -387,6 +405,33 @@ const AddMusicCollectionsCard = () => {
             <Button color="error" onClick={() => setOpenMusicCollectionDialog(false)}>Cancel</Button>
             </DialogActions>
         </Dialog>
+
+        {/* Add Album Track Loading Dialogue */}
+        <Dialog
+            open={addAlbumTrackLoading}
+            aria-labelledby="alert-dialog-title"    
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+            {"Adding Collection Track"}
+            </DialogTitle>
+            <DialogContent>
+                <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
+                    <CircularProgress/>
+                </Box>
+            </DialogContent>
+        </Dialog>
+
+         {/* Mui Music Collection Success Snackbar */} 
+         <Snackbar 
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+            open={openMuiSnackbar} autoHideDuration={6000} 
+            onClose={handleCloseMuiSnackbar}
+            >
+            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                Music Collection Created Successfully!
+            </Alert>
+      </Snackbar>
     </>
   )
 }

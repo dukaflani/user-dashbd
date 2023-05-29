@@ -7,11 +7,6 @@ import { Box } from '@mui/material'
 import VideoPageContent from '@/components/VideoPageContent'
 
 
-export const metadata = {
-  title: 'Videos Dashboard',
-  description: 'Dukaflani Dashboard',
-}
-
 export default function VideosPage() {
 
 

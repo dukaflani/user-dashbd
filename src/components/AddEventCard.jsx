@@ -1,11 +1,13 @@
 "use client"
 
 // React Imports
-import { useState, useEffect } from "react"
+import { useState, useEffect, forwardRef } from "react"
 
 // MUI Imports
 import { Autocomplete, Box, Button, Card, CardContent, Grid, 
-    Stack, TextField, Typography, colors, Chip } from "@mui/material"
+    Stack, TextField, Typography, colors, Chip, CircularProgress } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
@@ -15,9 +17,10 @@ import {  useFormik } from "formik"
 import * as Yup from 'yup'
 import slugify from 'slugify'
 import { nanoid } from 'nanoid'
+import { format, formatISO9075 } from "date-fns";
 
 // Tanstack Query
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
@@ -25,14 +28,30 @@ import MyTextArea from "./formComponents/MyTextArea"
 import { addEvent } from "@/axios/axios"
 
 
-const AddEventCard = () => {
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+
+const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const accessToken = useSelector((state) => state.auth.token)
+    const currentLoggedInUserProfile = useSelector((state) => state.auth.profileInfo) 
     const [nanoID, setNanoID] = useState("")
     const [ticketInfo, setTicketInfo] = useState(null)
     const [ticketCurrency, setTicketCurrency] = useState(null)
     const [ticketCategory, setTicketCategory] = useState(null)
     const [eventDate, setEventDate] = useState(null)  
     const [eventTime, setEventTime] = useState(null)
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      };
 
     useEffect(() => {
         setNanoID(nanoid(16))
@@ -58,9 +77,12 @@ const AddEventCard = () => {
     ];
 
 
-    const { mutate: addNewEvent } = useMutation(addEvent, {
+    const queryClient = useQueryClient()
+    const { mutate: addNewEvent, isLoading: loadAddingEvent } = useMutation(addEvent, {
         onSuccess: (data, _variables, _context) => {
-            console.log("event added success:", data)
+            queryClient.invalidateQueries('current-user-events')
+            setOpenAddEventDialogue(false)
+            setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
             console.log("event added error:", error?.response?.data?.detail)
@@ -107,7 +129,7 @@ const AddEventCard = () => {
             ticket_link: Yup.string().required("Required"),
         }),
         onSubmit: () => {
-            console.log("handle edit submit from formik:", {
+            addNewEvent({
                 accessToken,
                 title: formik.values?.title,
                 country: formik.values?.country,
@@ -119,8 +141,8 @@ const AddEventCard = () => {
                 description: formik.values?.description,
                 venue: formik.values?.venue,
                 location: formik.values?.location,
-                date: eventDate, 
-                time: eventTime,
+                date: format(new Date(eventDate), "yyyy-MM-dd"), 
+                time: formatISO9075(new Date(eventTime), { representation: 'time' }),
                 ticket_link: formik.values?.ticket_link,
 
                 event_category: ticketCategory ? ticketCategory?.value : '',  
@@ -135,14 +157,13 @@ const AddEventCard = () => {
                 local_currency_id: ticketCurrency ? ticketCurrency?.id : '',
                 local_currency_title: ticketCurrency ? ticketCurrency?.label : '',
                 
-
+                customuserprofile: currentLoggedInUserProfile?.id,
                 url_id: nanoID,
-                slug: slugify(formik.values?.title, {lower: true}),
+                slug: slugify(formik.values.title, {lower: true}),
             })
         }
     })
 
-    
 
 
     const currencyArray = [
@@ -153,7 +174,7 @@ const AddEventCard = () => {
         { id:5, title: 'South Africa Rand', symbol: "R." },
         { id:6, title: 'Nigeria Naira', symbol: "₦." },
         { id:7, title: 'Ghana Cedes', symbol: "GH₵." },
-        { id:7, title: 'South Sudan Pound', symbol: "SDG." },
+        { id:8, title: 'South Sudan Pound', symbol: "SDG." },
     ]
 
     const currencyOptions = currencyArray?.map((option, index) => ({
@@ -193,6 +214,7 @@ const AddEventCard = () => {
 
     
   return (
+    <>
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
             <Box>
                 <Card variant="outlined">
@@ -265,7 +287,7 @@ const AddEventCard = () => {
                                             <Grid xs={12} item>
                                                 <MyTextArea  
                                                     name="description" 
-                                                    label="Video Description" 
+                                                    label="Event Description" 
                                                     helperText={formik.errors.description && formik.touched.description ? formik.errors.description : null} 
                                                     error={formik.errors.description && formik.touched.description ? true : false} 
                                                     {...textAreaConfig} 
@@ -325,7 +347,7 @@ const AddEventCard = () => {
                                                     {...formik.getFieldProps("event_organizer")}
                                                 />
                                             </Grid>
-                                            <Grid xs={12} md={6} item>
+                                            <Grid xs={12} md={6} item> 
                                                 <MyTextField
                                                     required
                                                     name="ticket_platform" 
@@ -386,6 +408,17 @@ const AddEventCard = () => {
                                                     />
                                                 </Stack>
                                             </Grid>
+                                            <Grid xs={12} item> 
+                                                <MyTextField
+                                                    required
+                                                    name="ticket_link" 
+                                                    label="Ticket Link"
+                                                    helperText={formik.errors.ticket_link && formik.touched.ticket_link ? formik.errors.ticket_link : null} 
+                                                    error={formik.errors.ticket_link && formik.touched.ticket_link ? true : false} 
+                                                    {...textFieldConfig} 
+                                                    {...formik.getFieldProps("ticket_link")}
+                                                />
+                                            </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <DatePicker 
                                                     label="Event Date" 
@@ -414,8 +447,8 @@ const AddEventCard = () => {
                                                 ) : null}
                                                 </Stack>
                                             </Grid>
-                                            <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Add Event</Button>
+                                            <Grid xs={12} sx={{paddingTop: 3}} item > 
+                                                <Button  fullWidth variant="contained" size="small" type="submit" startIcon={loadAddingEvent && <CircularProgress color="inherit" size={25} />}>{loadAddingEvent ? "Adding Event..." : "Add Event"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -425,6 +458,18 @@ const AddEventCard = () => {
                 </Card>
             </Box>
         </form>
+
+        {/* Mui Success Snackbar */} 
+        <Snackbar 
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+            open={openMuiSnackbar} autoHideDuration={6000} 
+            onClose={handleCloseMuiSnackbar}
+            >
+            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                Event Added Successfully!
+            </Alert>
+      </Snackbar>
+    </>
   )
 }
 

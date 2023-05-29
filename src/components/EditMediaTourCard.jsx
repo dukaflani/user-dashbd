@@ -1,13 +1,15 @@
 "use client"
 
 // React Imports
-import { useState, useEffect } from "react"
+import { useState, forwardRef } from "react"
 
 // MUI Imports
-import { Autocomplete, Box, Button, Card, CardContent, Grid, 
+import { Autocomplete, Box, Button, Card, CardContent, Grid, CircularProgress,
     Stack, TextField, Typography, colors, Chip } from "@mui/material"
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // NPM Imports
 import { useSelector } from "react-redux"
@@ -16,14 +18,17 @@ import * as Yup from 'yup'
 import slugify from 'slugify'
 
 // Tanstack Query
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
 import { editMediaTour } from "@/axios/axios"
 
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
-const EditMediaTourCard = ({ editMediaTourObject }) => {
+const EditMediaTourCard = ({ editMediaTourObject, setOpenEditMediaTourDialogue }) => {
     const accessToken = useSelector((state) => state.auth.token)
 
     const [nanoID, setNanoID] = useState(editMediaTourObject?.url_id)
@@ -35,6 +40,17 @@ const EditMediaTourCard = ({ editMediaTourObject }) => {
     const [mediaTourDate, setMediaTourDate] = useState(editMediaTourObject?.date)
     const [mediaTourStartTime, setMediaTourStartTime] = useState(editMediaTourObject?.from_time)
     const [mediaTourEndTime, setMediaTourEndTime] = useState(editMediaTourObject?.to_time)
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+
+    
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      };
 
 
     const textFieldConfig = {
@@ -56,9 +72,12 @@ const EditMediaTourCard = ({ editMediaTourObject }) => {
     ];
 
 
-    const { mutate: editMyMediaTour } = useMutation(editMediaTour, {
+    const queryClient = useQueryClient()
+    const { mutate: editMyMediaTour, isLoading: editMediatourLoading } = useMutation(editMediaTour, {
         onSuccess: (data, _variables, _context) => {
-            console.log("media tour edited success:", data)
+            queryClient.invalidateQueries('current-user-media-tours')
+            setOpenEditMediaTourDialogue(false)
+            setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
             console.log("media tour edited error:", error?.response?.data?.detail)
@@ -98,17 +117,18 @@ const EditMediaTourCard = ({ editMediaTourObject }) => {
                 ),
         }),
         onSubmit: () => {
-            console.log("handle edit submit from formik:", {
+            editMyMediaTour({
                 accessToken,
                 title: formik.values?.title,
                 country: formik.values?.country,
                 station_name: formik.values?.station_name,
                 show_host: formik.values?.show_host,
                 show_title: formik.values?.show_title,
-                date: mediaTourDate,
                 poster: formik.values?.poster,
-                from_time: mediaTourStartTime,
-                to_time: mediaTourEndTime,
+
+                date: format(new Date(mediaTourDate), "yyyy-MM-dd"),
+                from_time: formatISO9075(new Date(mediaTourStartTime), { representation: 'time' }),
+                to_time: formatISO9075(new Date(mediaTourEndTime), { representation: 'time' }),
 
                 station_type: mediumType?.value,
                 station_type_id: mediumType?.id, 
@@ -116,6 +136,7 @@ const EditMediaTourCard = ({ editMediaTourObject }) => {
                 
                 url_id: nanoID,
                 slug: slugify(formik.values?.title, {lower: true}),
+                customuserprofile: editMediaTourObject?.customuserprofile
             })
         }
     })  
@@ -133,12 +154,10 @@ const EditMediaTourCard = ({ editMediaTourObject }) => {
         value: option.value
     }))
 
-   
-    
-
 
     
   return (
+    <>
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
             <Box>
                 <Card variant="outlined">
@@ -268,8 +287,8 @@ const EditMediaTourCard = ({ editMediaTourObject }) => {
                                                 ) : null}
                                                 </Stack>
                                             </Grid>
-                                            <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Add Media Tour</Button>
+                                            <Grid xs={12} sx={{paddingTop: 3}} item > 
+                                                <Button  fullWidth variant="contained" size="small" type="submit" startIcon={editMediatourLoading && <CircularProgress color="inherit" size={25} />}>{editMediatourLoading ? "Adding Media Tour..." : "Add Media Tour"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -279,6 +298,18 @@ const EditMediaTourCard = ({ editMediaTourObject }) => {
                 </Card>
             </Box>
         </form>
+
+        {/* Mui Success Snackbar */} 
+        <Snackbar 
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+            open={openMuiSnackbar} autoHideDuration={6000} 
+            onClose={handleCloseMuiSnackbar}
+            >
+            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                Media Tour Edited Successfully!
+            </Alert>
+        </Snackbar>
+    </>
   )
 }
 

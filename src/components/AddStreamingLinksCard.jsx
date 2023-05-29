@@ -1,11 +1,13 @@
 "use client"
 
 // React Imports
-import { useState, useEffect } from "react"
+import { useState, forwardRef } from "react"
 
 // MUI Imports
-import { Box, Button, Card, CardContent, Grid, 
+import { Box, Button, Card, CardContent, Grid, CircularProgress,
     Stack, TextField, Typography, colors, Autocomplete } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // NPM Imports
 import { useSelector } from "react-redux"
@@ -13,11 +15,17 @@ import {  useFormik } from "formik"
 import * as Yup from 'yup'
 
 // Tanstack Query
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
 import { addStreamingLinks, addStreamingLinkItem } from "@/axios/axios"
+
+
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
 
 
 const AddStreamingLinksCard = () => {
@@ -28,6 +36,16 @@ const AddStreamingLinksCard = () => {
     const [streamingLinksTitle, setStreamingLinksTitle] = useState('')
     const [streamingLinksID, setStreamingLinksID] = useState(null)
     const [streamingServiceLink, setStreamingServiceLink] = useState('')
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      }; 
 
 
     const textFieldConfig = {
@@ -49,9 +67,11 @@ const AddStreamingLinksCard = () => {
     ];
 
 
-    const { mutate: addNewStreamingLinks } = useMutation(addStreamingLinks, {
+    const queryClient = useQueryClient()
+    const { mutate: addNewStreamingLinks, isLoading: createLinksLoading } = useMutation(addStreamingLinks, {
         onSuccess: (data, _variables, _context) => {
-            console.log("streaming links added success:", data)
+            queryClient.invalidateQueries('current-user-streamingLinks')
+            setOpenMuiSnackbar(true)
             setShowStreamingLinksForm(false)
             setOpenStreamingLinkItemDialog(true)
             setStreamingLinksTitle(data.title)
@@ -62,10 +82,9 @@ const AddStreamingLinksCard = () => {
         }
     })
 
-    const { mutate: addNewStreamingLinkItem } = useMutation(addStreamingLinkItem, {
+    const { mutate: addNewStreamingLinkItem, isLoading: addingLinkLoading } = useMutation(addStreamingLinkItem, {
         onSuccess: (data, _variables, _context) => {
-            console.log("streaming links item added success:", data)
-            setOpenStreamingLinkItemDialog(false)
+            setOpenStreamingLinkItemDialog(true)
         },
         onError: (error, _variables, _context) => {
             console.log("streaming links item added error:", error?.response?.data?.detail)
@@ -81,7 +100,7 @@ const AddStreamingLinksCard = () => {
             title: Yup.string().required("Required"),
         }),
         onSubmit: () => {
-            console.log("handle edit submit from formik:", {
+            addNewStreamingLinks({
                 accessToken,
                 title: formik.values?.title,
             })
@@ -102,8 +121,8 @@ const AddStreamingLinksCard = () => {
     }
 
     const handleAddStreamingLinkItem = () => {
-        // do sumn here
-        console.log("new verse:", newStreamingLinkItem)
+        setOpenStreamingLinkItemDialog(false)
+        addNewStreamingLinkItem(newStreamingLinkItem)
     }
 
 
@@ -170,7 +189,7 @@ const AddStreamingLinksCard = () => {
                                                 />
                                             </Grid>
                                             <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Create Streaming Links</Button>
+                                                <Button  fullWidth variant="contained" size="small" type="submit" startIcon={createLinksLoading && <CircularProgress color="inherit" size={25} />}>{createLinksLoading ? "Creating Streaming Links..." : "Create Streaming Links"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -181,7 +200,7 @@ const AddStreamingLinksCard = () => {
             </Box>
         </form>
 
-            {/* Add Streaming Links Item Dialogue */}
+        {/* Add Streaming Links Item Dialogue */}
         <Dialog
             open={openStreamingLinkItemDialog}
             onClose={() => setOpenStreamingLinkItemDialog(false)} 
@@ -236,6 +255,33 @@ const AddStreamingLinksCard = () => {
             <Button color="error" onClick={() => setOpenStreamingLinkItemDialog(false)}>Cancel</Button>
             </DialogActions>
         </Dialog>
+
+        {/* Add Streaning Link Item Loading Dialogue */}
+        <Dialog
+            open={addingLinkLoading}
+            aria-labelledby="alert-dialog-title"    
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+            {"Adding Streaming Link"}
+            </DialogTitle>
+            <DialogContent>
+                <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
+                    <CircularProgress/>
+                </Box>
+            </DialogContent>
+        </Dialog>
+
+         {/* Mui Streaming Links Success Snackbar */} 
+         <Snackbar 
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+            open={openMuiSnackbar} autoHideDuration={6000} 
+            onClose={handleCloseMuiSnackbar}
+            >
+            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                Streaming Links Created Successfully!
+            </Alert>
+      </Snackbar>
     </>
   )
 }

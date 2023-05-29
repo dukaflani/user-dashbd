@@ -1,11 +1,13 @@
 "use client"
 
 // React Imports
-import { useState, useEffect } from "react"
+import { useState, useEffect, forwardRef } from "react"
 
 // MUI Imports
-import { Box, Button, Card, CardContent, Grid, 
+import { Box, Button, Card, CardContent, Grid, CircularProgress,
     Stack, TextField, Typography, colors, Autocomplete } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // NPM Imports
 import { useSelector } from "react-redux"
@@ -15,12 +17,17 @@ import slugify from 'slugify'
 import { nanoid } from 'nanoid'
 
 // Tanstack Query
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
-import MyTextArea from "./formComponents/MyTextArea"
 import { addLyrics, addLyricsVerse } from "@/axios/axios"
+
+
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
 
 
 const AddLyricsCard = () => {
@@ -33,6 +40,16 @@ const AddLyricsCard = () => {
     const [lyricsTitle, setLyricsTitle] = useState('')
     const [lyricsID, setLyricsID] = useState(null)
     const [verseVocalist, setVerseVocalist] = useState('')
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      }; 
 
     useEffect(() => {  
         setNanoID(nanoid(16))
@@ -58,9 +75,11 @@ const AddLyricsCard = () => {
     ];
 
 
-    const { mutate: addNewLyrics } = useMutation(addLyrics, {
+    const queryClient = useQueryClient()
+    const { mutate: addNewLyrics, isLoading: createLyricsLoading } = useMutation(addLyrics, {
         onSuccess: (data, _variables, _context) => {
-            console.log("lyrics added success:", data)
+            queryClient.invalidateQueries('current-user-lyrics')
+            setOpenMuiSnackbar(true)
             setShowLyricsForm(false)
             setOpenLyricsVerseDialog(true)
             setLyricsTitle(data.title)
@@ -71,10 +90,9 @@ const AddLyricsCard = () => {
         }
     })
 
-    const { mutate: addNewLyricsVerse } = useMutation(addLyricsVerse, {
+    const { mutate: addNewLyricsVerse, isLoading: addVerseLoading } = useMutation(addLyricsVerse, {
         onSuccess: (data, _variables, _context) => {
-            console.log("lyrics verse added success:", data)
-            setOpenLyricsVerseDialog(false)
+            setOpenLyricsVerseDialog(true)
         },
         onError: (error, _variables, _context) => {
             console.log("lyrics verse added error:", error?.response?.data?.detail)
@@ -104,7 +122,7 @@ const AddLyricsCard = () => {
             instruments: Yup.string(),
         }),
         onSubmit: () => {
-            console.log("handle edit submit from formik:", {
+            addNewLyrics({
                 accessToken,
                 title: formik.values?.title,
                 vocals: formik.values?.vocals,
@@ -132,8 +150,8 @@ const AddLyricsCard = () => {
     }
 
     const handleAddLyricsVerse = () => {
-        // do sumn here
-        console.log("new verse:", newVerse)
+        setOpenLyricsVerseDialog(false)
+        addNewLyricsVerse(newVerse)
     }
 
 
@@ -151,8 +169,6 @@ const AddLyricsCard = () => {
         label: option.title,
         value: option.value
     }))
-
-
 
     
   return (
@@ -268,7 +284,7 @@ const AddLyricsCard = () => {
                                                 />
                                             </Grid>
                                             <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Add Production Team</Button>
+                                                <Button  fullWidth variant="contained" size="small" type="submit" startIcon={createLyricsLoading && <CircularProgress color="inherit" size={25} />}>{createLyricsLoading ? "Adding Production Team..." : "Add Production Team"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -279,7 +295,7 @@ const AddLyricsCard = () => {
             </Box>
         </form>
 
-            {/* Add Lyrics Verse Dialogue */}
+        {/* Add Lyrics Verse Dialogue */}
         <Dialog
             open={openLyricsVerseDialog}
             onClose={() => setOpenLyricsVerseDialog(false)} 
@@ -341,10 +357,37 @@ const AddLyricsCard = () => {
                 </Box>
             </DialogContent>
             <DialogActions>
-            <Button onClick={handleAddLyricsVerse}>Add Verse</Button>
-            <Button color="error" onClick={() => setOpenLyricsVerseDialog(false)}>Cancel</Button>
+                <Button onClick={handleAddLyricsVerse}>Add Verse</Button>
+                <Button color="error" onClick={() => setOpenLyricsVerseDialog(false)}>Cancel</Button>
             </DialogActions>
         </Dialog>
+
+        {/* Add Lyrics Verse Loading Dialogue */}
+        <Dialog
+            open={addVerseLoading}
+            aria-labelledby="alert-dialog-title"    
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+            {"Adding a verse"}
+            </DialogTitle>
+            <DialogContent>
+                <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
+                    <CircularProgress/>
+                </Box>
+            </DialogContent>
+        </Dialog>
+
+        {/* Mui Lyrics Success Snackbar */} 
+        <Snackbar 
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+            open={openMuiSnackbar} autoHideDuration={6000} 
+            onClose={handleCloseMuiSnackbar}
+            >
+            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                Lyrics Created Successfully!
+            </Alert>
+      </Snackbar>
     </>
   )
 }

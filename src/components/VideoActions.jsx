@@ -5,7 +5,7 @@ import { Box, IconButton, Stack, Tooltip } from "@mui/material"
 import { Delete, Edit, VisibilitySharp } from "@mui/icons-material"
 
 
-const VideoActions = ({ params, handleOpenEditVideo, handleOpenViewVideo }) => {
+const VideoActions = ({ params, handleOpenEditVideo, handleOpenViewVideo, handleDelete }) => {
 
   return (
     <Box sx={{paddingX: 3}}>
@@ -21,7 +21,7 @@ const VideoActions = ({ params, handleOpenEditVideo, handleOpenViewVideo }) => {
                 </IconButton>
             </Tooltip>
             <Tooltip title="Delete Video">
-                <IconButton>
+                <IconButton onClick={() =>handleDelete(params?.row?.id)}>
                     <Delete color="warning"/>
                 </IconButton>
             </Tooltip>

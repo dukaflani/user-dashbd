@@ -1,11 +1,13 @@
 "use client"
 
 // React Imports
-import { useState, useEffect } from "react"
+import { useState, useEffect, forwardRef } from "react"
 
 // MUI Imports
-import { Autocomplete, Box, Button, Card, CardContent, Grid, 
+import { Autocomplete, Box, Button, Card, CardContent, Grid, CircularProgress,
     Stack, TextField, Typography, colors, Chip } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // NPM Imports
 import { useSelector } from "react-redux"
@@ -15,7 +17,7 @@ import slugify from 'slugify'
 import { nanoid } from 'nanoid'
 
 // Tanstack Query
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
@@ -23,12 +25,28 @@ import MyTextArea from "./formComponents/MyTextArea"
 import { addProduct } from "@/axios/axios"
 
 
-const AddProductCard = () => {
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+
+const AddProductCard = ({ setOpenAddProductDialogue }) => {
     const accessToken = useSelector((state) => state.auth.token)
+    const user_profile = useSelector((state) => state.auth.profileInfo)
     const [nanoID, setNanoID] = useState("")
     const [localCurrency, setLocalCurrency] = useState(null)
     const [productCategory, setProductCategory] = useState(null)
     const [productStatus, setProductStatus] = useState(null)
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      };
 
     useEffect(() => {
         setNanoID(nanoid(16))
@@ -54,9 +72,12 @@ const AddProductCard = () => {
     ];
 
 
-    const { mutate: addNewProduct } = useMutation(addProduct, {
+    const queryClient = useQueryClient()
+    const { mutate: addNewProduct, isLoading: addProductLoading } = useMutation(addProduct, {
         onSuccess: (data, _variables, _context) => {
-            console.log("video added success:", data)
+            queryClient.invalidateQueries('current-user-products')
+            setOpenAddProductDialogue(false)
+            setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
             console.log("video added error:", error?.response?.data?.detail)
@@ -73,6 +94,7 @@ const AddProductCard = () => {
             image: '',
             whatsapp: '',
             sold_by: '',
+            country: '',
         },
         validationSchema: Yup.object({
             title: Yup.string().required("Required"),
@@ -93,9 +115,10 @@ const AddProductCard = () => {
                 ).required("Required"),
             whatsapp: Yup.number().integer().typeError("Please enter a valid phone number"),
             sold_by: Yup.string(),
+            country: Yup.string().required("Required"),
         }),
         onSubmit: () => {
-            console.log("handle edit submit from formik:", {
+            addNewProduct({
                 accessToken,
                 title: formik.values?.title,
                 status_description: formik.values?.status_description,
@@ -103,6 +126,7 @@ const AddProductCard = () => {
                 dollar_price: 0,
                 description: formik.values?.description,
                 image: formik.values?.image,
+                country: formik.values?.image,
 
                 local_currency: localCurrency ? localCurrency?.symbol : '',
                 local_currency_id: localCurrency ? localCurrency?.id : '',
@@ -120,6 +144,7 @@ const AddProductCard = () => {
                 sold_by: formik.values?.sold_by,
                 url_id: nanoID,
                 slug: slugify(formik.values?.title, {lower: true}),
+                customuserprofile: user_profile?.id,
             })
         }
     })
@@ -173,6 +198,7 @@ const AddProductCard = () => {
 
     
   return (
+    <>
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
             <Box>
                 <Card variant="outlined">
@@ -343,7 +369,7 @@ const AddProductCard = () => {
                                                 </Stack>
                                             </Grid>
                                             <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Add Product</Button>
+                                                <Button  fullWidth variant="contained" size="small" type="submit" startIcon={addProductLoading && <CircularProgress color="inherit" size={25} />}>{addProductLoading ? "Adding Product..." : "Add Product"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -353,6 +379,18 @@ const AddProductCard = () => {
                 </Card>
             </Box>
         </form>
+
+        {/* Mui Success Snackbar */} 
+        <Snackbar 
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+            open={openMuiSnackbar} autoHideDuration={6000} 
+            onClose={handleCloseMuiSnackbar}
+            >
+            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                Product Added Successfully!
+            </Alert>
+      </Snackbar>
+    </>
   )
 }
 

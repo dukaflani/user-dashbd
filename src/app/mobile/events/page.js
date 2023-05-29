@@ -1,8 +1,16 @@
+"use client"
 
+// MUI Imports
+import { Box, Typography } from '@mui/material'
+
+// Project Import
+import MobileEventsPageContent from '@/components/MobileEventsPageContent'
 
 const EventsPage = () => {
   return (
-    <div>Events page</div>
+      <Box component="main">
+        <MobileEventsPageContent/>
+      </Box>
   )
 }
 

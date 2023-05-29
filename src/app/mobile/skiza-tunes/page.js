@@ -1,8 +1,16 @@
+"use client"
 
+// MUI Imports
+import { Box } from '@mui/material'
+
+// Project Import
+import MobileSkizaTunesPageContent from '@/components/MobileSkizaTunesPageContent'
 
 const SkizaTunesPage = () => {
   return (
-    <div>Skiza Tunes</div>
+      <Box component="main" >
+        <MobileSkizaTunesPageContent/>
+      </Box>
   )
 }
 

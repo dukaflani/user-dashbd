@@ -4,25 +4,26 @@
 import { useState, forwardRef, useMemo, useCallback } from "react"
 
 // MUI Imports
-import { AppBar, Avatar, Box, Button, Container, Dialog, 
-    IconButton, Slide, Stack, Toolbar, Typography } from "@mui/material"
+import { AppBar, Avatar, Box, Button, Container, Dialog, CircularProgress,
+    IconButton, Slide, Stack, Toolbar, Typography, DialogTitle, DialogContent } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // Data Grid
 import { DataGrid } from '@mui/x-data-grid';
 
 // NPM Imports
-import numeral from "numeral";
 import { formatDistanceStrict } from "date-fns";
 import { useSelector } from "react-redux";
 
 // Tanstack Query
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 // Icons
 import {  CloseSharp, VideoCall } from "@mui/icons-material"
 
 // Project Imports
-import { getUserMediaTours } from "@/axios/axios"
+import { deleteMediaTour, getUserMediaTours } from "@/axios/axios"
 import AddMediaTourCard from "./AddMediaTourCard";
 import MediaTourActions from "./MediaTourActions";
 import ViewMediaTourCard from "./ViewMediaTourCard";
@@ -33,10 +34,15 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
+const Alert = forwardRef(function Alert(props, ref) {
+return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 
 
 const MediaToursPageContent = () => {
-    const currentUser = useSelector((state) => state.auth.userInfo) 
+    const currentUser = useSelector((state) => state.auth.userInfo)
+    const accessToken = useSelector((state) => state.auth.token) 
     const [pageSize, setPageSize] = useState(5)
 
     // Add Media Tour 
@@ -79,6 +85,32 @@ const MediaToursPageContent = () => {
       const handleCloseViewMediaTour = () => {
         setOpenViewMediaTourDialog(false)
       }
+
+
+    // Delete Media Tour
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+    const queryClient = useQueryClient()
+    const { mutate: deleteMyMediaTour, isLoading: deleteMediaTourLoading } = useMutation(deleteMediaTour, {
+      onSuccess: (data, _variables, _context) => {
+        queryClient.invalidateQueries('current-user-media-tours')
+        setOpenMuiSnackbar(true)
+      },
+      onError: (error, _variables, _context) => {
+          console.log("video deleted error:", error?.response?.data?.detail)
+      }
+  })
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      };
+
+    const handleDelete = (id) => {
+      deleteMyMediaTour({ id, accessToken })
+    }
 
     
     const columns = useMemo(
@@ -181,13 +213,15 @@ const MediaToursPageContent = () => {
             headerName: 'Actions',
             type: 'actions', 
             width: 150,
-            renderCell: (params) => <MediaTourActions {...{params, handleOpenEditMediaTour, handleOpenViewMediaTour}} />
+            renderCell: (params) => <MediaTourActions {...{params, handleOpenEditMediaTour, handleOpenViewMediaTour, handleDelete }} />
         }
         ], [])
 
     // const currentUserID = 1
-    const currentUserID = currentUser?.id ? currentUser?.id : 0
-    const { data: media_tours, isLoading, isFetching } = useQuery(["current-user-media-tours", currentUserID], (currentUserID) => getUserMediaTours(currentUserID))
+    const currentUserID = currentUser?.id
+    const { data: media_tours, isLoading, isFetching } = useQuery(["current-user-media-tours", currentUserID], (currentUserID) => getUserMediaTours(currentUserID), {
+        enabled: !!currentUserID
+    })
 
     const getRowSpacing = useCallback((params) => {
         return {
@@ -264,7 +298,7 @@ const MediaToursPageContent = () => {
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <AddMediaTourCard/>
+                        <AddMediaTourCard  setOpenAddMediaTourDialogue={setOpenAddMediaTourDialogue}  />
                     </Box>
                 </Container>
             </Box>
@@ -294,7 +328,7 @@ const MediaToursPageContent = () => {
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <EditMediaTourCard  editMediaTourObject={editMediaTourObject}  />
+                        <EditMediaTourCard  editMediaTourObject={editMediaTourObject}  setOpenEditMediaTourDialogue={setOpenEditMediaTourDialogue}  />
                     </Box>
                 </Container>
             </Box>
@@ -329,6 +363,34 @@ const MediaToursPageContent = () => {
                 </Container>
             </Box>
       </Dialog>
+
+
+      {/* Add Delete Loading Dialogue */}
+      <Dialog
+            open={deleteMediaTourLoading}
+            aria-labelledby="alert-dialog-title"    
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle color="danger" id="alert-dialog-title">
+            {"Deleting Media Tour..."}
+            </DialogTitle>
+            <DialogContent>
+                <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
+                    <CircularProgress/>
+                </Box>
+            </DialogContent>
+       </Dialog>
+
+      {/* Mui Success Snackbar */} 
+      <Snackbar 
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+              open={openMuiSnackbar} autoHideDuration={6000} 
+              onClose={handleCloseMuiSnackbar}
+              >
+              <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                  Media Tour Deleted Successfully!
+              </Alert>
+      </Snackbar>
     </>
   )
 }

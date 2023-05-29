@@ -4,8 +4,10 @@
 import { useState, forwardRef, useMemo, useCallback } from "react"
 
 // MUI Imports
-import { AppBar, Avatar, Box, Button, Container, Dialog, 
-    IconButton, Slide, Stack, Toolbar, Typography } from "@mui/material"
+import { AppBar, Box, Button, Container, Dialog, CircularProgress,
+    IconButton, Slide, Stack, Toolbar, Typography, DialogTitle, DialogContent } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // Data Grid
 import { DataGrid } from '@mui/x-data-grid';
@@ -16,13 +18,13 @@ import { formatDistanceStrict } from "date-fns";
 import { useSelector } from "react-redux";
 
 // Tanstack Query
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 // Icons
 import {  CloseSharp, VideoCall } from "@mui/icons-material"
 
 // Project Imports
-import { getUserLyrics } from "@/axios/axios"
+import { deleteLyrics, getUserLyrics } from "@/axios/axios"
 import AddLyricsCard from "./AddLyricsCard";
 import LyricsActions from "./LyricsActions";
 import EditLyricsCard from "./EditLyricsCard";
@@ -32,10 +34,15 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
+const Alert = forwardRef(function Alert(props, ref) {
+return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 
 
 const LyricsPageContent = () => {
     const currentUser = useSelector((state) => state.auth.userInfo) 
+    const accessToken = useSelector((state) => state.auth.token)
     const [pageSize, setPageSize] = useState(5)
 
     // Add Lyrics 
@@ -64,6 +71,31 @@ const LyricsPageContent = () => {
         setOpenEditLyricsDialogue(false);
     };
 
+
+    // Delete Lyrics
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+    const queryClient = useQueryClient()
+    const { mutate: deleteMyLyrics, isLoading: deleteLyricsLoading } = useMutation(deleteLyrics, {
+        onSuccess: (data, _variables, _context) => {
+            queryClient.invalidateQueries('current-user-lyrics')
+            setOpenMuiSnackbar(true)
+        },
+        onError: (error, _variables, _context) => {
+            console.log("Lyrics deleted error:", error?.response?.data?.detail)
+        }
+    })
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+    
+        setOpenMuiSnackbar(false);
+        };
+
+    const handleDelete = (id) => {
+        deleteMyLyrics({ id, accessToken })
+    }
     
     const columns = useMemo(
     () => [
@@ -140,13 +172,15 @@ const LyricsPageContent = () => {
             headerName: 'Actions',
             type: 'actions', 
             width: 150,
-            renderCell: (params) => <LyricsActions {...{params, handleOpenEditLyrics}} />
+            renderCell: (params) => <LyricsActions {...{params, handleOpenEditLyrics, handleDelete}} />
         }
         ], [])
 
     // const currentUserID = 1
-    const currentUserID = currentUser?.id ? currentUser?.id : 0
-    const { data: lyrics, isLoading, isFetching } = useQuery(["current-user-lyrics", currentUserID], (currentUserID) => getUserLyrics(currentUserID))
+    const currentUserID = currentUser?.id
+    const { data: lyrics, isLoading, isFetching } = useQuery(["current-user-lyrics", currentUserID], (currentUserID) => getUserLyrics(currentUserID), {
+        enabled: !!currentUserID
+    })
 
     const getRowSpacing = useCallback((params) => {
         return {
@@ -254,6 +288,34 @@ const LyricsPageContent = () => {
                 </Container>
             </Box>
       </Dialog>
+
+      
+      {/* Add Delete Loading Dialogue */}
+      <Dialog
+            open={deleteLyricsLoading}
+            aria-labelledby="alert-dialog-title"    
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle color="danger" id="alert-dialog-title">
+            {"Deleting Lyrics..."}
+            </DialogTitle>
+            <DialogContent>
+                <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
+                    <CircularProgress/>
+                </Box>
+            </DialogContent>
+       </Dialog>
+
+      {/* Mui Success Snackbar */} 
+      <Snackbar 
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+              open={openMuiSnackbar} autoHideDuration={6000} 
+              onClose={handleCloseMuiSnackbar}
+              >
+              <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                  Lyrics Deleted Successfully!
+              </Alert>
+      </Snackbar>
 
     </>
   )

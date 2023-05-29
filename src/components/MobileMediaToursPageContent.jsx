@@ -13,7 +13,6 @@ import MuiAlert from '@mui/material/Alert';
 import { DataGrid } from '@mui/x-data-grid';
 
 // NPM Imports
-import numeral from "numeral";
 import { formatDistanceStrict } from "date-fns";
 import { useSelector } from "react-redux";
 
@@ -24,11 +23,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {  CloseSharp, VideoCall } from "@mui/icons-material"
 
 // Project Imports
-import { deleteEvent, getUserEvents } from "@/axios/axios"
-import AddEventCard from "./AddEventCard";
-import EventsActions from "./EventsActions";
-import ViewEventCard from "./ViewEventCard";
-import EditEventCard from "./EditEventCard";
+import { deleteMediaTour, getUserMediaTours } from "@/axios/axios"
+import AddMediaTourCard from "./AddMediaTourCard";
+import MediaTourActions from "./MediaTourActions";
+import ViewMediaTourCard from "./ViewMediaTourCard";
+import EditMediaTourCard from "./EditMediaTourCard";
 
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -41,63 +40,63 @@ return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 
 
 
-const EventsPageContent = () => {
-    const currentUser = useSelector((state) => state.auth.userInfo) 
-    const accessToken = useSelector((state) => state.auth.token)
+const MobileMediaToursPageContent = () => {
+    const currentUser = useSelector((state) => state.auth.userInfo)
+    const accessToken = useSelector((state) => state.auth.token) 
     const [pageSize, setPageSize] = useState(5)
 
-    // Add Events 
-    const [openAddEventDialogue, setOpenAddEventDialogue] = useState(false)
+    // Add Media Tour 
+    const [openAddMediaTourDialogue, setOpenAddMediaTourDialogue] = useState(false)
 
-    const handleOpenAddEvent = () => { 
-        setOpenAddEventDialogue(true);
+    const handleOpenAddMediaTour = () => { 
+        setOpenAddMediaTourDialogue(true);
     };
     
-    const handleCloseAddEvent = () => {
-        setOpenAddEventDialogue(false);
+    const handleCloseAddMediaTour = () => {
+        setOpenAddMediaTourDialogue(false);
     };
 
 
-    // Edit Events
-    const [openEditEventDialogue, setOpenEditEventDialogue] = useState(false)
-    const [editEventObject, setEditEventObject] = useState(null)
+    // Edit Media Tour
+    const [openEditMediaTourDialogue, setOpenEditMediaTourDialogue] = useState(false)
+    const [editMediaTourObject, setEditMediaTourObject] = useState(null)
 
 
-    const handleOpenEditEvent = (event_object) => { 
-        setOpenEditEventDialogue(true);
-        setEditEventObject(event_object)
+    const handleOpenEditMediaTour = (media_tour_object) => { 
+        setOpenEditMediaTourDialogue(true);
+        setEditMediaTourObject(media_tour_object)
     };
     
-    const handleCloseEditEvent = () => {
-        setOpenEditEventDialogue(false);
+    const handleCloseEditMediaTour = () => {
+        setOpenEditMediaTourDialogue(false);
     };
 
 
-    // View Events
-    const [openViewEventDialog, setOpenViewEventDialog] = useState(false)
-    const [viewEventObject, setViewEventObject] = useState(null)
+    // View Media Tour
+    const [openViewMediaTourDialog, setOpenViewMediaTourDialog] = useState(false)
+    const [viewMediaTourObject, setViewMediaTourObject] = useState(null)
 
 
-    const handleOpenViewEvent = (event_object) => { 
-        setOpenViewEventDialog(true)
-        setViewEventObject(event_object)
+    const handleOpenViewMediaTour = (media_tour_object) => { 
+        setOpenViewMediaTourDialog(true)
+        setViewMediaTourObject(media_tour_object)
       }
   
-      const handleCloseViewEvent = () => {
-        setOpenViewEventDialog(false)
+      const handleCloseViewMediaTour = () => {
+        setOpenViewMediaTourDialog(false)
       }
 
 
-    // Delete Video
+    // Delete Media Tour
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
     const queryClient = useQueryClient()
-    const { mutate: deleteMyEvent, isLoading: deleteEventLoading } = useMutation(deleteEvent, {
-        onSuccess: (data, _variables, _context) => {
-            queryClient.invalidateQueries('current-user-events')
-            setOpenMuiSnackbar(true)
+    const { mutate: deleteMyMediaTour, isLoading: deleteMediaTourLoading } = useMutation(deleteMediaTour, {
+      onSuccess: (data, _variables, _context) => {
+        queryClient.invalidateQueries('current-user-media-tours')
+        setOpenMuiSnackbar(true)
       },
       onError: (error, _variables, _context) => {
-          console.log("event deleted error:", error?.response?.data?.detail)
+          console.log("video deleted error:", error?.response?.data?.detail)
       }
   })
 
@@ -110,19 +109,15 @@ const EventsPageContent = () => {
       };
 
     const handleDelete = (id) => {
-        deleteMyEvent({ id, accessToken })
+      deleteMyMediaTour({ id, accessToken })
     }
 
     
     const columns = useMemo(
     () => [
         { field: 'id', headerName: 'ID', sortable: false, filterable: false },
-        { field: 'event_category_id', headerName: 'Event Category ID', sortable: false, filterable: false },
-        { field: 'event_category_title', headerName: 'Event Category Title', sortable: false, filterable: false },
-        { field: 'event_ticket_info_id', headerName: 'Event Ticket Info ID', sortable: false, filterable: false },
-        { field: 'event_ticket_info_title', headerName: 'Event Ticket Info Title', sortable: false, filterable: false },
-        { field: 'local_currency_id', headerName: 'Currency ID', sortable: false, filterable: false },
-        { field: 'local_currency_title', headerName: 'Currency Title', sortable: false, filterable: false },
+        { field: 'station_type_id', headerName: 'Station Type ID', sortable: false, filterable: false },
+        { field: 'station_type_title', headerName: 'Station Type Title', sortable: false, filterable: false },
         {
             field: 'poster',
             headerName: 'Poster',
@@ -133,8 +128,15 @@ const EventsPageContent = () => {
             },
         {
             field: 'title',
-            headerName: 'Event Title',
+            headerName: 'MediaTour Title',
             width: 250,
+            sortable: true,
+            editable: false
+        },
+        {
+            field: 'station_name',
+            headerName: 'Station Name',
+        //   width: 100,
             sortable: true,
             editable: false
         },
@@ -146,62 +148,24 @@ const EventsPageContent = () => {
             editable: false
         },
         {
-            field: 'city',
-            headerName: 'City',
+            field: 'show_host',
+            headerName: 'Show Host',
         //   width: 100,
             sortable: true,
             editable: false
         },
         {
-            field: 'event_category',
-            headerName: 'Category',
+            field: 'show_title',
+            headerName: 'Show Title',
         //   width: 100,
             sortable: true,
             editable: false
         },
         {
-            field: 'event_organizer',
-            headerName: 'Organizer',
+            field: 'station_type',
+            headerName: 'Medium',
         //   width: 100,
             sortable: true,
-            editable: false
-        },
-        {
-            field: 'event_ticket_info',
-            headerName: 'Ticket Info',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        // Add Price + Currency in this column
-        // {
-        //     field: 'fullName',
-        //     headerName: 'Full name',
-        //     description: 'This column has a value getter and is not sortable.',
-        //     sortable: false,
-        //     width: 160,
-        //     valueGetter: (params) =>
-        //       `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-        //   },
-        {
-            field: 'local_price',
-            headerName: 'Price',
-            width:50,
-            sortable: true,
-            type: 'number',
-            renderCell: (params) => params.row.views_count < 1000 || params.row.views_count % 10 === 0 ? numeral(params.row.views_count).format('0a') : numeral(params.row.views_count).format('0.0a'),
-            editable: false
-        },
-        {
-            field: 'ticket_platform',
-            headerName: 'Ticketing Platform',
-        //   width: 175,
-            editable: false
-        },
-        {
-            field: 'local_currency',
-            headerName: 'Currency',
-        //   width: 175,
             editable: false
         },
         {
@@ -211,36 +175,15 @@ const EventsPageContent = () => {
             editable: false
         },
         {
-            field: 'description',
-            headerName: 'Description',
+            field: 'from_time',
+            headerName: 'Starts',
         //   width: 175,
             editable: false
         },
         {
-            field: 'venue',
-            headerName: 'Venue',
+            field: 'to_time',
+            headerName: 'Ends',
         //   width: 175,
-            editable: false
-        },
-        {
-            field: 'location',
-            headerName: 'Location',
-        //   width: 175,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'time',
-            headerName: 'Time',
-        //   width: 175,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'ticket_link',
-            headerName: 'Ticket Link',
-            width: 175,
-            sortable: true,
             editable: false
         },
         {
@@ -258,24 +201,8 @@ const EventsPageContent = () => {
             editable: false
         },
         {
-            field: 'is_featured',
+            field: 'is_pinned',
             headerName: 'Featured',
-        //   width: 175,
-            type: 'boolean',
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'is_sponsored',
-            headerName: 'Sponsored',
-        //   width: 100,
-            type: 'boolean',
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'is_global',
-            headerName: 'Global Event',
         //   width: 175,
             type: 'boolean',
             sortable: true,
@@ -286,13 +213,13 @@ const EventsPageContent = () => {
             headerName: 'Actions',
             type: 'actions', 
             width: 150,
-            renderCell: (params) => <EventsActions {...{params, handleOpenEditEvent, handleOpenViewEvent, handleDelete}} />
+            renderCell: (params) => <MediaTourActions {...{params, handleOpenEditMediaTour, handleOpenViewMediaTour, handleDelete }} />
         }
         ], [])
 
     // const currentUserID = 1
-    const currentUserID = currentUser?.id 
-    const { data: events, isLoading, isFetching } = useQuery(["current-user-events", currentUserID], (currentUserID) => getUserEvents(currentUserID), {
+    const currentUserID = currentUser?.id
+    const { data: media_tours, isLoading, isFetching } = useQuery(["current-user-media-tours", currentUserID], (currentUserID) => getUserMediaTours(currentUserID), {
         enabled: !!currentUserID
     })
 
@@ -309,31 +236,21 @@ const EventsPageContent = () => {
         <Box sx={{width: '100%'}}>
             <Stack rowGap={2} sx={{width: '100%'}}>
                 <Stack direction='row' sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                    <Typography variant="h6">My Events:</Typography>
-                    <Button onClick={handleOpenAddEvent} startIcon={<VideoCall/>} size='small' variant="outlined">Add Event</Button>
+                    <Typography variant="h6">My Media Tours:</Typography>
+                    <Button onClick={handleOpenAddMediaTour} startIcon={<VideoCall/>} size='small' variant="outlined">Add Media Tour</Button>
                 </Stack>
-                <Box sx={{ height: 400, maxWidth: 1150 }}>
+                <Box sx={{ height: 400, width: {xs:340, sm: 560} }}>
                     <DataGrid
                         columns={columns}
-                        rows={events ? events : []}
+                        rows={media_tours ? media_tours : []}
                         getRowId={(row) => row.id}
                         columnVisibilityModel={{
                             id: false,
-                            venue: false,
-                            country: false,
-                            location: false,
-                            local_price: false,
-                            local_currency: false,
-                            event_ticket_info: false,
-                            time: false,
-                            ticket_link: false,
+                            show_host: false,
+                            to_time: false,
                             url_id: false,
-                            event_category_id: false,
-                            event_category_title: false,
-                            event_ticket_info_id: false,
-                            event_ticket_info_title: false,
-                            local_currency_id: false,
-                            local_currency_title: false,
+                            station_type_id: false,
+                            station_type_title: false,
                         }}
 
                         initialState={{
@@ -350,7 +267,7 @@ const EventsPageContent = () => {
                         // showColumnVerticalBorder
                         getRowSpacing={getRowSpacing}
                         localeText={{
-                          noRowsLabel: isLoading ? 'Loading events...' : 'No events found...'
+                          noRowsLabel: isLoading ? 'Loading media tours' : 'No media tours found...'
                         }}
                         
                     />
@@ -358,11 +275,11 @@ const EventsPageContent = () => {
             </Stack>
         </Box>
 
-         {/* Add Event Dialog */}
+         {/* Add Media Tour Dialog */}
         <Dialog
             fullScreen
-            open={openAddEventDialogue}
-            onClose={handleCloseAddEvent}
+            open={openAddMediaTourDialogue}
+            onClose={handleCloseAddMediaTour}
             TransitionComponent={Transition}
         >
             <AppBar color='inherit' sx={{ position: 'fixed' }}>
@@ -374,25 +291,25 @@ const EventsPageContent = () => {
                       >
                         <VideoCall/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Add Event</Typography>
-                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseAddEvent}>Close</Button>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Add Media Tour</Typography>
+                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseAddMediaTour}>Close</Button>
                 </Toolbar>
             </AppBar>
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <AddEventCard setOpenAddEventDialogue={setOpenAddEventDialogue} />
+                        <AddMediaTourCard  setOpenAddMediaTourDialogue={setOpenAddMediaTourDialogue}  />
                     </Box>
                 </Container>
             </Box>
       </Dialog>
 
 
-        {/*  Edit Event Dialog  */}
+        {/*  Edit Media Tour Dialog  */}
         <Dialog
             fullScreen
-            open={openEditEventDialogue}
-            onClose={handleCloseEditEvent}
+            open={openEditMediaTourDialogue}
+            onClose={handleCloseEditMediaTour}
             TransitionComponent={Transition}
         >
             <AppBar color='inherit' sx={{ position: 'relative' }}>
@@ -404,25 +321,25 @@ const EventsPageContent = () => {
                       >
                         <VideoCall/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Edit Event</Typography>
-                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseEditEvent}>Close</Button>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Edit Media Tour</Typography>
+                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseEditMediaTour}>Close</Button>
                 </Toolbar>
             </AppBar>
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <EditEventCard  editEventObject={editEventObject} setOpenEditEventDialogue={setOpenEditEventDialogue}  />
+                        <EditMediaTourCard  editMediaTourObject={editMediaTourObject}  setOpenEditMediaTourDialogue={setOpenEditMediaTourDialogue}  />
                     </Box>
                 </Container>
             </Box>
       </Dialog>
 
 
-         {/* View Event Dialog  */}
+         {/* View Media Tour Dialog  */}
         <Dialog
             fullScreen
-            open={openViewEventDialog}   
-            onClose={handleCloseViewEvent}
+            open={openViewMediaTourDialog}   
+            onClose={handleCloseViewMediaTour}
             TransitionComponent={Transition}
         >
             <AppBar color='inherit' sx={{ position: 'relative' }}>
@@ -434,27 +351,28 @@ const EventsPageContent = () => {
                       >
                         <VideoCall/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">View Event</Typography>
-                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseViewEvent}>Close</Button>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">View Media Tour</Typography>
+                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseViewMediaTour}>Close</Button>
                 </Toolbar>
             </AppBar>
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <ViewEventCard viewEventObject={viewEventObject} />
+                        <ViewMediaTourCard viewMediaTourObject={viewMediaTourObject} />
                     </Box>
                 </Container>
             </Box>
       </Dialog>
+
 
       {/* Add Delete Loading Dialogue */}
       <Dialog
-            open={deleteEventLoading}
+            open={deleteMediaTourLoading}
             aria-labelledby="alert-dialog-title"    
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle color="danger" id="alert-dialog-title">
-            {"Deleting Event..."}
+            {"Deleting Media Tour..."}
             </DialogTitle>
             <DialogContent>
                 <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
@@ -470,11 +388,11 @@ const EventsPageContent = () => {
               onClose={handleCloseMuiSnackbar}
               >
               <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
-                  Event Deleted Successfully!
+                  Media Tour Deleted Successfully!
               </Alert>
       </Snackbar>
     </>
   )
 }
 
-export default EventsPageContent
+export default MobileMediaToursPageContent

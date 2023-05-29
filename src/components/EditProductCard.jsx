@@ -1,11 +1,13 @@
 "use client"
 
 // React Imports
-import { useState } from "react"
+import { useState, forwardRef } from "react"
 
 // MUI Imports
-import { Autocomplete, Box, Button, Card, CardContent, Grid, 
+import { Autocomplete, Box, Button, Card, CardContent, Grid, CircularProgress,
     Stack, TextField, Typography, colors, Chip } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // NPM Imports
 import { useSelector } from "react-redux"
@@ -14,15 +16,19 @@ import * as Yup from 'yup'
 import slugify from 'slugify'
 
 // Tanstack Query
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
 import MyTextArea from "./formComponents/MyTextArea"
 import { editProduct } from "@/axios/axios" 
 
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
-const EditProductCard = ({ editProductObject }) => {
+
+const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
     const accessToken = useSelector((state) => state.auth.token)
     
     const [nanoID, setNanoID] = useState(editProductObject?.url_id)
@@ -41,8 +47,19 @@ const EditProductCard = ({ editProductObject }) => {
         label: editProductObject?.product_status_title, 
         value: editProductObject?.product_status 
     })
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
 
-// { id:1, title: 'Kenya Shillings', symbol: "Ksh." }
+    
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      };
+
+
     const textFieldConfig = {
         fullWidth: true,
         variant: 'outlined',
@@ -62,9 +79,12 @@ const EditProductCard = ({ editProductObject }) => {
     ];
 
 
-    const { mutate: editMyProduct } = useMutation(editProduct, {
+    const queryClient = useQueryClient()
+    const { mutate: editMyProduct, isLoading: editProductLoading } = useMutation(editProduct, {
         onSuccess: (data, _variables, _context) => {
-            console.log("Product edited success:", data)
+            queryClient.invalidateQueries('current-user-products')
+            setOpenEditProductDialogue(false)
+            setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
             console.log("Product edited error:", error?.response?.data?.detail)
@@ -81,6 +101,7 @@ const EditProductCard = ({ editProductObject }) => {
             image: '',
             whatsapp: editProductObject?.whatsapp,
             sold_by: editProductObject?.sold_by,
+            country: editProductObject?.country,
         },
         validationSchema: Yup.object({
             title: Yup.string().required("Required"),
@@ -102,9 +123,10 @@ const EditProductCard = ({ editProductObject }) => {
                 .required("Required"),
             whatsapp: Yup.number().integer().typeError("Please enter a valid phone number").required("Required"),
             sold_by: Yup.string().required("Required"),
+            country: Yup.string().required("Required"),
         }),
         onSubmit: () => {
-            console.log("handle edit submit from formik:", {
+            editMyProduct({
                 accessToken,
                 id: editProductObject?.id,
                 title: formik.values?.title,
@@ -113,6 +135,7 @@ const EditProductCard = ({ editProductObject }) => {
                 dollar_price: editProductObject?.dollar_price,
                 description: formik.values?.description,
                 image: formik.values?.image,
+                country: formik.values?.image,
 
                 local_currency: localCurrency?.symbol,
                 local_currency_id: localCurrency?.id,
@@ -130,6 +153,7 @@ const EditProductCard = ({ editProductObject }) => {
                 sold_by: formik.values?.sold_by,
                 url_id: nanoID,
                 slug: slugify(formik.values?.title, {lower: true}),
+                customuserprofile: editProductObject?.customuserprofile,
             })
         }
     })
@@ -180,9 +204,8 @@ const EditProductCard = ({ editProductObject }) => {
     }))
     
 
-
-    
   return (
+    <>
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
             <Box>
                 <Card variant="outlined">
@@ -352,8 +375,8 @@ const EditProductCard = ({ editProductObject }) => {
                                                 ) : null}
                                                 </Stack>
                                             </Grid>
-                                            <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Edit Product</Button>
+                                            <Grid xs={12} sx={{paddingTop: 3}} item > 
+                                                <Button  fullWidth variant="contained" size="small" type="submit" startIcon={editProductLoading && <CircularProgress color="inherit" size={25} />}>{editProductLoading ? "Editing Product..." : "Edit Product"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -363,6 +386,18 @@ const EditProductCard = ({ editProductObject }) => {
                 </Card>
             </Box>
         </form>
+
+        {/* Mui Success Snackbar */} 
+        <Snackbar 
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+            open={openMuiSnackbar} autoHideDuration={6000} 
+            onClose={handleCloseMuiSnackbar}
+            >
+            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                Product Edited Successfully!
+            </Alert>
+        </Snackbar>
+    </>
   )
 }
 

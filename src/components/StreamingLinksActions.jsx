@@ -5,7 +5,7 @@ import { Box, IconButton, Stack, Tooltip } from "@mui/material"
 import { Delete, Edit, VisibilitySharp } from "@mui/icons-material"
 
 
-const StreamingLinksActions = ({ params, handleOpenEditStreamingLinks }) => {
+const StreamingLinksActions = ({ params, handleOpenEditStreamingLinks, handleDelete }) => {
 
   return (
     <Box sx={{paddingX: 3}}>
@@ -17,7 +17,7 @@ const StreamingLinksActions = ({ params, handleOpenEditStreamingLinks }) => {
                 </IconButton>
             </Tooltip>
             <Tooltip title="Delete Streaming Links">
-                <IconButton>
+                <IconButton onClick={() =>handleDelete(params?.row?.id)}>
                     <Delete color="warning"/>
                 </IconButton>
             </Tooltip>

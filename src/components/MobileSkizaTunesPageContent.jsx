@@ -39,7 +39,7 @@ return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 
 
 
-const SKizaTunesPageContent = () => {
+const MobileSKizaTunesPageContent = () => {
     const currentUser = useSelector((state) => state.auth.userInfo) 
     const accessToken = useSelector((state) => state.auth.token)
     const [pageSize, setPageSize] = useState(5)
@@ -144,7 +144,7 @@ const SKizaTunesPageContent = () => {
                     <Typography variant="h6">My Skiza Tunes:</Typography>
                     <Button onClick={handleOpenAddSkizaTunes} startIcon={<VideoCall/>} size='small' variant="outlined">Add Skiza Tunes</Button>
                 </Stack>
-                <Box sx={{ height: 400, maxWidth: 1150 }}>
+                <Box sx={{ height: 400, width: {xs:340, sm: 560} }}>
                     <DataGrid
                         columns={columns}
                         rows={skizaTunes ? skizaTunes : []}
@@ -265,4 +265,4 @@ const SKizaTunesPageContent = () => {
   )
 }
 
-export default SKizaTunesPageContent
+export default MobileSKizaTunesPageContent

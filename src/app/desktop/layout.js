@@ -5,13 +5,12 @@ import { useMemo, useState, useEffect } from 'react';
 
 // NextJs Imports
 import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
 
 // MUI Imports
 import { ThemeProvider, createTheme, styled, useTheme } from '@mui/material/styles';
-import {Box, Toolbar, List, CssBaseline, Divider, IconButton,
-    ListItem, ListItemButton, ListItemIcon, ListItemText, Container, Stack, Tooltip} from '@mui/material';
+import {Box, Toolbar, List, CssBaseline, Divider, IconButton, Dialog, DialogTitle, DialogContent, Card, CardContent, Typography,
+    ListItem, ListItemButton, ListItemIcon, ListItemText, Container, Stack, Tooltip, CircularProgress, DialogActions,
+    Button, useMediaQuery } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
 
@@ -28,10 +27,13 @@ import { Brightness4Sharp, Brightness5Sharp, Category, ConfirmationNumber, Keybo
   LinkSharp, PhonelinkRing, RadioOutlined, SpaceDashboard, VideoLibrary } from '@mui/icons-material';
 
 // Project Imports
+import DesktopHeaderLogo from '@/components/DesktopHeaderLogo';
 import UserAccountInfo from '@/components/UserAccountInfo';
 import Copyright from '@/components/Copyright';
+import LoginForm from '@/components/LoginForm';
 import { getCurrentUser, getRefreshToken, getUserProfile, renewAccessToken } from '@/axios/axios';
 import { updateProfileInfo, updateToken, updateUserInfo } from '@/Redux/Features/auth/authSlice';
+import { isAdminOrArtist, isPromoter, isVendor } from '@/utils/checkRole';
 
 const drawerWidth = 240;
 const drawerWidth2 = 0;
@@ -102,33 +104,54 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 export default function MainNavbar({ children }) {
+  const currentLoggedInUser = useSelector((state) => state.auth.userInfo) 
+  const currentLoggedInUserProfile = useSelector((state) => state.auth.profileInfo) 
   const theme = useTheme();
   const dispatch = useDispatch()
   const router = useRouter()
   const pathname = usePathname()
   
   // Auth
+  const [showAuthDialog, setShowAuthDialog] = useState(true)
+  const [showLoginDialog, setShowLoginDialog] = useState(false)
   const newToken = useSelector((state) => state.auth.token) 
-  const { data: currentUser } = useQuery(['current-user', newToken], (newToken) => getCurrentUser(newToken), {
+  const { data: currentUser, isSuccess: foundCurrentUser } = useQuery(['current-user', newToken], (newToken) => getCurrentUser(newToken), {
     onSuccess: (data, _variables, _context) => {
       dispatch(updateUserInfo(data))
+      setShowLoginDialog(false)
     },
-  })
-  
-  
-  const userID = currentUser?.id ? currentUser?.id : 0
-  const { data: userProfile, isLoading: loadingProfile } = useQuery(["user-profile", userID], (userID) => getUserProfile(userID), {
-    onSuccess: (data, _variables, _context) => {
-      dispatch(updateProfileInfo(data[0]))
+    onError: (error, _variables, _context) => {
+      setShowAuthDialog(false)
+      setShowLoginDialog(true)
     }
   })
   
+  
+  const userID = currentLoggedInUser?.id 
+  const { data: userProfile, } = useQuery(["user-profile", userID], (userID) => getUserProfile(userID), {
+    onSuccess: (data, _variables, _context) => {
+      dispatch(updateProfileInfo(data[0]))
+      setShowAuthDialog(false)
+    },
+    enabled: !!userID,
+  })
+
+
+  const handleLogin = () => {
+    // Login mutation onSuccess: () => setShowLoginDialog(false)
+  }
+  
   // Get refresh token
-  const { data: refreshToken } = useQuery(['refresh-token'], getRefreshToken)
+  const [myRefreshToken, setMyRefreshToken] = useState(null)
+  const { data: refreshToken } = useQuery(['refresh-token'], getRefreshToken, {
+    onSuccess: (data, _variables, _context) => {
+      setMyRefreshToken(data)
+    }
+  })
   
   // Renew access token
   const currentRefreshToken = {
-    refresh: refreshToken ? refreshToken : '',
+    refresh: myRefreshToken,
   }
   const { data: newAccessToken } = useQuery(['new-access-token', currentRefreshToken],  (currentRefreshToken) => renewAccessToken(currentRefreshToken), {
     onSuccess: (data, _variables, _context) => {
@@ -136,6 +159,7 @@ export default function MainNavbar({ children }) {
       dispatch(updateToken(data?.access))
     },
     refetchInterval: 270000,
+    enabled: !!myRefreshToken,
   })
   
   
@@ -143,6 +167,8 @@ export default function MainNavbar({ children }) {
   // Dark Mode
   const [darkMode, setDarkMode] = useState("")
   const [cookie, setCookie] = useCookies(["Mode"])
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  
   
   const handleSetDarkMode = () => {
     setDarkMode("dark")
@@ -174,7 +200,7 @@ export default function MainNavbar({ children }) {
   
   const darkTheme = useMemo(() => createTheme({
     palette: {
-      mode: darkMode === "dark" ? 'dark' : 'light'
+      mode: darkMode === "dark" || prefersDarkMode === true ? 'dark' : 'light'
     }
   }), [darkMode])
   
@@ -189,57 +215,78 @@ export default function MainNavbar({ children }) {
     setOpen(false);
   };
 
-  const navItems1 = [
-    {
-      label: 'Dashboard',
-      icon: <SpaceDashboard />,
-      link: '/'
-    },
-    {
-      label: 'Videos',
-      icon: <VideoLibrary />,
-      link: '/videos'
-    },
-    {
-      label: 'Products',
-      icon: <Category />,
-      link: '/products'
-    },
-    {
-      label: 'Events',
-      icon: <ConfirmationNumber />,
-      link: '/events'
-    },
-    {
-      label: 'Media Tours',
-      icon: <RadioOutlined />,
-      link: '/media-tours'
-    },
-  ]
+  const navItems1 = useMemo(
+    () =>  [
+      {
+        label: 'Dashboard',
+        icon: <SpaceDashboard />,
+        link: '/'
+      },
+      ...isAdminOrArtist(currentLoggedInUser) ? [
+        {
+          label: 'Videos',
+          icon: <VideoLibrary />,
+          link: '/videos'
+        },
+        {
+          label: 'Products',
+          icon: <Category />,
+          link: '/products'
+        },
+        {
+          label: 'Events',
+          icon: <ConfirmationNumber />,
+          link: '/events'
+        },
+        {
+          label: 'Media Tours',
+          icon: <RadioOutlined />,
+          link: '/media-tours'
+        },
+      ] : [],
+      ...isVendor(currentLoggedInUser) ? [
+        {
+          label: 'Products',
+          icon: <Category />,
+          link: '/products'
+        },
+      ] : [],
+      ...isPromoter(currentLoggedInUser) ? [
+        {
+          label: 'Events',
+          icon: <ConfirmationNumber />,
+          link: '/events'
+        },
+      ] : [],
+  ] , [currentLoggedInUser])
 
-  const navItems2 = [
-    {
-      label: 'Streaming Links',
-      icon: <LinkSharp />,
-      link: '/streaming-links'
-    },
-    {
-      label: 'Lyrics',
-      icon: <KeyboardVoice />,
-      link: '/lyrics'
-    },
-    {
-      label: 'Skiza Tunes',
-      icon: <PhonelinkRing />,
-      link: '/skiza-tunes'
-    },
-    {
-      label: 'Music Collections',
-      icon: <LibraryMusic />,
-      link: '/music-collections'
-    }
-  ]
+  const navItems2 = useMemo(
+    () => [
+      ...isAdminOrArtist(currentLoggedInUser) ? [
+        {
+          label: 'Streaming Links',
+          icon: <LinkSharp />,
+          link: '/streaming-links'
+        },
+        {
+          label: 'Lyrics',
+          icon: <KeyboardVoice />,
+          link: '/lyrics'
+        },
+        {
+          label: 'Skiza Tunes',
+          icon: <PhonelinkRing />,
+          link: '/skiza-tunes'
+        },
+        {
+          label: 'Music Collections',
+          icon: <LibraryMusic />,
+          link: '/music-collections'
+        }
+      ] : [],
+  ], [currentLoggedInUser])
 
+  
   return (
     <ThemeProvider theme={darkTheme}>
         <Box sx={{ display: 'flex' }}>
@@ -272,17 +319,7 @@ export default function MainNavbar({ children }) {
                 <MenuIcon />
               </IconButton>) 
               }
-              <Link href="/" title="Creator's Hub">
-                <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
-                    <Image
-                      src={darkMode === "dark" ? "/branding/dukaflani-creator-hub-white.png" : "/branding/dukaflani-creator-hub-blue.png"}
-                      width={130}
-                      height={35}
-                      style={{objectFit: "contain"}}
-                      alt="Dukaflani Logo"
-                    />
-                </Box>
-              </Link>
+              <DesktopHeaderLogo  darkMode={darkMode} setDarkMode={setDarkMode}  />
               <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
                 {darkMode === "dark" ? (<IconButton
                   // color="inherit"
@@ -340,7 +377,7 @@ export default function MainNavbar({ children }) {
                   </ListItem>
               ))}
             </List>
-            <Divider />
+           {isAdminOrArtist(currentLoggedInUser) && <Divider />}
             <List>
               {navItems2?.map((navItem, index) => (
                   <ListItem key={index} disablePadding sx={{ display: 'block' }}>
@@ -372,16 +409,48 @@ export default function MainNavbar({ children }) {
           </Drawer>
           <Box component="main" sx={{ flexGrow: 1, minHeight: '100vh', paddingTop: 10, paddingBottom: 10 }}>
             <Container maxWidth="lg">
-              <Stack sx={{width: "100%"}} spacing={2}>
+              {currentLoggedInUserProfile && <Stack sx={{width: "100%"}} spacing={2}>
                 <UserAccountInfo/>
                 <Box sx={{width: '100%', overflowX: 'auto'}}>
                    { children }
                 </Box>
                 <Copyright/>
-              </Stack>
+              </Stack>}
             </Container>
           </Box>
         </Box>
+
+         {/* Auth Loading Dialog */}
+       <Dialog
+            open={showAuthDialog}
+            aria-labelledby="alert-dialog-title"    
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle color="danger" id="alert-dialog-title">
+              {foundCurrentUser ? "Preparing your dashboard..." : "Checking authentication..."} 
+            </DialogTitle>
+            <DialogContent>
+                <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
+                    <CircularProgress/>
+                </Box>
+            </DialogContent>
+       </Dialog>
+
+         {/* Login Request Dialog */}
+       <Dialog
+            open={showLoginDialog}
+            aria-labelledby="alert-dialog-title"    
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogContent>
+                <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
+                    <LoginForm/>
+                </Box>
+            </DialogContent>
+            {/* <DialogActions>
+                <Button onClick={handleLogin}>Login</Button>
+            </DialogActions> */}
+       </Dialog>
     </ThemeProvider>
   );
 }

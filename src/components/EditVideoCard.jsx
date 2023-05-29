@@ -1,11 +1,13 @@
 "use client"
 
 // React Imports
-import { useState } from "react"
+import { useState, forwardRef } from "react"
 
 // MUI Imports
-import { Autocomplete, Box, Button, Card, CardContent, Grid, 
+import { Autocomplete, Box, Button, Card, CardContent, Grid, CircularProgress,
     Stack, TextField, Typography, colors, Chip } from "@mui/material"
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // NPM Imports
 import { useSelector } from "react-redux"
@@ -14,13 +16,18 @@ import * as Yup from 'yup'
 import slugify from 'slugify'
 
 // Tanstack Query
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
 import MyTextArea from "./formComponents/MyTextArea"
-import { editVideo, getUserLyrics, getUserMusicCollections, 
+import { editVideo, getGenres, getUserLyrics, getUserMusicCollections, 
     getUserProducts, getUserSkizaTunes, getUserStreamingLinks } from "@/axios/axios"
+
+const Alert = forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 
 
 const EditVideoCard = ({ editVideoObject }) => {
@@ -33,6 +40,18 @@ const EditVideoCard = ({ editVideoObject }) => {
     const [videoLyrics, setVideoLyrics] = useState({ id: editVideoObject?.lyrics,  label:editVideoObject?.lyrics_title })
     const [videoSkizaTunes, setVideoSkizaTunes] = useState({ id: editVideoObject?.skiza,  label:editVideoObject?.skiza_title })
     const [videoAlbum, setVideoAlbum] = useState({ id: editVideoObject?.album,  label:editVideoObject?.album_title })
+    const [videoGenre, setVideoGenre] = useState({ id: editVideoObject?.genre,  label:editVideoObject?.genre_title })
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+
+    
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      };
 
 
     const textFieldConfig = {
@@ -54,9 +73,12 @@ const EditVideoCard = ({ editVideoObject }) => {
     ];
 
 
-    const { mutate: editMyVideo } = useMutation(editVideo, {
+    const queryClient = useQueryClient()
+    const { mutate: editMyVideo, isLoading: editVideoLoading } = useMutation(editVideo, {
         onSuccess: (data, _variables, _context) => {
-            console.log("video edited success:", data)
+          queryClient.invalidateQueries('current-user-videos')
+          setOpenEditEventDialogue(false)
+          setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
             console.log("video edited error:", error?.response?.data?.detail)
@@ -71,7 +93,6 @@ const EditVideoCard = ({ editVideoObject }) => {
             youtube_id: editVideoObject?.youtube_id,
             description: editVideoObject?.description,
             thumbnail: '',
-            genre: editVideoObject?.genre,
         },
         validationSchema: Yup.object({
             title: Yup.string().required("Required"),
@@ -90,10 +111,9 @@ const EditVideoCard = ({ editVideoObject }) => {
                     "Unsupported Format! Use png, jpg or jpeg",
                     value => value && SUPPORTED_FORMATS.includes(value.type)
                 ),
-                genre: Yup.string().required("Required"),
         }),
         onSubmit: () => {
-            console.log("handle edit submit from formik:", {
+          editMyVideo({
                 accessToken,
                 id: editVideoObject?.id,
                 title: formik.values.title,
@@ -109,7 +129,7 @@ const EditVideoCard = ({ editVideoObject }) => {
                 album: videoAlbum?.id,
                 lyrics: videoLyrics?.id,
                 skiza: videoSkizaTunes?.id,
-                genre: formik.values.genre,
+                genre: videoGenre?.id,
                 customuserprofile: editVideoObject?.customuserprofile,
             })
         }
@@ -117,47 +137,62 @@ const EditVideoCard = ({ editVideoObject }) => {
 
     // Current User ID
     // const currentUserID = 3
-    const currentUserID = currentUser?.id ? currentUser?.id : 0
+    const currentUserID = currentUser?.id
 
     // User Streaming Links
-    const { data: streamingLinks } = useQuery(["current-user-streamingLinks", currentUserID], (currentUserID) => getUserStreamingLinks(currentUserID))
+    const { data: streamingLinks } = useQuery(["current-user-streamingLinks", currentUserID], (currentUserID) => getUserStreamingLinks(currentUserID), {
+      enabled: !!currentUserID,
+    })
     const streamingServicesOptions = streamingLinks?.map((option, index) => ({
         id: option.id,
         label: option.title,
     }))
 
     // User Products
-    const { data: products } = useQuery(["current-user-products", currentUserID], (currentUserID) => getUserProducts(currentUserID))
+    const { data: products } = useQuery(["current-user-products", currentUserID], (currentUserID) => getUserProducts(currentUserID), {
+      enabled: !!currentUserID,
+    })
     const productDataOptions = products?.map((option, index) => ({
         id: option.id,
         label: option.title
     }))
 
     // User Lyrics
-    const { data: lyrics } = useQuery(["current-user-lyrics", currentUserID], (currentUserID) => getUserLyrics(currentUserID))
+    const { data: lyrics } = useQuery(["current-user-lyrics", currentUserID], (currentUserID) => getUserLyrics(currentUserID), {
+      enabled: !!currentUserID,
+    })
     const lyricsDataOptions = lyrics?.map((option, index) => ({
         id: option.id,
         label: option.title
     }))
 
   //  User Skiza Tunes
-    const { data: skizaTunes } = useQuery(["current-user-skizaTunes", currentUserID], (currentUserID) => getUserSkizaTunes(currentUserID))
+    const { data: skizaTunes } = useQuery(["current-user-skizaTunes", currentUserID], (currentUserID) => getUserSkizaTunes(currentUserID), {
+      enabled: !!currentUserID,
+    })
     const skizaDataOptions = skizaTunes?.map((option, index) => ({
         id: option.id,
         label: option.title
     }))
     
   //  User Music Collection
-    const { data: musicCollections, isLoading, isFetching } = useQuery(["current-user-musicCollections", currentUserID], (currentUserID) => getUserMusicCollections(currentUserID))
+    const { data: musicCollections, isLoading, isFetching } = useQuery(["current-user-musicCollections", currentUserID], (currentUserID) => getUserMusicCollections(currentUserID), {
+      enabled: !!currentUserID,
+    })
     const albumDataOptions = musicCollections?.map((option, index) => ({
         id: option.id,
         label: option.title
     }))
     
+  // Fetch Genres 
+  const { data: genres } = useQuery(["genres"], getGenres)
+  const genresOptions = genres?.map((option, index) => ({
+    id: option.id,
+    label: option.title
+  }))
 
-
-    
   return (
+    <>
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
             <Box>
                 <Card variant="outlined">
@@ -194,16 +229,30 @@ const EditVideoCard = ({ editVideoObject }) => {
                                                     {...formik.getFieldProps("song_title")}
                                                 />
                                             </Grid>
-                                            <Grid xs={12} md={6} item>
-                                                <MyTextField
-                                                    required
-                                                    name="genre" 
-                                                    label="Genre"
-                                                    helperText={formik.errors.genre && formik.touched.genre ? formik.errors.genre : null} 
-                                                    error={formik.errors.genre && formik.touched.genre ? true : false} 
-                                                    {...textFieldConfig} 
-                                                    {...formik.getFieldProps("genre")}
+                                            <Grid xs={12} md={6} item> 
+                                            <Stack spacing={2}>
+                                                    <Autocomplete
+                                                        options={genresOptions ? genresOptions : []}
+                                                        value={videoGenre}
+                                                        size="small"
+                                                        onChange={(event, newValue) => setVideoGenre(newValue)}
+                                                        getOptionLabel={ (option) => option.label}
+                                                        renderOption={(props, option) => {
+                                                            return (
+                                                              <li {...props} key={option.id}>
+                                                                {option.label}
+                                                              </li>
+                                                            );
+                                                          }}
+                                                          renderTags={(tagValue, getTagProps) => {
+                                                            return tagValue.map((option, index) => (
+                                                              <Chip {...getTagProps({ index })} key={index} label={option} />
+                                                            ))
+                                                          }}
+                                                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                        renderInput={(params) => <TextField {...params} label="Genre" />}
                                                     />
+                                                </Stack>
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
@@ -372,7 +421,7 @@ const EditVideoCard = ({ editVideoObject }) => {
                                                 </Stack>
                                             </Grid>
                                             <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Edit Video</Button>
+                                                <Button  fullWidth variant="contained" size="small" type="submit" startIcon={editVideoLoading && <CircularProgress color="inherit" size={25} />}>{editVideoLoading ? "Editing Video..." : "Edit Video"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -382,6 +431,18 @@ const EditVideoCard = ({ editVideoObject }) => {
                 </Card>
             </Box>
         </form>
+
+        {/* Mui Success Snackbar */} 
+        <Snackbar 
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+            open={openMuiSnackbar} autoHideDuration={6000} 
+            onClose={handleCloseMuiSnackbar}
+            >
+            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                Video Edited Successfully!
+            </Alert>
+        </Snackbar>
+    </>
   )
 }
 

@@ -5,7 +5,7 @@ import { Box, IconButton, Stack, Tooltip } from "@mui/material"
 import { Delete, Edit, VisibilitySharp } from "@mui/icons-material"
 
 
-const ProductActions = ({ params, handleOpenEditProduct, handleOpenViewProduct }) => {
+const ProductActions = ({ params, handleOpenEditProduct, handleOpenViewProduct, handleDelete }) => {
 
   return (
     <Box sx={{paddingX: 3}}>
@@ -21,7 +21,7 @@ const ProductActions = ({ params, handleOpenEditProduct, handleOpenViewProduct }
                 </IconButton>
             </Tooltip>
             <Tooltip title="Delete Product">
-                <IconButton>
+                <IconButton onClick={() =>handleDelete(params?.row?.id)}>
                     <Delete color="warning"/>
                 </IconButton>
             </Tooltip>

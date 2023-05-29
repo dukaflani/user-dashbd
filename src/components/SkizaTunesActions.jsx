@@ -5,7 +5,7 @@ import { Box, IconButton, Stack, Tooltip } from "@mui/material"
 import { Delete, Edit, VisibilitySharp } from "@mui/icons-material"
 
 
-const SkizaTunesActions = ({ params, handleOpenEditSkizaTunes }) => {
+const SkizaTunesActions = ({ params, handleOpenEditSkizaTunes, handleDelete }) => {
 
   return (
     <Box sx={{paddingX: 3}}>
@@ -17,7 +17,7 @@ const SkizaTunesActions = ({ params, handleOpenEditSkizaTunes }) => {
                 </IconButton>
             </Tooltip>
             <Tooltip title="Delete Skiza Tunes">
-                <IconButton>
+                <IconButton onClick={() =>handleDelete(params?.row?.id)}>
                     <Delete color="warning"/>
                 </IconButton>
             </Tooltip>

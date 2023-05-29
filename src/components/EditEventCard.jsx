@@ -1,32 +1,37 @@
 "use client"
 
 // React Imports
-import { useState, useEffect } from "react"
+import { useState, forwardRef } from "react"
 
 // MUI Imports
-import { Autocomplete, Box, Button, Card, CardContent, Grid, 
+import { Autocomplete, Box, Button, Card, CardContent, Grid, CircularProgress,
     Stack, TextField, Typography, colors, Chip } from "@mui/material"
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // NPM Imports
 import { useSelector } from "react-redux"
 import {  useFormik } from "formik"
 import * as Yup from 'yup'
 import slugify from 'slugify'
+import { format, formatISO9075 } from "date-fns";
 
 // Tanstack Query
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
 import MyTextArea from "./formComponents/MyTextArea"
 import { editEvent } from "@/axios/axios"
 
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
-const EditEventCard = ({ editEventObject }) => {
+const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
     const accessToken = useSelector((state) => state.auth.token)
-    const currentUser = useSelector((state) => state.auth.userInfo)
 
     const [nanoID, setNanoID] = useState(editEventObject?.url_id)
 
@@ -48,6 +53,17 @@ const EditEventCard = ({ editEventObject }) => {
 
     const [eventDate, setEventDate] = useState(editEventObject?.date)  
     const [eventTime, setEventTime] = useState(editEventObject?.time)
+    const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+
+    
+
+    const handleCloseMuiSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenMuiSnackbar(false);
+      };
 
 
     const textFieldConfig = {
@@ -69,9 +85,12 @@ const EditEventCard = ({ editEventObject }) => {
     ];
 
 
-    const { mutate: editMyEvent } = useMutation(editEvent, {
+    const queryClient = useQueryClient()
+    const { mutate: editMyEvent, isLoading: editEventLoading } = useMutation(editEvent, {
         onSuccess: (data, _variables, _context) => {
-            console.log("event edited success:", data)
+            queryClient.invalidateQueries('current-user-events')
+            setOpenEditEventDialogue(false)
+            setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
             console.log("event edited error:", error?.response?.data?.detail)
@@ -118,7 +137,7 @@ const EditEventCard = ({ editEventObject }) => {
             ticket_link: Yup.string().required("Required"),
         }),
         onSubmit: () => {
-            console.log("handle edit submit from formik:", {
+            editMyEvent({
                 accessToken,
                 id: editEventObject?.id,
                 title: formik.values?.title,
@@ -131,8 +150,8 @@ const EditEventCard = ({ editEventObject }) => {
                 description: formik.values?.description,
                 venue: formik.values?.venue,
                 location: formik.values?.location,
-                date: eventDate, 
-                time: eventTime,
+                date: format(new Date(eventDate), "yyyy-MM-dd"), 
+                time: formatISO9075(new Date(eventTime), { representation: 'time' }),
                 ticket_link: formik.values?.ticket_link,
                 
                 event_category: ticketCategory ? ticketCategory?.value : '',
@@ -148,6 +167,7 @@ const EditEventCard = ({ editEventObject }) => {
                 local_currency_id: ticketCurrency ? ticketCurrency?.id : '',
                 local_currency_title: ticketCurrency ? ticketCurrency?.label : '',
 
+                customuserprofile: editEventObject?.customuserprofile,
                 url_id: nanoID,
                 slug: slugify(formik.values?.title, {lower: true}),
             })
@@ -198,11 +218,10 @@ const EditEventCard = ({ editEventObject }) => {
         label: option.title,
         value: option.value
     }))
-    
-
 
     
   return (
+    <>
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
             <Box>
                 <Card variant="outlined">
@@ -424,8 +443,8 @@ const EditEventCard = ({ editEventObject }) => {
                                                 ) : null}
                                                 </Stack>
                                             </Grid>
-                                            <Grid xs={12} sx={{paddingTop: 3}} item >
-                                                <Button  fullWidth variant="contained" size="small" type="submit">Edit Event</Button>
+                                            <Grid xs={12} sx={{paddingTop: 3}} item > editEventLoading
+                                                <Button  fullWidth variant="contained" size="small" type="submit"  startIcon={editEventLoading && <CircularProgress color="inherit" size={25} />}>{editEventLoading ? "Editing Event..." : "Edit Event"}</Button>
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -435,6 +454,18 @@ const EditEventCard = ({ editEventObject }) => {
                 </Card>
             </Box>
         </form>
+
+        {/* Mui Success Snackbar */} 
+        <Snackbar 
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+            open={openMuiSnackbar} autoHideDuration={6000} 
+            onClose={handleCloseMuiSnackbar}
+            >
+            <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
+                Event Edited Successfully!
+            </Alert>
+        </Snackbar>
+    </>
   )
 }
 

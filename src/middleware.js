@@ -1,4 +1,4 @@
-import { NextResponse, userAgent } from 'next/server'
+import { NextResponse, userAgent, NextRequest } from 'next/server'
 
 // Set pathname where middleware will be executed
 // export const config = {
@@ -19,19 +19,27 @@ export const config = {
   }
 
 
-export function middleware(req) {
+export function middleware(NextRequest) {
   // Parse user agent
-  const { device } = userAgent(req)
-  const originalPathName = req.nextUrl.pathname
+  const { device } = userAgent(NextRequest)
+
+
+  // Check darkMode cookie
+  // let darkModeCookie = NextRequest.cookies.get('LightMode')?.value;
+  // let countryCode = NextRequest.geo.country
+
+
+  const originalPathName = NextRequest.nextUrl.pathname
   
   // Check the viewport
-  const viewport = device.type === 'mobile' ? 'mobile' : 'desktop'
-  // const viewport = 'mobile'
+  // const viewport = device.type === 'mobile' ? 'mobile' : 'desktop'
+  const viewport = 'mobile'
   
   //Update the expected url
-  req.nextUrl.pathname = `/${viewport}${originalPathName}`
-  
+  // NextRequest.nextUrl.searchParams.set('LightMode', darkModeCookie)
+  NextRequest.nextUrl.pathname = `/${viewport}${originalPathName}`
 
-  // Return rewrited response
-  return NextResponse.rewrite(req.nextUrl)
+  // Return rewritten response
+  return NextResponse.rewrite(NextRequest.nextUrl)
+
 }

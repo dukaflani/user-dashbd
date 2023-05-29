@@ -4,7 +4,7 @@
 import { useState, forwardRef, useMemo, useCallback } from "react"
 
 // MUI Imports
-import { AppBar, Avatar, Box, Button, Container, Dialog, CircularProgress,
+import { AppBar, Box, Button, Container, Dialog, CircularProgress,
     IconButton, Slide, Stack, Toolbar, Typography, DialogTitle, DialogContent } from "@mui/material"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -24,10 +24,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {  CloseSharp, VideoCall } from "@mui/icons-material"
 
 // Project Imports
-import { deleteMusicCollection, getUserMusicCollections } from "@/axios/axios"
-import AddMusicCollectionsCard from "./AddMusicCollectionsCard";
-import MusicCollectionsActions from "./MusicCollectionsActions";
-import EditMusicCollectionsCard from "./EditMusicCollectionsCard";
+import { deleteLyrics, getUserLyrics } from "@/axios/axios"
+import AddLyricsCard from "./AddLyricsCard";
+import LyricsActions from "./LyricsActions";
+import EditLyricsCard from "./EditLyricsCard";
 
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -40,134 +40,124 @@ return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 
 
 
-const MusicCollectionPageContent = () => {
+const MobileLyricsPageContent = () => {
     const currentUser = useSelector((state) => state.auth.userInfo) 
     const accessToken = useSelector((state) => state.auth.token)
     const [pageSize, setPageSize] = useState(5)
 
-    // Add Music Collection 
-    const [openAddMusicCollectionsDialogue, setOpenAddMusicCollectionsDialogue] = useState(false)
+    // Add Lyrics 
+    const [openAddLyricsDialogue, setOpenAddLyricsDialogue] = useState(false)
 
-    const handleOpenAddMusicCollections = () => { 
-        setOpenAddMusicCollectionsDialogue(true);
+    const handleOpenAddLyrics = () => { 
+        setOpenAddLyricsDialogue(true);
     };
     
-    const handleCloseAddMusicCollections = () => {
-        setOpenAddMusicCollectionsDialogue(false);
+    const handleCloseAddLyrics = () => {
+        setOpenAddLyricsDialogue(false);
     };
 
 
-    // Edit Music Collection
-    const [openEditMusicCollectionsDialogue, setOpenEditMusicCollectionsDialogue] = useState(false)
-    const [editMusicCollectionsObject, setEditMusicCollectionsObject] = useState(null)
+    // Edit Lyrics
+    const [openEditLyricsDialogue, setOpenEditLyricsDialogue] = useState(false)
+    const [editLyricsObject, setEditLyricsObject] = useState(null)
 
 
-    const handleOpenEditMusicCollections = (musicCollections_object) => { 
-        setOpenEditMusicCollectionsDialogue(true);
-        setEditMusicCollectionsObject(musicCollections_object)
+    const handleOpenEditLyrics = (lyrics_object) => { 
+        setOpenEditLyricsDialogue(true);
+        setEditLyricsObject(lyrics_object)
     };
     
-    const handleCloseEditMusicCollections = () => {
-        setOpenEditMusicCollectionsDialogue(false);
+    const handleCloseEditLyrics = () => {
+        setOpenEditLyricsDialogue(false);
     };
 
 
-    // Delete Music Collection
+    // Delete Lyrics
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
     const queryClient = useQueryClient()
-    const { mutate: deleteMyMusicCollection, isLoading: deleteMusicCollectionLoading } = useMutation(deleteMusicCollection, {
-      onSuccess: (data, _variables, _context) => {
-        queryClient.invalidateQueries('current-user-musicCollections')
-        setOpenMuiSnackbar(true)
-      },
-      onError: (error, _variables, _context) => {
-          console.log("MusicCollection deleted error:", error?.response?.data?.detail)
-      }
-  })
+    const { mutate: deleteMyLyrics, isLoading: deleteLyricsLoading } = useMutation(deleteLyrics, {
+        onSuccess: (data, _variables, _context) => {
+            queryClient.invalidateQueries('current-user-lyrics')
+            setOpenMuiSnackbar(true)
+        },
+        onError: (error, _variables, _context) => {
+            console.log("Lyrics deleted error:", error?.response?.data?.detail)
+        }
+    })
 
     const handleCloseMuiSnackbar = (event, reason) => {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
     
         setOpenMuiSnackbar(false);
-      };
+        };
 
     const handleDelete = (id) => {
-      deleteMyMusicCollection({ id, accessToken })
+        deleteMyLyrics({ id, accessToken })
     }
-
     
     const columns = useMemo(
     () => [
         { field: 'id', headerName: 'ID', sortable: false, filterable: false },
-        { field: 'album_type_title', headerName: 'Album Type Title', sortable: false, filterable: false },
-        { field: 'album_type_id', headerName: 'Album Type ID', sortable: false, filterable: false },
-        { field: 'option_type_title', headerName: 'Option Type Title', sortable: false, filterable: false },
-        { field: 'option_type_id', headerName: 'Option Type ID', sortable: false, filterable: false },
-        {
-            field: 'cover',
-            headerName: 'Album Cover',
-            // width: 100,
-            renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.cover} />,
-            sortable: false,
-            filterable: false
-        },
         {
             field: 'title',
-            headerName: 'Music Collection Title',
+            headerName: 'Lyrics Title',
             width: 250,
             sortable: true,
             editable: false
         },
         {
-            field: 'album_type',
-            headerName: 'Collection Type',
+            field: 'vocals',
+            headerName: 'Vocals',
         //   width: 100,
             sortable: true,
             editable: false
         },
         {
-            field: 'option_type',
-            headerName: 'Host Service',
+            field: 'bgvs',
+            headerName: 'BGVs',
         //   width: 100,
             sortable: true,
             editable: false
         },
         {
-            field: 'link_title',
-            headerName: 'Hosted On',
+            field: 'audio',
+            headerName: 'Audio',
         //   width: 100,
             sortable: true,
             editable: false
         },
         {
-            field: 'link',
-            headerName: 'Link',
+            field: 'director',
+            headerName: 'Director',
         //   width: 100,
             sortable: true,
+            editable: false
+        },
+        {
+            field: 'writer',
+            headerName: 'Writer',
+        //   width: 100,
+            sortable: true,
+            editable: false
+        },
+        {
+            field: 'instruments',
+            headerName: 'Instruments',
+        //   width: 175,
+            editable: false
+        },
+        {
+            field: 'producer',
+            headerName: 'Executive Producer',
+        //   width: 175,
             editable: false
         },
         {
             field: 'url_id',
             headerName: 'URL ID',
-        //   width: 100,
-            sortable: true,
-            editable: false
-        },
-        {
-            field: 'track_count',
-            headerName: 'Track Count',
         //   width: 175,
-            sortable: true,
-            renderCell: (params) => params.row.track_count < 1000 || params.row.track_count % 10 === 0 ? numeral(params.row.track_count).format('0a') : numeral(params.row.track_count).format('0.0a'),
-            editable: false
-        },
-        {
-            field: 'is_sponsored',
-            headerName: 'Sponsored',
-        //   width: 175,
-            type: 'boolean',
             editable: false
         },
         {
@@ -182,14 +172,14 @@ const MusicCollectionPageContent = () => {
             headerName: 'Actions',
             type: 'actions', 
             width: 150,
-            renderCell: (params) => <MusicCollectionsActions {...{params, handleOpenEditMusicCollections, handleDelete }} />
+            renderCell: (params) => <LyricsActions {...{params, handleOpenEditLyrics, handleDelete}} />
         }
         ], [])
 
     // const currentUserID = 1
     const currentUserID = currentUser?.id
-    const { data: musicCollections, isLoading, isFetching } = useQuery(["current-user-musicCollections", currentUserID], (currentUserID) => getUserMusicCollections(currentUserID), {
-        enabled: !!currentUserID,
+    const { data: lyrics, isLoading, isFetching } = useQuery(["current-user-lyrics", currentUserID], (currentUserID) => getUserLyrics(currentUserID), {
+        enabled: !!currentUserID
     })
 
     const getRowSpacing = useCallback((params) => {
@@ -205,22 +195,17 @@ const MusicCollectionPageContent = () => {
         <Box sx={{width: '100%'}}>
             <Stack rowGap={2} sx={{width: '100%'}}>
                 <Stack direction='row' sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                    <Typography variant="h6">My Music Collections:</Typography>
-                    <Button onClick={handleOpenAddMusicCollections} startIcon={<VideoCall/>} size='small' variant="outlined">Add Music Collection</Button>
+                    <Typography variant="h6">My Lyrics:</Typography>
+                    <Button onClick={handleOpenAddLyrics} startIcon={<VideoCall/>} size='small' variant="outlined">Add Lyrics</Button>
                 </Stack>
-                <Box sx={{ height: 400, maxWidth: 1150 }}>
+                <Box sx={{ height: 400, width: {xs:340, sm: 560} }}>
                     <DataGrid
                         columns={columns}
-                        rows={musicCollections ? musicCollections : []}
+                        rows={lyrics ? lyrics : []}
                         getRowId={(row) => row.id}
                         columnVisibilityModel={{
                             id: false,
                             url_id: false,
-                            link: false,
-                            album_type_title: false,
-                            album_type_id: false,
-                            option_type_title: false,
-                            option_type_id: false,
                         }}
 
                         initialState={{
@@ -237,7 +222,7 @@ const MusicCollectionPageContent = () => {
                         // showColumnVerticalBorder
                         getRowSpacing={getRowSpacing}
                         localeText={{
-                          noRowsLabel: isLoading ? 'Loading music collections' : 'No music collections found...'
+                          noRowsLabel: isLoading ? 'Loading lyrics...' : 'No lyrics found...'
                         }}
                         
                     />
@@ -245,11 +230,11 @@ const MusicCollectionPageContent = () => {
             </Stack>
         </Box>
 
-         {/* Add Music Collections Dialog */}
+         {/* Add Lyrics Dialog */}
         <Dialog
             fullScreen
-            open={openAddMusicCollectionsDialogue}
-            onClose={handleCloseAddMusicCollections}
+            open={openAddLyricsDialogue}
+            onClose={handleCloseAddLyrics}
             TransitionComponent={Transition}
         >
             <AppBar color='inherit' sx={{ position: 'fixed' }}>
@@ -261,25 +246,25 @@ const MusicCollectionPageContent = () => {
                       >
                         <VideoCall/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Add Music Collection</Typography>
-                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseAddMusicCollections}>Close</Button>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Add Lyrics</Typography>
+                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseAddLyrics}>Close</Button>
                 </Toolbar>
             </AppBar>
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <AddMusicCollectionsCard/>
+                        <AddLyricsCard/>
                     </Box>
                 </Container>
             </Box>
       </Dialog>
 
 
-        {/*  Edit Music Collection Dialog  */}
+        {/*  Edit Lyrics Dialog  */}
         <Dialog
             fullScreen
-            open={openEditMusicCollectionsDialogue}
-            onClose={handleCloseEditMusicCollections}
+            open={openEditLyricsDialogue}
+            onClose={handleCloseEditLyrics}
             TransitionComponent={Transition}
         >
             <AppBar color='inherit' sx={{ position: 'relative' }}>
@@ -291,14 +276,14 @@ const MusicCollectionPageContent = () => {
                       >
                         <VideoCall/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Edit Music Collection</Typography>
-                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseEditMusicCollections}>Close</Button>
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Edit Lyrics</Typography>
+                    <Button startIcon={<CloseSharp/>} autoFocus color="inherit" onClick={handleCloseEditLyrics}>Close</Button>
                 </Toolbar>
             </AppBar>
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <EditMusicCollectionsCard  editMusicCollectionsObject={editMusicCollectionsObject}  />
+                        <EditLyricsCard  editLyricsObject={editLyricsObject}  />
                     </Box>
                 </Container>
             </Box>
@@ -307,12 +292,12 @@ const MusicCollectionPageContent = () => {
       
       {/* Add Delete Loading Dialogue */}
       <Dialog
-            open={deleteMusicCollectionLoading}
+            open={deleteLyricsLoading}
             aria-labelledby="alert-dialog-title"    
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle color="danger" id="alert-dialog-title">
-            {"Deleting Music Collection..."}
+            {"Deleting Lyrics..."}
             </DialogTitle>
             <DialogContent>
                 <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
@@ -328,11 +313,12 @@ const MusicCollectionPageContent = () => {
               onClose={handleCloseMuiSnackbar}
               >
               <Alert onClose={handleCloseMuiSnackbar} severity="success" sx={{ width: '100%' }}>
-                  Music Collection Deleted Successfully!
+                  Lyrics Deleted Successfully!
               </Alert>
       </Snackbar>
+
     </>
   )
 }
 
-export default MusicCollectionPageContent
+export default MobileLyricsPageContent
