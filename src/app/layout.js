@@ -26,8 +26,8 @@ const queryClient = new QueryClient();
 
 
 export const metadata = {
-  title: 'Dukaflani',
-  description: 'Dukaflani Dashboard',
+  title: 'Dashboard!',
+  description: "Dukaflani Creator's Hub",
 }
 
 export default function RootLayout({ children }) {
