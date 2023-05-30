@@ -1,4 +1,4 @@
-// "use client"
+"use client"
 
 import './globals.css'
 // Fonts
@@ -24,11 +24,6 @@ import store from '@/Redux/App/store'
 const queryClient = new QueryClient();
 
 
-
-export const metadata = {
-  title: 'Dashboard!',
-  description: "Dukaflani Creator's Hub",
-}
 
 export default function RootLayout({ children }) {
   return (
