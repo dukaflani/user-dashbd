@@ -48,6 +48,14 @@ import { updateProfileInfo, updateToken, updateUserInfo } from '@/Redux/Features
 
 const drawerWidth = 240;
 
+
+export const metadata = {
+  title: "Dashboard",
+  description: "Welcome to your dashboard"
+}
+
+
+
 function MobileNavbar(props) {
   const currentLoggedInUser = useSelector((state) => state.auth.userInfo) 
   const currentLoggedInUserProfile = useSelector((state) => state.auth.profileInfo) 

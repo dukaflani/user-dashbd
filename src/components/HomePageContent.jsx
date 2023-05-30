@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import numeral from "numeral";
 
 
+
 const HomePageContent = () => {
     const userProfile = useSelector((state) => state.auth.profileInfo) 
 
