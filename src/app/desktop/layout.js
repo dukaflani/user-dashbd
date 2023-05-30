@@ -104,11 +104,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 
-export const metadata = {
-  title: "Dashboard",
-  description: "Welcome to your dashboard"
-}
-
 
 
 export default function MainNavbar({ children }) {
