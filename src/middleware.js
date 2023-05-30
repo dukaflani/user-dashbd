@@ -32,8 +32,8 @@ export function middleware(NextRequest) {
   const originalPathName = NextRequest.nextUrl.pathname
   
   // Check the viewport
-  // const viewport = device.type === 'mobile' ? 'mobile' : 'desktop'
-  const viewport = 'mobile'
+  const viewport = device.type === 'mobile' ? 'mobile' : 'desktop'
+  // const viewport = 'mobile'
   
   //Update the expected url
   // NextRequest.nextUrl.searchParams.set('LightMode', darkModeCookie)
