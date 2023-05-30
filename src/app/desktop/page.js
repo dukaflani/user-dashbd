@@ -7,8 +7,6 @@ import { Box } from '@mui/material'
 import HomePageContent from '@/components/HomePageContent'
 
 
-
-
 export default function Home() {
 
 

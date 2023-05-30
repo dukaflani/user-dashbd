@@ -1,4 +1,4 @@
-"use client"
+// "use client"
 
 import './globals.css'
 // Fonts
@@ -25,10 +25,10 @@ const queryClient = new QueryClient();
 
 
 
-// export const metadata = {
-//   title: 'Dukaflani',
-//   description: 'Dukaflani Dashboard',
-// }
+export const metadata = {
+  title: 'Dukaflani',
+  description: 'Dukaflani Dashboard',
+}
 
 export default function RootLayout({ children }) {
   return (
