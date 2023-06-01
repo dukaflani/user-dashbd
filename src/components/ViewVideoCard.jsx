@@ -15,8 +15,8 @@ const ViewVideoCard = ({ viewVideoObject }) => {
           <CardContent>
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                {/* <Avatar sx={{height: 100, width: 170}} variant='rounded' src={viewVideoObject?.thumbnail} alt={viewVideoObject?.title} /> */}
-                <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
+                <Avatar sx={{height: 100, width: 170}} variant='rounded' src={viewVideoObject?.thumbnail} alt={viewVideoObject?.title} />
+                {/* <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
                     <Image
                         src={viewVideoObject?.thumbnail}
                         width={170}
@@ -24,12 +24,12 @@ const ViewVideoCard = ({ viewVideoObject }) => {
                         style={{objectFit: "contain"}}
                         alt={viewVideoObject?.title}
                     />
-                </Box>
+                </Box> */}
               </Grid>
               <Grid item xs={8}>
                 <Stack spacing={2}>
                   <Typography variant='subtitle1' gutterBottom sx={{fontWeight: 'bold'}}>{viewVideoObject?.title}</Typography>
-                  <Typography variant='body2' sx={{color: '#1976d2'}}>{viewVideoObject?.genre}</Typography>
+                  <Typography variant='body2' sx={{color: '#1976d2'}}>{viewVideoObject?.genre_title}</Typography>
                 </Stack>
               </Grid>
               <Grid item xs={12}>
