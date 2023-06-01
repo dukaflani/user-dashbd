@@ -277,7 +277,6 @@ const EditMediaTourCard = ({ editMediaTourObject, setOpenEditMediaTourDialogue }
                                                 <Stack spacing={1}>
                                                     <Typography variant="subtitle1">Media Tour Poster:</Typography>
                                                     <input
-                                                        required 
                                                         type="file"
                                                         name="poster"
                                                         onChange={(e) => formik.setFieldValue("poster", e.target.files[0])}

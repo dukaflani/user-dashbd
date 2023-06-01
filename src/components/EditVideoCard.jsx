@@ -410,7 +410,6 @@ const EditVideoCard = ({ editVideoObject }) => {
                                                 <Stack spacing={1}>
                                                     <Typography variant="subtitle1">Video Thumbnail:</Typography>
                                                     <input
-                                                        required 
                                                         type="file"
                                                         name="thumbnail"
                                                         onChange={(e) => formik.setFieldValue("thumbnail", e.target.files[0])}

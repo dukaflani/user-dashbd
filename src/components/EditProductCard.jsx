@@ -119,8 +119,7 @@ const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
                     "fileFormat",
                     "Unsupported Format! Use png, jpg or jpeg",
                     value => value && SUPPORTED_FORMATS.includes(value.type)
-                )
-                .required("Required"),
+                ),
             whatsapp: Yup.number().integer().typeError("Please enter a valid phone number").required("Required"),
             sold_by: Yup.string().required("Required"),
             country: Yup.string().required("Required"),
@@ -365,7 +364,6 @@ const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
                                                 <Stack spacing={1}>
                                                     <Typography variant="subtitle1">Product Image:</Typography>
                                                     <input
-                                                        required 
                                                         type="file"
                                                         name="image"
                                                         onChange={(e) => formik.setFieldValue("image", e.target.files[0])}

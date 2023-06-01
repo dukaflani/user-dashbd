@@ -433,7 +433,6 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
                                                 <Stack spacing={1}>
                                                     <Typography variant="subtitle1">Event Poster:</Typography>
                                                     <input
-                                                        required 
                                                         type="file"
                                                         name="poster"
                                                         onChange={(e) => formik.setFieldValue("poster", e.target.files[0])}
