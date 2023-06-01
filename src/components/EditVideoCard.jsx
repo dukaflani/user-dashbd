@@ -81,7 +81,7 @@ const EditVideoCard = ({ editVideoObject }) => {
           setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
-            console.log("video edited error:", error?.response?.data?.detail)
+            console.log("video edited error2:", error)
         }
     })
 
