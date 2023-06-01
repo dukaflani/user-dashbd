@@ -211,7 +211,7 @@ export default function MainNavbar({ children }) {
   }), [darkMode, prefersDarkMode])
   
   
-  // Drawer
+  // Drawer Options
   const [open, setOpen] = useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
