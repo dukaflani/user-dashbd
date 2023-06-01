@@ -40,7 +40,12 @@ const UserAccountInfo = () => {
            <CardContent>
               <Stack>
                 <Typography variant="subtitle2">Account Notification:</Typography>
-                <Typography variant="body2">Welcome to the Dukaflani Creator&apos;s Hub</Typography>
+                <Typography variant="body2">
+                  {userProfile?.role == "USER" ? 
+                  "A 'USER' account does not have enough privillages to add content on Dukaflani. Please upgrade to an 'ARTIST', 'VENDOR' or 'PROMOTER' account." 
+                  : 
+                  "Welcome to the Dukaflani Creator's Hub."}
+                  </Typography>
               </Stack>
            </CardContent>
         </Card>

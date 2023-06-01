@@ -84,12 +84,20 @@ const HomePageContent = () => {
                     <Stack spacing={1}>
                         <Typography variant='subtitle2'>From Dukaflani:</Typography>
                             <Card>
-                                <CardMedia
+                                <Box sx={{ width:"100%", paddingTop: 130, position: "relative" }}>
+                                    <Image
+                                        src="/media/diamond.png"
+                                        fill={true}
+                                        style={{objectFit: "contain"}}
+                                        alt="NEW FEATURE RELEASE"
+                                    />
+                                </Box>
+                                {/* <CardMedia
                                 component="img"
                                 height="130"
                                 image="/media/diamond.png"
                                 alt="NEW FEATURE RELEASE"
-                                />
+                                /> */}
                                 <CardContent>
                                     <Stack>
                                         <Typography gutterBottom variant='subtitle2'>NEW FEATURE RELEASE</Typography>
@@ -101,12 +109,20 @@ const HomePageContent = () => {
                                 </CardActions>
                             </Card>
                             <Card>
-                                <CardMedia
+                                <Box sx={{ width:"100%", paddingTop: 130, position: "relative" }}>
+                                    <Image
+                                        src="/media/diamond.png"
+                                        fill={true}
+                                        style={{objectFit: "contain"}}
+                                        alt="NEW FEATURE RELEASE"
+                                    />
+                                </Box>
+                                {/* <CardMedia
                                 component="img"
                                 height="130"
                                 image="/media/diamond.png"
                                 alt="NEW FEATURE RELEASE"
-                                />
+                                /> */}
                                 <CardContent>
                                     <Stack>
                                         <Typography gutterBottom variant='subtitle2'>NEW FEATURE RELEASE</Typography>
