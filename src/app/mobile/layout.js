@@ -38,6 +38,7 @@ import MenuIcon from "@mui/icons-material/Menu"
 import MobileUserAccountInfo from '@/components/MobileUserAccountInfo';
 import Copyright from '@/components/Copyright';
 import MobileHeaderLogo from '@/components/MobileHeaderLogo';
+import AppBarLinearProgress from '@/components/AppBarLinearProgress';
 import { isAdminOrArtist, isPromoter, isVendor } from '@/utils/checkRole';
 import LoginForm from '@/components/LoginForm';
 import { getCurrentUser, getRefreshToken, getUserProfile, renewAccessToken } from '@/axios/axios';
