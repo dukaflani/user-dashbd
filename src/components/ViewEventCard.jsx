@@ -15,8 +15,8 @@ const ViewEventCard = ({ viewEventObject }) => {
           <CardContent>
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                {/* <Avatar sx={{height: 170, width: 150}} variant='rounded' src={viewEventObject?.poster} alt={viewEventObject?.title} /> */}
-                <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
+                <Avatar sx={{height: 170, width: 150}} variant='rounded' src={viewEventObject?.poster} alt={viewEventObject?.title} />
+                {/* <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
                     <Image
                         src={viewEventObject?.poster}
                         width={150}
@@ -24,7 +24,7 @@ const ViewEventCard = ({ viewEventObject }) => {
                         style={{objectFit: "contain"}}
                         alt={viewEventObject?.title}
                     />
-                </Box>
+                </Box> */}
               </Grid>
               <Grid item xs={8}>
                 <Stack spacing={2}>

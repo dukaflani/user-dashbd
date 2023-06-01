@@ -274,7 +274,7 @@ const AddProductCard = ({ setOpenAddProductDialogue }) => {
                                             <Grid xs={12} item>
                                                 <MyTextArea  
                                                     name="description" 
-                                                    label="Video Description" 
+                                                    label="Product Description" 
                                                     helperText={formik.errors.description && formik.touched.description ? formik.errors.description : null} 
                                                     error={formik.errors.description && formik.touched.description ? true : false} 
                                                     {...textAreaConfig} 

@@ -252,28 +252,28 @@ const EditMediaTourCard = ({ editMediaTourObject, setOpenEditMediaTourDialogue }
                                                     {...formik.getFieldProps("show_host")}
                                                 />
                                             </Grid>
-                                            <Grid xs={12} item>
+                                            <Grid xs={12} md={6} item>
                                                 <DatePicker 
                                                     label="Media Tour Date" 
                                                     value={mediaTourDate} 
                                                     onChange={(newValue) => setMediaTourDate(newValue)} 
                                                     />
                                             </Grid>
-                                            <Grid xs={12} item>
+                                            <Grid xs={12} md={6} item>
                                                 <TimePicker
                                                     label="Interview Start Time"
                                                     value={mediaTourStartTime}
                                                     onChange={(newValue) => setMediaTourStartTime(newValue)}
                                                     />
                                             </Grid>
-                                            <Grid xs={12} item>
+                                            <Grid xs={12} md={6} item>
                                                 <TimePicker
                                                     label="Interview End Time"
                                                     value={mediaTourEndTime}
                                                     onChange={(newValue) => setMediaTourEndTime(newValue)}
                                                     />
                                             </Grid>
-                                            <Grid xs={12} item>
+                                            <Grid xs={12} md={6} item>
                                                 <Stack spacing={1}>
                                                     <Typography variant="subtitle1">Media Tour Poster:</Typography>
                                                     <input

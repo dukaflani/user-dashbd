@@ -13,8 +13,8 @@ const ViewMediaTourCard = ({ viewMediaTourObject }) => {
           <CardContent>
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                {/* <Avatar sx={{height: 170, width: 150}} variant='rounded' src={viewMediaTourObject?.poster} alt={viewMediaTourObject?.title} /> */}
-                <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
+                <Avatar sx={{height: 170, width: 150}} variant='rounded' src={viewMediaTourObject?.poster} alt={viewMediaTourObject?.title} />
+                {/* <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
                     <Image
                         src={viewMediaTourObject?.poster}
                         width={150}
@@ -22,7 +22,7 @@ const ViewMediaTourCard = ({ viewMediaTourObject }) => {
                         style={{objectFit: "contain"}}
                         alt={viewMediaTourObject?.title}
                     />
-                </Box>
+                </Box> */}
               </Grid>
               <Grid item xs={8}>
                 <Stack spacing={2}>

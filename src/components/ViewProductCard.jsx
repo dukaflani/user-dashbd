@@ -15,8 +15,8 @@ const ViewProductCard = ({ viewProductObject }) => {
           <CardContent>
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                {/* <Avatar sx={{height: 170, width: 150}} variant='rounded' src={viewProductObject?.image} alt={viewProductObject?.title} /> */}
-                <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
+                <Avatar sx={{height: 170, width: 150}} variant='rounded' src={viewProductObject?.image} alt={viewProductObject?.title} />
+                {/* <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
                     <Image
                         src={viewProductObject?.image}
                         width={150}
@@ -24,7 +24,7 @@ const ViewProductCard = ({ viewProductObject }) => {
                         style={{objectFit: "contain"}}
                         alt={viewProductObject?.title}
                     />
-                </Box>
+                </Box> */}
               </Grid>
               <Grid item xs={8}>
                 <Stack spacing={2}>
