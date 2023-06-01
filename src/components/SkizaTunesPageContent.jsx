@@ -212,7 +212,7 @@ const SKizaTunesPageContent = () => {
             onClose={handleCloseEditSkizaTunes}
             TransitionComponent={Transition}
         >
-            <AppBar color='inherit' sx={{ position: 'relative' }}>
+            <AppBar color='inherit' sx={{ position: 'fixed' }}>
                 <Toolbar variant="dense">
                     <IconButton
                         edge="start"

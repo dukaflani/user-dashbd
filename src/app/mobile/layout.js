@@ -42,6 +42,7 @@ import { isAdminOrArtist, isPromoter, isVendor } from '@/utils/checkRole';
 import LoginForm from '@/components/LoginForm';
 import { getCurrentUser, getRefreshToken, getUserProfile, renewAccessToken } from '@/axios/axios';
 import { updateProfileInfo, updateToken, updateUserInfo } from '@/Redux/Features/auth/authSlice';
+import { pageHasChanged } from '@/Redux/Features/navigation/navigationSlice';
 
 
 
@@ -53,6 +54,7 @@ const drawerWidth = 240;
 function MobileNavbar(props) {
   const currentLoggedInUser = useSelector((state) => state.auth.userInfo) 
   const currentLoggedInUserProfile = useSelector((state) => state.auth.profileInfo) 
+  const pageNavigated = useSelector((state) => state.navigation.pageChanged)
   // const theme = useTheme();
   const dispatch = useDispatch()
   const router = useRouter()
@@ -84,9 +86,6 @@ function MobileNavbar(props) {
    })
  
  
-   const handleLogin = () => {
-     // Login mutation onSuccess: () => setShowLoginDialog(false)
-   }
    
    // Get refresh token
    const [myRefreshToken, setMyRefreshToken] = useState(null)
@@ -147,7 +146,7 @@ function MobileNavbar(props) {
    
    const darkTheme = useMemo(() => createTheme({
      palette: {
-       mode: darkMode === "dark" || prefersDarkMode === true ? 'dark' : 'light'
+       mode: darkMode === "dark" || prefersDarkMode === true ? "dark" : darkMode === "light" && prefersDarkMode === true ? "light" : "light"
      }
    }), [darkMode, prefersDarkMode])
 
@@ -233,6 +232,11 @@ function MobileNavbar(props) {
   ], [currentLoggedInUser])
 
 
+   // Navigation
+   useEffect(() => {
+    dispatch(pageHasChanged(false))
+  }, [pathname])
+
 
   const drawer = (
     <div>
@@ -246,7 +250,10 @@ function MobileNavbar(props) {
         {navItems1?.map((navItem, index) => (
           <ListItem key={index} disablePadding>
             <ListItemButton
-              onClick={() => router.push(`${navItem.link}`)}
+              onClick={() => {
+                dispatch(pageHasChanged(true))
+                router.push(`${navItem.link}`)
+            }}
               selected={pathname === navItem.link}
             >
               <ListItemIcon>
@@ -262,7 +269,10 @@ function MobileNavbar(props) {
         {navItems2?.map((navItem, index) => (
           <ListItem key={index} disablePadding>
             <ListItemButton
-              onClick={() => router.push(`${navItem.link}`)}
+              onClick={() => {
+                dispatch(pageHasChanged(true))
+                router.push(`${navItem.link}`)
+            }}
               selected={pathname === navItem.link}
             >
               <ListItemIcon>
@@ -290,6 +300,7 @@ function MobileNavbar(props) {
             ml: { md: `${drawerWidth}px` },
           }}
         >
+          {pageNavigated && <AppBarLinearProgress  darkMode={darkMode}  prefersDarkMode={prefersDarkMode}   />}
           <Toolbar variant="dense">
             <IconButton
               color="inherit"
@@ -397,9 +408,6 @@ function MobileNavbar(props) {
                     <LoginForm/>
                 </Box>
             </DialogContent>
-            {/* <DialogActions>
-                <Button onClick={handleLogin}>Login</Button>
-            </DialogActions> */}
        </Dialog>
     </ThemeProvider>
   );

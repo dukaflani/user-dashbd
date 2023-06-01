@@ -1,3 +1,6 @@
+// NextJS Imports
+import Image from "next/image";
+
 // MUI Imports
 import { Avatar, Box, Card, CardContent, Grid, Paper, Stack, Typography } from "@mui/material"
 
@@ -12,7 +15,16 @@ const ViewProductCard = ({ viewProductObject }) => {
           <CardContent>
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                <Avatar sx={{height: 170, width: 150}} variant='rounded' src={viewProductObject?.image} alt={viewProductObject?.title} />
+                {/* <Avatar sx={{height: 170, width: 150}} variant='rounded' src={viewProductObject?.image} alt={viewProductObject?.title} /> */}
+                <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
+                    <Image
+                        src={viewProductObject?.image}
+                        width={150}
+                        height={170}
+                        style={{objectFit: "contain"}}
+                        alt={viewProductObject?.title}
+                    />
+                </Box>
               </Grid>
               <Grid item xs={8}>
                 <Stack spacing={2}>

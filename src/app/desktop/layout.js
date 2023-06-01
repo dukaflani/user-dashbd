@@ -31,9 +31,11 @@ import DesktopHeaderLogo from '@/components/DesktopHeaderLogo';
 import UserAccountInfo from '@/components/UserAccountInfo';
 import Copyright from '@/components/Copyright';
 import LoginForm from '@/components/LoginForm';
+import AppBarLinearProgress from '@/components/AppBarLinearProgress';
 import { getCurrentUser, getRefreshToken, getUserProfile, renewAccessToken } from '@/axios/axios';
 import { updateProfileInfo, updateToken, updateUserInfo } from '@/Redux/Features/auth/authSlice';
 import { isAdminOrArtist, isPromoter, isVendor } from '@/utils/checkRole';
+import { pageHasChanged } from '@/Redux/Features/navigation/navigationSlice';
 
 const drawerWidth = 240;
 const drawerWidth2 = 0;
@@ -109,6 +111,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function MainNavbar({ children }) {
   const currentLoggedInUser = useSelector((state) => state.auth.userInfo) 
   const currentLoggedInUserProfile = useSelector((state) => state.auth.profileInfo) 
+  const pageNavigated = useSelector((state) => state.navigation.pageChanged)
   const theme = useTheme();
   const dispatch = useDispatch()
   const router = useRouter()
@@ -203,7 +206,7 @@ export default function MainNavbar({ children }) {
   
   const darkTheme = useMemo(() => createTheme({
     palette: {
-      mode: darkMode === "dark" || prefersDarkMode === true ? 'dark' : 'light'
+      mode: darkMode === "dark" || prefersDarkMode === true ? "dark" : darkMode === "light" && prefersDarkMode === true ? "light" : "light"
     }
   }), [darkMode, prefersDarkMode])
   
@@ -289,12 +292,19 @@ export default function MainNavbar({ children }) {
       ] : [],
   ], [currentLoggedInUser])
 
+
+  // Navigation
+  useEffect(() => {
+    dispatch(pageHasChanged(false))
+  }, [pathname])
   
+
   return (
     <ThemeProvider theme={darkTheme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
-          <AppBar color='inherit' position="fixed" open={open}>
+          <AppBar color='inherit' position="fixed" open={open}> 
+          {pageNavigated && <AppBarLinearProgress  darkMode={darkMode}  prefersDarkMode={prefersDarkMode}   />}
             <Toolbar variant="dense">
               {!open ? (<IconButton
                 color="inherit"
@@ -362,7 +372,10 @@ export default function MainNavbar({ children }) {
                           justifyContent: open ? 'initial' : 'center',
                           px: 2.5,
                         }}
-                        onClick={() => router.push(`${navItem.link}`)}
+                        onClick={() => {
+                          dispatch(pageHasChanged(true))
+                          router.push(`${navItem.link}`)
+                        }}
                         selected={pathname === navItem.link}
                       >
                         <ListItemIcon
@@ -391,7 +404,10 @@ export default function MainNavbar({ children }) {
                         justifyContent: open ? 'initial' : 'center',
                         px: 2.5,
                       }}
-                      onClick={() => router.push(`${navItem.link}`)}
+                      onClick={() => {
+                        dispatch(pageHasChanged(true))
+                        router.push(`${navItem.link}`)
+                      }}
                       selected={pathname === navItem.link}
                     >
                       <ListItemIcon

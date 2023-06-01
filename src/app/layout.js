@@ -29,8 +29,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <title>Dashboard</title>
-        <meta name="description" content="Dukaflani Creator's Hub"/>
+        <title>Creator&apos;s Hub!</title>
+        <meta name="description" content="Dukaflani Creator's Hub!"/>
       </head>
       <body className={roboto.className}>
           <CssBaseline />

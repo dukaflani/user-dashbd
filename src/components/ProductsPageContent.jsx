@@ -3,6 +3,9 @@
 // React Imports
 import { useState, forwardRef, useMemo, useCallback } from "react"
 
+// NextJS Imports
+import Image from "next/image";
+
 // MUI Imports
 import { AppBar, Avatar, Box, Button, Container, Dialog, CircularProgress,
     IconButton, Slide, Stack, Toolbar, Typography, DialogTitle, DialogContent } from "@mui/material"
@@ -128,7 +131,18 @@ const ProductsPageContent = () => {
             field: 'image',
             headerName: 'Image',
             // width: 100,
-            renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.image} />,
+            // renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.image} />,
+            renderCell: (params) => (
+                <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
+                    <Image
+                        src={params.row.image}
+                        width={80}
+                        height={50}
+                        style={{objectFit: "contain"}}
+                        alt=" "
+                    />
+                </Box>
+            ),
             sortable: false,
             filterable: false
             },
@@ -372,7 +386,7 @@ const ProductsPageContent = () => {
             onClose={handleCloseEditProduct}
             TransitionComponent={Transition}
         >
-            <AppBar color='inherit' sx={{ position: 'relative' }}>
+            <AppBar color='inherit' sx={{ position: 'fixed' }}>
                 <Toolbar variant="dense">
                     <IconButton
                         edge="start"
@@ -401,7 +415,7 @@ const ProductsPageContent = () => {
             onClose={handleCloseViewProduct}
             TransitionComponent={Transition}
         >
-            <AppBar color='inherit' sx={{ position: 'relative' }}>
+            <AppBar color='inherit' sx={{ position: 'fixed' }}>
                 <Toolbar variant="dense">
                     <IconButton
                         edge="start"

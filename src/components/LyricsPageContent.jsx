@@ -267,7 +267,7 @@ const LyricsPageContent = () => {
             onClose={handleCloseEditLyrics}
             TransitionComponent={Transition}
         >
-            <AppBar color='inherit' sx={{ position: 'relative' }}>
+            <AppBar color='inherit' sx={{ position: 'fixed' }}>
                 <Toolbar variant="dense">
                     <IconButton
                         edge="start"
