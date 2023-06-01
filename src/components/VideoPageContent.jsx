@@ -410,7 +410,7 @@ const VideoPageContent = () => {
             <Box>
                 <Container maxWidth="md">
                     <Box sx={{ width: '100%', paddingY: 10 }}>
-                        <EditVideoCard  editVideoObject={editVideoObject}  />
+                        <EditVideoCard  editVideoObject={editVideoObject} setOpenEditVideoDialogue={setOpenEditVideoDialogue}  />
                     </Box>
                 </Container>
             </Box>

@@ -30,7 +30,7 @@ const Alert = forwardRef(function Alert(props, ref) {
 
 
 
-const EditVideoCard = ({ editVideoObject }) => {
+const EditVideoCard = ({ editVideoObject, setOpenEditVideoDialogue }) => {
     const accessToken = useSelector((state) => state.auth.token)
     const currentUser = useSelector((state) => state.auth.userInfo) 
 
@@ -77,11 +77,11 @@ const EditVideoCard = ({ editVideoObject }) => {
     const { mutate: editMyVideo, isLoading: editVideoLoading } = useMutation(editVideo, {
         onSuccess: (data, _variables, _context) => {
           queryClient.invalidateQueries('current-user-videos')
-          setOpenEditEventDialogue(false)
           setOpenMuiSnackbar(true)
+          // setOpenEditVideoDialogue(false)
         },
         onError: (error, _variables, _context) => {
-            console.log("video edited error2:", error)
+            // console.log("video edited error2:", error)
         }
     })
 

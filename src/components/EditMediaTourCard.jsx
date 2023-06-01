@@ -76,11 +76,11 @@ const EditMediaTourCard = ({ editMediaTourObject, setOpenEditMediaTourDialogue }
     const { mutate: editMyMediaTour, isLoading: editMediatourLoading } = useMutation(editMediaTour, {
         onSuccess: (data, _variables, _context) => {
             queryClient.invalidateQueries('current-user-media-tours')
-            setOpenEditMediaTourDialogue(false)
+            // setOpenEditMediaTourDialogue(false)
             setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
-            console.log("media tour edited error:", error?.response?.data?.detail)
+            // console.log("media tour edited error:", error?.response?.data?.detail)
         }
     })
 

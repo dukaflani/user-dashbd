@@ -75,7 +75,7 @@ export const editVideo = async ( { accessToken, id, ...videoDetails } ) => {
     const video_details = videoDetails
     const video_id = id
 
-    const response = await api.put(`/store/videos/${video_id}`, video_details, {
+    const response = await api.put(`/store/videos/${video_id}/`, video_details, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -89,7 +89,7 @@ export const deleteVideo = async ( { id, accessToken } ) => {
     const access_token = accessToken
     const video_id = id
 
-    const response = await api.delete(`/store/videos/${video_id}`, {
+    const response = await api.delete(`/store/videos/${video_id}/`, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -127,7 +127,7 @@ export const editProduct = async ( { accessToken, id, ...productDetails } ) => {
     const product_details = productDetails
     const product_id = id
 
-    const response = await api.put(`/store/products/${product_id}`, product_details, {
+    const response = await api.put(`/store/products/${product_id}/`, product_details, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -141,7 +141,7 @@ export const deleteProduct = async ( { id, accessToken } ) => {
     const access_token = accessToken
     const product_id = id
 
-    const response = await api.delete(`/store/products/${product_id}`, {
+    const response = await api.delete(`/store/products/${product_id}/`, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -179,7 +179,7 @@ export const editEvent = async ( { accessToken, id, ...eventDetails } ) => {
     const event_details = eventDetails
     const event_id = id
 
-    const response = await api.put(`/store/events/${event_id}`, event_details, {
+    const response = await api.put(`/store/events/${event_id}/`, event_details, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -194,7 +194,7 @@ export const deleteEvent = async ( { id, accessToken } ) => {
     const access_token = accessToken
     const event_id = id
 
-    const response = await api.delete(`/store/events/${event_id}`, {
+    const response = await api.delete(`/store/events/${event_id}/`, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -232,7 +232,7 @@ export const editMediaTour = async ( { accessToken, id, ...mediatourDetails } ) 
     const mediatour_details = mediatourDetails
     const mediatour_id = id
 
-    const response = await api.put(`/store/media-tour/${mediatour_id}`, mediatour_details, {
+    const response = await api.put(`/store/media-tour/${mediatour_id}/`, mediatour_details, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -247,7 +247,7 @@ export const deleteMediaTour = async ( { id, accessToken } ) => {
     const access_token = accessToken
     const mediatour_id = id
 
-    const response = await api.delete(`/store/media-tour/${mediatour_id}`, {
+    const response = await api.delete(`/store/media-tour/${mediatour_id}/`, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -285,7 +285,7 @@ export const editLyrics = async ( { accessToken, id, ...lyricsDetails } ) => {
     const lyrics_details = lyricsDetails
     const lyrics_id = id
 
-    const response = await api.put(`/store/lyrics/${lyrics_id}`, lyrics_details, {
+    const response = await api.put(`/store/lyrics/${lyrics_id}/`, lyrics_details, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -300,7 +300,7 @@ export const deleteLyrics = async ( { id, accessToken } ) => {
     const access_token = accessToken
     const lyrics_id = id
 
-    const response = await api.delete(`/store/lyrics/${lyrics_id}`, {
+    const response = await api.delete(`/store/lyrics/${lyrics_id}/`, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -352,7 +352,7 @@ export const deleteStreamingLinks = async ( { id, accessToken } ) => {
     const access_token = accessToken
     const streamingLinks_id = id
 
-    const response = await api.delete(`/store/streaming-links/${streamingLinks_id}`, {
+    const response = await api.delete(`/store/streaming-links/${streamingLinks_id}/`, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -404,7 +404,7 @@ export const deleteSkizaTunes = async ( { id, accessToken } ) => {
     const access_token = accessToken
     const skizaTunes_id = id
 
-    const response = await api.delete(`/store/skiza-tunes/${skizaTunes_id}`, {
+    const response = await api.delete(`/store/skiza-tunes/${skizaTunes_id}/`, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
@@ -456,7 +456,7 @@ export const deleteMusicCollection = async ( { id, accessToken } ) => {
     const access_token = accessToken
     const musicCollection_id = id
 
-    const response = await api.delete(`/store/album/${musicCollection_id}`, {
+    const response = await api.delete(`/store/album/${musicCollection_id}/`, {
         headers: {
             // 'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',

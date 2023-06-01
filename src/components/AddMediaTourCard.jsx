@@ -80,11 +80,11 @@ const AddMediaTourCard = ({ setOpenAddMediaTourDialogue }) => {
     const { mutate: addNewMediaTour, isLoading: addMediaTourLoading } = useMutation(addMediaTour, {
         onSuccess: (data, _variables, _context) => {
             queryClient.invalidateQueries('current-user-media-tours')
-            setOpenAddMediaTourDialogue(false)
+            // setOpenAddMediaTourDialogue(false)
             setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
-            console.log("media tour added error:", error?.response?.data?.detail)
+            // console.log("media tour added error:", error?.response?.data?.detail)
         }
     })
 

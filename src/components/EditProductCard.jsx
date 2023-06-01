@@ -83,11 +83,11 @@ const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
     const { mutate: editMyProduct, isLoading: editProductLoading } = useMutation(editProduct, {
         onSuccess: (data, _variables, _context) => {
             queryClient.invalidateQueries('current-user-products')
-            setOpenEditProductDialogue(false)
+            // setOpenEditProductDialogue(false)
             setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
-            console.log("Product edited error:", error?.response?.data?.detail)
+            // console.log("Product edited error:", error?.response?.data?.detail)
         }
     })
 

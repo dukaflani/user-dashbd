@@ -89,11 +89,11 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
     const { mutate: editMyEvent, isLoading: editEventLoading } = useMutation(editEvent, {
         onSuccess: (data, _variables, _context) => {
             queryClient.invalidateQueries('current-user-events')
-            setOpenEditEventDialogue(false)
+            // setOpenEditEventDialogue(false)
             setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
-            console.log("event edited error:", error?.response?.data?.detail)
+            // console.log("event edited error:", error?.response?.data?.detail)
         }
     })
 

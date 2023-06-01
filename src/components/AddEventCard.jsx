@@ -81,11 +81,11 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const { mutate: addNewEvent, isLoading: loadAddingEvent } = useMutation(addEvent, {
         onSuccess: (data, _variables, _context) => {
             queryClient.invalidateQueries('current-user-events')
-            setOpenAddEventDialogue(false)
+            // setOpenAddEventDialogue(false)
             setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
-            console.log("event added error:", error?.response?.data?.detail)
+            // console.log("event added error:", error?.response?.data?.detail)
         }
     })
 

@@ -83,11 +83,11 @@ const AddVideoCard = ({ setOpenAddVideoDialogue }) => {
     const { mutate: addNewVideo, isLoading: addNewVideoLoading } = useMutation(addVideo, {
         onSuccess: (data, _variables, _context) => {
             queryClient.invalidateQueries('current-user-videos')
-            setOpenAddVideoDialogue(false)
+            // setOpenAddVideoDialogue(false)
             setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
-            console.log("video added error:", error?.response?.data?.detail)
+            // console.log("video added error:", error?.response?.data?.detail)
         }
     })
 
