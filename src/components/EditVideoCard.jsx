@@ -100,17 +100,17 @@ const EditVideoCard = ({ editVideoObject }) => {
             youtube_id: Yup.string().required("Required"),
             description: Yup.string(),
             thumbnail: Yup
-                .mixed()
-                .test(
-                    "fileSize",
-                    "Should not be more than 1MB",
-                    value => value && value.size <= FILE_SIZE
-                )
-                .test(
-                    "fileFormat",
-                    "Unsupported Format! Use png, jpg or jpeg",
-                    value => value && SUPPORTED_FORMATS.includes(value.type)
-                ),
+                .mixed(),
+                // .test(
+                //     "fileSize",
+                //     "Should not be more than 1MB",
+                //     value => value && value.size <= FILE_SIZE
+                // )
+                // .test(
+                //     "fileFormat",
+                //     "Unsupported Format! Use png, jpg or jpeg",
+                //     value => value && SUPPORTED_FORMATS.includes(value.type)
+                // ),
         }),
         onSubmit: () => {
           editMyVideo({

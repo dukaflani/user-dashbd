@@ -104,17 +104,17 @@ const EditMediaTourCard = ({ editMediaTourObject, setOpenEditMediaTourDialogue }
             from_time: Yup.string(),
             to_time: Yup.string(),
             poster: Yup
-                .mixed()
-                .test(
-                    "fileSize",
-                    "Should not be more than 1MB",
-                    value => value && value.size <= FILE_SIZE
-                )
-                .test(
-                    "fileFormat",
-                    "Unsupported Format! Use png, jpg or jpeg",
-                    value => value && SUPPORTED_FORMATS.includes(value.type)
-                ),
+                .mixed(),
+                // .test(
+                //     "fileSize",
+                //     "Should not be more than 1MB",
+                //     value => value && value.size <= FILE_SIZE
+                // )
+                // .test(
+                //     "fileFormat",
+                //     "Unsupported Format! Use png, jpg or jpeg",
+                //     value => value && SUPPORTED_FORMATS.includes(value.type)
+                // ),
         }),
         onSubmit: () => {
             editMyMediaTour({

@@ -121,17 +121,17 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
             city: Yup.string().required("Required"),
             description: Yup.string(),
             poster: Yup
-                .mixed()
-                .test(
-                    "fileSize",
-                    "Should not be more than 1MB",
-                    value => value && value.size <= FILE_SIZE
-                )
-                .test(
-                    "fileFormat",
-                    "Unsupported Format! Use png, jpg or jpeg",
-                    value => value && SUPPORTED_FORMATS.includes(value.type)
-                ),
+                .mixed(),
+                // .test(
+                //     "fileSize",
+                //     "Should not be more than 1MB",
+                //     value => value && value.size <= FILE_SIZE
+                // )
+                // .test(
+                //     "fileFormat",
+                //     "Unsupported Format! Use png, jpg or jpeg",
+                //     value => value && SUPPORTED_FORMATS.includes(value.type)
+                // ),
             venue: Yup.string().required("Required"),
             location: Yup.string().required("Required"),
             ticket_link: Yup.string().required("Required"),

@@ -109,17 +109,17 @@ const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
             local_price: Yup.number().integer().typeError("Please enter a valid price").required("Required"),
             description: Yup.string(),
             image: Yup
-                .mixed()
-                .test(
-                    "fileSize",
-                    "Should not be more than 1MB",
-                    value => value && value.size <= FILE_SIZE
-                )
-                .test(
-                    "fileFormat",
-                    "Unsupported Format! Use png, jpg or jpeg",
-                    value => value && SUPPORTED_FORMATS.includes(value.type)
-                ),
+                .mixed(),
+                // .test(
+                //     "fileSize",
+                //     "Should not be more than 1MB",
+                //     value => value && value.size <= FILE_SIZE
+                // )
+                // .test(
+                //     "fileFormat",
+                //     "Unsupported Format! Use png, jpg or jpeg",
+                //     value => value && SUPPORTED_FORMATS.includes(value.type)
+                // ),
             whatsapp: Yup.number().integer().typeError("Please enter a valid phone number").required("Required"),
             sold_by: Yup.string().required("Required"),
             country: Yup.string().required("Required"),
