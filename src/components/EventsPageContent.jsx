@@ -130,18 +130,7 @@ const EventsPageContent = () => {
             field: 'poster',
             headerName: 'Poster',
             // width: 100,
-            // renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.poster} />,
-            renderCell: (params) => (
-                <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
-                    <Image
-                        src={params.row.poster}
-                        width={80}
-                        height={50}
-                        style={{objectFit: "contain"}}
-                        alt=" "
-                    />
-                </Box>
-            ),
+            renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.poster} />,
             sortable: false,
             filterable: false
             },

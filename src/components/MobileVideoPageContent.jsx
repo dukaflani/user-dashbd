@@ -123,18 +123,7 @@ const MobileVideoPageContent = () => {
                 field: 'thumbnail',
                 headerName: 'Thumbnail',
                 // width: 100,
-                // renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.thumbnail} />,
-                renderCell: (params) => (
-                  <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
-                    <Image
-                        src={params.row.thumbnail}
-                        width={80}
-                        height={50}
-                        style={{objectFit: "contain"}}
-                        alt=" "
-                    />
-                  </Box>
-                ),
+                renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.thumbnail} />,
                 sortable: false,
                 filterable: false
               },

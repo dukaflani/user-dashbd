@@ -131,18 +131,7 @@ const ProductsPageContent = () => {
             field: 'image',
             headerName: 'Image',
             // width: 100,
-            // renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.image} />,
-            renderCell: (params) => (
-                <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
-                    <Image
-                        src={params.row.image}
-                        width={80}
-                        height={50}
-                        style={{objectFit: "contain"}}
-                        alt=" "
-                    />
-                </Box>
-            ),
+            renderCell: (params) => <Avatar sx={{ height: 50, width: 80}} variant="rounded"  src={params.row.image} />,
             sortable: false,
             filterable: false
             },
