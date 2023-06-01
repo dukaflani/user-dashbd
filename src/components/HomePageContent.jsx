@@ -84,7 +84,7 @@ const HomePageContent = () => {
                     <Stack spacing={1}>
                         <Typography variant='subtitle2'>From Dukaflani:</Typography>
                             <Card>
-                                <Box sx={{ width:"100%", height: 130, position: "relative" }}>
+                                <Box sx={{ width:"100%", height: 150, position: "relative" }}>
                                     <Image
                                         src="/media/diamond.png"
                                         fill={true}
@@ -109,7 +109,7 @@ const HomePageContent = () => {
                                 </CardActions>
                             </Card>
                             <Card>
-                                <Box sx={{ width:"100%", height: 130, position: "relative" }}>
+                                <Box sx={{ width:"100%", height: 150, position: "relative" }}>
                                     <Image
                                         src="/media/diamond.png"
                                         fill={true}
