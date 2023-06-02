@@ -103,7 +103,7 @@ const AddMediaTourCard = ({ setOpenAddMediaTourDialogue }) => {
             country: Yup.string().required("Required"),
             station_name: Yup.string().required("Required"),
             show_host: Yup.string().required("Required"),
-            show_title: Yup.number().integer().typeError("Please enter a valid price"),
+            show_title: Yup.string().required("Required"),
             poster: Yup
                 .mixed()
                 .test(
@@ -128,8 +128,11 @@ const AddMediaTourCard = ({ setOpenAddMediaTourDialogue }) => {
                 poster: formik.values?.poster,
 
                 date: format(new Date(mediaTourDate), "yyyy-MM-dd"),
+                raw_date: mediaTourDate,
                 from_time: formatISO9075(new Date(mediaTourStartTime), { representation: 'time' }),
+                raw_from_time: mediaTourStartTime,
                 to_time: formatISO9075(new Date(mediaTourEndTime), { representation: 'time' }),
+                raw_to_time: mediaTourEndTime,
 
                 station_type: mediumType ? mediumType?.value : '',
                 station_type_id: mediumType ? mediumType?.id : '', 
@@ -141,6 +144,7 @@ const AddMediaTourCard = ({ setOpenAddMediaTourDialogue }) => {
             })
         }
     })
+
 
 
     const mediumArray = [

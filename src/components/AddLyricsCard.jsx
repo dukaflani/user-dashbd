@@ -32,7 +32,7 @@ const Alert = forwardRef(function Alert(props, ref) {
 
 const AddLyricsCard = () => {
     const accessToken = useSelector((state) => state.auth.token)
-    const [nanoID, setNanoID] = useState("")
+    const [nanoID, setNanoID] = useState("") 
     const [verseType, setVerseType] = useState(null)
     const [verseLyrics, setVerseLyrics] = useState("")
     const [openLyricsVerseDialog, setOpenLyricsVerseDialog] = useState(false)
@@ -93,6 +93,9 @@ const AddLyricsCard = () => {
     const { mutate: addNewLyricsVerse, isLoading: addVerseLoading } = useMutation(addLyricsVerse, {
         onSuccess: (data, _variables, _context) => {
             setOpenLyricsVerseDialog(true)
+            setVerseType(null)
+            setVerseLyrics("")
+            setVerseVocalist("")
         },
         onError: (error, _variables, _context) => {
             console.log("lyrics verse added error:", error?.response?.data?.detail)
@@ -139,12 +142,11 @@ const AddLyricsCard = () => {
     })
 
     const newVerse = {  
+        accessToken,
         lyrics: lyricsID, 
-
         type: verseType?.value,
         type_id: verseType?.id,
         type_title: verseType?.label,
-
         artist: verseVocalist,
         body: verseLyrics, 
     }
@@ -308,7 +310,7 @@ const AddLyricsCard = () => {
             <DialogContent>
                 <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 2}}>
                     <Grid container spacing={2}>
-                        <Grid xs={12} md={6} item>
+                        <Grid xs={12} item>
                                 <Stack spacing={2}>
                                     <Autocomplete
                                         options={versesOptions} 
@@ -369,7 +371,7 @@ const AddLyricsCard = () => {
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle id="alert-dialog-title">
-            {"Adding a verse"}
+            {"Adding a verse..."}
             </DialogTitle>
             <DialogContent>
                 <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>

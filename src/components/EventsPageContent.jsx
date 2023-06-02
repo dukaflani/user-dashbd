@@ -126,6 +126,8 @@ const EventsPageContent = () => {
         { field: 'event_ticket_info_title', headerName: 'Event Ticket Info Title', sortable: false, filterable: false },
         { field: 'local_currency_id', headerName: 'Currency ID', sortable: false, filterable: false },
         { field: 'local_currency_title', headerName: 'Currency Title', sortable: false, filterable: false },
+        { field: 'raw_date', headerName: 'Raw Date', sortable: false, filterable: false },
+        { field: 'raw_time', headerName: 'Raw Time', sortable: false, filterable: false },
         {
             field: 'poster',
             headerName: 'Poster',
@@ -337,6 +339,8 @@ const EventsPageContent = () => {
                             event_ticket_info_title: false,
                             local_currency_id: false,
                             local_currency_title: false,
+                            raw_time: false,
+                            raw_date: false,
                         }}
 
                         initialState={{

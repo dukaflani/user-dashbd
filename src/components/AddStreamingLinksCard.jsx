@@ -85,6 +85,8 @@ const AddStreamingLinksCard = () => {
     const { mutate: addNewStreamingLinkItem, isLoading: addingLinkLoading } = useMutation(addStreamingLinkItem, {
         onSuccess: (data, _variables, _context) => {
             setOpenStreamingLinkItemDialog(true)
+            setStreamingService(null)
+            setStreamingServiceLink("")
         },
         onError: (error, _variables, _context) => {
             console.log("streaming links item added error:", error?.response?.data?.detail)
@@ -110,8 +112,8 @@ const AddStreamingLinksCard = () => {
    
 
     const newStreamingLinkItem = {  
+        accessToken,
         streaming_links: streamingLinksID, 
-
         streaming_service: streamingService?.value,
         streaming_service_id: streamingService?.id,
         streaming_service_title: streamingService?.label,
@@ -213,7 +215,7 @@ const AddStreamingLinksCard = () => {
             <DialogContent>
                 <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 2}}>
                     <Grid container spacing={2}>
-                        <Grid xs={12} md={6} item>
+                        <Grid xs={12} item>
                                 <Stack spacing={2}>
                                     <Autocomplete
                                         options={streamingServicesOptions} 

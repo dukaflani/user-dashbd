@@ -16,7 +16,7 @@ import { useSelector } from "react-redux"
 import {  useFormik } from "formik"
 import * as Yup from 'yup'
 import slugify from 'slugify'
-import { format, formatISO9075 } from "date-fns";
+import { format, formatISO, formatISO9075 } from "date-fns";
 
 // Tanstack Query
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -34,6 +34,12 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
     const accessToken = useSelector((state) => state.auth.token)
 
     const [nanoID, setNanoID] = useState(editEventObject?.url_id)
+    const [eventDate, setEventDate] = useState(null)  
+    const [eventTime, setEventTime] = useState(null)
+    // const [eventDate, setEventDate] = useState(editEventObject?.raw_date)  
+    // const [eventTime, setEventTime] = useState(editEventObject?.raw_time)
+    console.log("raw date:", editEventObject?.raw_date)
+    console.log("raw time:", editEventObject?.raw_time)
 
     const [ticketInfo, setTicketInfo] = useState({ 
         id:editEventObject?.event_ticket_info_id, 
@@ -51,11 +57,9 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
         value: editEventObject?.event_category 
     })
 
-    const [eventDate, setEventDate] = useState(editEventObject?.date)  
-    const [eventTime, setEventTime] = useState(editEventObject?.time)
+    
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
 
-    
 
     const handleCloseMuiSnackbar = (event, reason) => {
         if (reason === 'clickaway') {
@@ -113,12 +117,12 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
             ticket_link: editEventObject?.ticket_link,
         },
         validationSchema: Yup.object({
-            title: Yup.string().required("Required"),
-            country: Yup.string().required("Required"),
-            event_organizer: Yup.string().required("Required"),
-            ticket_platform: Yup.string().required("Required"),
+            title: Yup.string(),
+            country: Yup.string(),
+            event_organizer: Yup.string(),
+            ticket_platform: Yup.string(),
             local_price: Yup.number().integer().typeError("Please enter a valid price"),
-            city: Yup.string().required("Required"),
+            city: Yup.string(),
             description: Yup.string(),
             poster: Yup
                 .mixed(),
@@ -132,9 +136,9 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
                 //     "Unsupported Format! Use png, jpg or jpeg",
                 //     value => value && SUPPORTED_FORMATS.includes(value.type)
                 // ),
-            venue: Yup.string().required("Required"),
-            location: Yup.string().required("Required"),
-            ticket_link: Yup.string().required("Required"),
+            venue: Yup.string(),
+            location: Yup.string(),
+            ticket_link: Yup.string(),
         }),
         onSubmit: () => {
             editMyEvent({
@@ -150,8 +154,10 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
                 description: formik.values?.description,
                 venue: formik.values?.venue,
                 location: formik.values?.location,
-                date: format(new Date(eventDate), "yyyy-MM-dd"), 
-                time: formatISO9075(new Date(eventTime), { representation: 'time' }),
+                date: eventDate ? format(new Date(eventDate), "yyyy-MM-dd") : editEventObject?.date, 
+                raw_date: eventDate ? eventDate : editEventObject?.raw_date,
+                time: eventTime ? formatISO9075(new Date(eventTime), { representation: 'time' }) : editEventObject?.time,
+                raw_time: eventTime ? eventTime : editEventObject?.raw_time,
                 ticket_link: formik.values?.ticket_link,
                 
                 event_category: ticketCategory ? ticketCategory?.value : '',
@@ -417,14 +423,14 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <DatePicker 
-                                                    label="Event Date" 
+                                                    label="Change Event Date" 
                                                     value={eventDate} 
                                                     onChange={(newValue) => setEventDate(newValue)} 
                                                     />
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <TimePicker
-                                                    label="Event Time"
+                                                    label="Change Event Time"
                                                     value={eventTime}
                                                     onChange={(newValue) => setEventTime(newValue)}
                                                     />
@@ -442,7 +448,7 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
                                                 ) : null}
                                                 </Stack>
                                             </Grid>
-                                            <Grid xs={12} sx={{paddingTop: 3}} item > editEventLoading
+                                            <Grid xs={12} sx={{paddingTop: 3}} item >
                                                 <Button  fullWidth variant="contained" size="small" type="submit"  startIcon={editEventLoading && <CircularProgress color="inherit" size={25} />}>{editEventLoading ? "Editing Event..." : "Edit Event"}</Button>
                                             </Grid>
                                         </Grid>

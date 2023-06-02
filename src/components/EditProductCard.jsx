@@ -104,9 +104,9 @@ const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
             country: editProductObject?.country,
         },
         validationSchema: Yup.object({
-            title: Yup.string().required("Required"),
-            status_description: Yup.string().required("Required"),
-            local_price: Yup.number().integer().typeError("Please enter a valid price").required("Required"),
+            title: Yup.string(),
+            status_description: Yup.string(),
+            local_price: Yup.number().integer().typeError("Please enter a valid price"),
             description: Yup.string(),
             image: Yup
                 .mixed(),
@@ -120,9 +120,9 @@ const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
                 //     "Unsupported Format! Use png, jpg or jpeg",
                 //     value => value && SUPPORTED_FORMATS.includes(value.type)
                 // ),
-            whatsapp: Yup.number().integer().typeError("Please enter a valid phone number").required("Required"),
-            sold_by: Yup.string().required("Required"),
-            country: Yup.string().required("Required"),
+            whatsapp: Yup.number().integer().typeError("Please enter a valid phone number"),
+            sold_by: Yup.string(),
+            country: Yup.string(),
         }),
         onSubmit: () => {
             editMyProduct({
@@ -134,7 +134,7 @@ const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
                 dollar_price: editProductObject?.dollar_price,
                 description: formik.values?.description,
                 image: formik.values?.image,
-                country: formik.values?.image,
+                country: formik.values?.country,
 
                 local_currency: localCurrency?.symbol,
                 local_currency_id: localCurrency?.id,
@@ -166,7 +166,7 @@ const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
         { id:5, title: 'South Africa Rand', symbol: "R." },
         { id:6, title: 'Nigeria Naira', symbol: "₦." },
         { id:7, title: 'Ghana Cedes', symbol: "GH₵." },
-        { id:7, title: 'South Sudan Pound', symbol: "SDG." },
+        { id:8, title: 'South Sudan Pound', symbol: "SDG." },
     ]
 
     const currencyOptions = currencyArray?.map((option, index) => ({
@@ -230,7 +230,18 @@ const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
                                                     {...formik.getFieldProps("title")}
                                                 />
                                             </Grid>
-                                            <Grid xs={12} item>
+                                            <Grid xs={12} md={6} item>
+                                                <MyTextField
+                                                    required
+                                                    name="country" 
+                                                    label="Country"
+                                                    helperText={formik.errors.country && formik.touched.country ? formik.errors.country : null} 
+                                                    error={formik.errors.country && formik.touched.country ? true : false} 
+                                                    {...textFieldConfig} 
+                                                    {...formik.getFieldProps("country")}
+                                                />
+                                            </Grid>
+                                            <Grid xs={12} md={6} item>
                                                 <MyTextField
                                                     required
                                                     name="status_description" 

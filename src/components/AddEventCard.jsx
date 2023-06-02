@@ -44,6 +44,9 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const [eventTime, setEventTime] = useState(null)
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
 
+    console.log("Date:", eventDate)
+    console.log("Time:", eventTime)
+
 
     const handleCloseMuiSnackbar = (event, reason) => {
         if (reason === 'clickaway') {
@@ -142,7 +145,9 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
                 venue: formik.values?.venue,
                 location: formik.values?.location,
                 date: format(new Date(eventDate), "yyyy-MM-dd"), 
+                raw_date: eventDate,
                 time: formatISO9075(new Date(eventTime), { representation: 'time' }),
+                raw_time: eventTime,
                 ticket_link: formik.values?.ticket_link,
 
                 event_category: ticketCategory ? ticketCategory?.value : '',  

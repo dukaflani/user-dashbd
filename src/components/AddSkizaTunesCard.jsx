@@ -29,7 +29,7 @@ const Alert = forwardRef(function Alert(props, ref) {
 
 const AddSkizaTunesCard = () => {
     const accessToken = useSelector((state) => state.auth.token)
-    const [skizaTuneCountry, setSkizaTuneCountry] = useState(null)
+    const [skizaTuneCountry, setSkizaTuneCountry] = useState(null) 
     const [openSkizaTuneItemDialog, setOpenSkizaTuneItemDialog] = useState(false)
     const [showSkizaTunesForm, setShowSkizaTunesForm] = useState(true)
     const [skizaTunesTitle, setSkizaTunesTitle] = useState('')
@@ -87,6 +87,11 @@ const AddSkizaTunesCard = () => {
     const { mutate: addNewSkizaTuneItem, isLoading: addSkizaItemLoading } = useMutation(addSkizaTuneItem, {
         onSuccess: (data, _variables, _context) => {
             setOpenSkizaTuneItemDialog(true)
+            setSkizaTuneCountry(null)
+            setSkizaTuneCarrier('')
+            setSkizaTuneCode(null)
+            setSkizaTuneSMS(null)
+            setSkizaTuneUSSD(null)
         },
         onError: (error, _variables, _context) => {
             console.log("skiza tune item added error:", error?.response?.data?.detail)
@@ -110,6 +115,7 @@ const AddSkizaTunesCard = () => {
     })
     
     const newSkizaTuneItem = {  
+        accessToken,
         skiza_tune: skizaTuneID, 
         country: skizaTuneCountry,
         carrier: skizaTuneCarrier,
@@ -242,7 +248,7 @@ const AddSkizaTunesCard = () => {
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle id="alert-dialog-title">
-            {"Adding Skiza Tune Codes"}
+            {"Adding Skiza Tune Code..."}
             </DialogTitle>
             <DialogContent>
                 <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>

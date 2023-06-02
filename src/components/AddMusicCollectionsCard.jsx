@@ -96,6 +96,9 @@ const AddMusicCollectionsCard = () => {
     const { mutate: addNewMusicCollectionItem, isLoading: addAlbumTrackLoading } = useMutation(addMusicCollectionItem, {
         onSuccess: (data, _variables, _context) => {
             setOpenMusicCollectionDialog(true)
+            setMusicCollectionItemVideoID(null)
+            setFeaturedArtistList("")
+            setMusicCollectionItemTitle("")
         },
         onError: (error, _variables, _context) => {
             console.log("music collection item added error:", error?.response?.data?.detail)
@@ -150,10 +153,11 @@ const AddMusicCollectionsCard = () => {
     })
 
 
-    const newMusicCollectionItem = {  
+    const newMusicCollectionItem = { 
+        accessToken, 
         title: musicCollectionItemTitle,
         album: albumID, 
-        video: musicCollectionItemVideoID?.id,
+        video: musicCollectionItemVideoID ? musicCollectionItemVideoID?.id : 1,
         featuring: featuredArtistList, 
     }
 
@@ -311,7 +315,7 @@ const AddMusicCollectionsCard = () => {
                                                                 ))
                                                                 }}
                                                             isOptionEqualToValue={(option, value) => option.id === value.id}
-                                                            renderInput={(params) => <TextField {...params} label="Album Types" />}
+                                                            renderInput={(params) => <TextField {...params} label="Collection Type" />}
                                                         />
                                                 </Stack>
                                             </Grid>
@@ -372,7 +376,7 @@ const AddMusicCollectionsCard = () => {
                                     onChange={(e) => setFeaturedArtistList(e.target.value)}
                                 />  
                         </Grid>
-                        <Grid xs={12} md={6} item>
+                        <Grid xs={12} item>
                                 <Stack spacing={2}>
                                     <Autocomplete
                                         options={userVideoOptions} 
@@ -413,7 +417,7 @@ const AddMusicCollectionsCard = () => {
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle id="alert-dialog-title">
-            {"Adding Collection Track"}
+            {"Adding Collection Track..."}
             </DialogTitle>
             <DialogContent>
                 <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>

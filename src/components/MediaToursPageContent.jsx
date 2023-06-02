@@ -121,6 +121,10 @@ const MediaToursPageContent = () => {
         { field: 'id', headerName: 'ID', sortable: false, filterable: false },
         { field: 'station_type_id', headerName: 'Station Type ID', sortable: false, filterable: false },
         { field: 'station_type_title', headerName: 'Station Type Title', sortable: false, filterable: false },
+        { field: 'raw_date', headerName: 'Raw Date', sortable: false, filterable: false },
+        { field: 'raw_from_time', headerName: 'Raw From Time', sortable: false, filterable: false },
+        { field: 'raw_to_time', headerName: 'Raw To Time', sortable: false, filterable: false },
+        { field: 'customuserprofile', headerName: 'Profile ID', sortable: false, filterable: false },
         {
             field: 'poster',
             headerName: 'Poster',
@@ -254,6 +258,10 @@ const MediaToursPageContent = () => {
                             url_id: false,
                             station_type_id: false,
                             station_type_title: false,
+                            raw_date: false,
+                            raw_from_time: false,
+                            raw_to_time: false,
+                            customuserprofile: false,
                         }}
 
                         initialState={{

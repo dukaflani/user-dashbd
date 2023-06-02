@@ -80,7 +80,7 @@ const AddProductCard = ({ setOpenAddProductDialogue }) => {
             setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
-            // console.log("video added error:", error?.response?.data?.detail)
+            // console.log("video added error:", error)
         }
     })
 
@@ -90,6 +90,7 @@ const AddProductCard = ({ setOpenAddProductDialogue }) => {
             title: '',
             status_description: '',
             local_price: '',
+            dollar_price: 0,
             description: '',
             image: '',
             whatsapp: '',
@@ -123,10 +124,10 @@ const AddProductCard = ({ setOpenAddProductDialogue }) => {
                 title: formik.values?.title,
                 status_description: formik.values?.status_description,
                 local_price: formik.values?.local_price,
-                dollar_price: 0,
+                dollar_price: formik.values?.dollar_price,
                 description: formik.values?.description,
                 image: formik.values?.image,
-                country: formik.values?.image,
+                country: formik.values?.country,
 
                 local_currency: localCurrency ? localCurrency?.symbol : '',
                 local_currency_id: localCurrency ? localCurrency?.id : '',
@@ -158,7 +159,7 @@ const AddProductCard = ({ setOpenAddProductDialogue }) => {
         { id:5, title: 'South Africa Rand', symbol: "R." },
         { id:6, title: 'Nigeria Naira', symbol: "₦." },
         { id:7, title: 'Ghana Cedes', symbol: "GH₵." },
-        { id:7, title: 'South Sudan Pound', symbol: "SDG." },
+        { id:8, title: 'South Sudan Pound', symbol: "SDG." },
     ]
 
     const currencyOptions = currencyArray?.map((option, index) => ({
@@ -224,7 +225,18 @@ const AddProductCard = ({ setOpenAddProductDialogue }) => {
                                                     {...formik.getFieldProps("title")}
                                                 />
                                             </Grid>
-                                            <Grid xs={12} item>
+                                            <Grid xs={12} md={6} item>
+                                                <MyTextField
+                                                    required
+                                                    name="country" 
+                                                    label="Country"
+                                                    helperText={formik.errors.country && formik.touched.country ? formik.errors.country : null} 
+                                                    error={formik.errors.country && formik.touched.country ? true : false} 
+                                                    {...textFieldConfig} 
+                                                    {...formik.getFieldProps("country")}
+                                                />
+                                            </Grid>
+                                            <Grid xs={12} md={6} item>
                                                 <MyTextField
                                                     required
                                                     name="status_description" 
