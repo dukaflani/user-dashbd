@@ -9,8 +9,8 @@ import { useRouter, usePathname } from 'next/navigation';
 // MUI Imports
 import { ThemeProvider, createTheme, styled, useTheme } from '@mui/material/styles';
 import {Box, Toolbar, List, CssBaseline, Divider, IconButton, Dialog, DialogTitle, DialogContent, Card, CardContent, Typography,
-    ListItem, ListItemButton, ListItemIcon, ListItemText, Container, Stack, Tooltip, CircularProgress, DialogActions,
-    Button, useMediaQuery } from '@mui/material';
+    ListItem, ListItemButton, ListItemIcon, ListItemText, ListItemAvatar, Container, Stack, Tooltip, CircularProgress, DialogActions,
+    Button, useMediaQuery, Link, Menu, MenuItem, Avatar } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
 
@@ -23,6 +23,8 @@ import { useQuery } from '@tanstack/react-query'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MenuIcon from '@mui/icons-material/Menu';
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import WebOutlinedIcon from '@mui/icons-material/WebOutlined';
 import { Brightness4Sharp, Brightness5Sharp, Category, ConfirmationNumber, KeyboardVoice, LibraryMusic, 
   LinkSharp, PhonelinkRing, RadioOutlined, SpaceDashboard, VideoLibrary } from '@mui/icons-material';
 
@@ -297,6 +299,17 @@ export default function MainNavbar({ children }) {
   useEffect(() => {
     dispatch(pageHasChanged(false))
   }, [pathname])
+
+
+  // More Icon Menu
+  const [anchorEl, setAnchorEl] = useState(null);
+    const openNavMenu = Boolean(anchorEl);
+    const handleClickNavMenu = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleCloseNavMenu = () => {
+      setAnchorEl(null);
+    };
   
 
   return (
@@ -334,21 +347,86 @@ export default function MainNavbar({ children }) {
               }
               <DesktopHeaderLogo  darkMode={darkMode} setDarkMode={setDarkMode}  />
               <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                {darkMode === "dark" ? (<IconButton
+                {darkMode === "dark" ? (<Tooltip title="Light Mode"><IconButton
                   // color="inherit"
                   aria-label="toggle dark mode"
                   edge="start"
                   onClick={handleSetLightMode}  
                 >
                    <Brightness5Sharp/>
-                </IconButton>) : (<IconButton
+                </IconButton></Tooltip>) : (<Tooltip title="Dark Mode"><IconButton
                   // color="inherit"
                   aria-label="toggle dark mode"
                   edge="start"
                   onClick={handleSetDarkMode}
                 >
                   <Brightness4Sharp/>
-                </IconButton>)}
+                </IconButton></Tooltip>)}
+                <Tooltip title="More Options">
+                  <IconButton
+                    id="basic-button"
+                    aria-controls={openNavMenu ? 'basic-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={openNavMenu ? 'true' : undefined}
+                    onClick={handleClickNavMenu} 
+                    >
+                    <MoreVertIcon />
+                  </IconButton>
+                </Tooltip>
+                {/* Video Options Menu */}
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={openNavMenu}
+                  onClose={handleCloseNavMenu}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                  }}
+                  PaperProps={{
+                    elevation: 0,
+                    sx: {
+                      overflow: 'visible',
+                      filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                      mt: 1.5,
+                      '& .MuiAvatar-root': {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                      },
+                      '&:before': {
+                        content: '""',
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: 'background.paper',
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        zIndex: 0,
+                      },
+                    },
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                  >
+                    <MenuItem onClick={handleCloseNavMenu}>
+                      <List>
+                        <Link href='https://dukaflani.com' underline='none'>
+                          <ListItem disableGutters>
+                            <ListItemAvatar>
+                              <Avatar>
+                                <WebOutlinedIcon />
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary="Go Back" secondary="Main Site" />
+                          </ListItem>
+                        </Link>
+                      </List>
+                    </MenuItem>
+                  </Menu>
+
               </Box>
             </Toolbar>
           </AppBar>

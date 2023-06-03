@@ -14,8 +14,8 @@ import { useCookies } from 'react-cookie';
 import { useQuery } from '@tanstack/react-query';
 
 // MUI Imports
-import { CircularProgress, Container, Dialog, DialogContent, DialogTitle, Stack, 
-  ThemeProvider, createTheme, useMediaQuery, useTheme } from '@mui/material';
+import { CircularProgress, Container, Dialog, DialogContent, DialogTitle, Stack, Tooltip,
+  ThemeProvider, createTheme, useMediaQuery, Link, Menu, MenuItem, ListItemAvatar, Avatar } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -32,7 +32,9 @@ import Toolbar from '@mui/material/Toolbar';
 // Icons
 import { Brightness4Sharp, Brightness5Sharp, Category, ConfirmationNumber, KeyboardVoice, LibraryMusic,
    LinkSharp, PhonelinkRing, RadioOutlined, SpaceDashboard, VideoLibrary } from '@mui/icons-material';
+import WebOutlinedIcon from '@mui/icons-material/WebOutlined';
 import MenuIcon from "@mui/icons-material/Menu"
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 
 // Project Imports
 import MobileUserAccountInfo from '@/components/MobileUserAccountInfo';
@@ -233,6 +235,17 @@ function MobileNavbar(props) {
   ], [currentLoggedInUser])
 
 
+  // More Icon Menu
+  const [anchorEl, setAnchorEl] = useState(null);
+    const openNavMenu = Boolean(anchorEl);
+    const handleClickNavMenu = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleCloseNavMenu = () => {
+      setAnchorEl(null);
+    };
+
+
    // Navigation
    useEffect(() => {
     dispatch(pageHasChanged(false))
@@ -331,6 +344,71 @@ function MobileNavbar(props) {
               >
                 <Brightness4Sharp/>
               </IconButton>)}
+              <Tooltip title="More Options">
+                  <IconButton
+                    id="basic-button"
+                    aria-controls={openNavMenu ? 'basic-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={openNavMenu ? 'true' : undefined}
+                    onClick={handleClickNavMenu} 
+                    >
+                    <MoreVertIcon />
+                  </IconButton>
+                </Tooltip>
+                {/* Video Options Menu */}
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={openNavMenu}
+                  onClose={handleCloseNavMenu}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                  }}
+                  PaperProps={{
+                    elevation: 0,
+                    sx: {
+                      overflow: 'visible',
+                      filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                      mt: 1.5,
+                      '& .MuiAvatar-root': {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                      },
+                      '&:before': {
+                        content: '""',
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: 'background.paper',
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        zIndex: 0,
+                      },
+                    },
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                  >
+                    <MenuItem onClick={handleCloseNavMenu}>
+                      <List>
+                        <Link href='https://dukaflani.com' underline='none' target="_blank" rel="noopener">
+                          <ListItem disableGutters>
+                            <ListItemAvatar>
+                              <Avatar>
+                                <WebOutlinedIcon />
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary="Go Back" secondary="Main Site" />
+                          </ListItem>
+                        </Link>
+                      </List>
+                    </MenuItem>
+                  </Menu>
+
             </Box>
           </Toolbar>
         </AppBar>
