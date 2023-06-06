@@ -17,7 +17,7 @@ const DesktopHeaderLogo = ({ darkMode }) => {
         <Link href="/" title="Creator's Hub">
         <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
             <Image
-                src={darkMode === "dark" ? "/branding/dukaflani-creator-hub-white.png" : "/branding/dukaflani-creator-hub-blue.png"}
+                src="/branding/dukaflani-creator-hub-blue.png"
                 width={130}
                 height={35}
                 style={{objectFit: "contain"}}

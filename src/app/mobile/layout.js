@@ -75,7 +75,8 @@ function MobileNavbar(props) {
      onError: (error, _variables, _context) => {
        setShowAuthDialog(false)
        setShowLoginDialog(true)
-     }
+     },
+     enabled: !!newToken
    })
    
    
@@ -262,7 +263,7 @@ function MobileNavbar(props) {
       <Divider />
       <List>
         {navItems1?.map((navItem, index) => (
-          <ListItem key={index} disablePadding>
+          <ListItem onClick={() => setMobileOpen(false)} key={index} disablePadding>
             <ListItemButton
               onClick={() => {
                 dispatch(pageHasChanged(true))
@@ -281,7 +282,7 @@ function MobileNavbar(props) {
       {isAdminOrArtist(currentLoggedInUser) && <Divider />}
       <List>
         {navItems2?.map((navItem, index) => (
-          <ListItem key={index} disablePadding>
+          <ListItem onClick={() => setMobileOpen(false)} key={index} disablePadding>
             <ListItemButton
               onClick={() => {
                 dispatch(pageHasChanged(true))

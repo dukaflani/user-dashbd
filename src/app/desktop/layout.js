@@ -131,7 +131,8 @@ export default function MainNavbar({ children }) {
     onError: (error, _variables, _context) => {
       setShowAuthDialog(false)
       setShowLoginDialog(true)
-    }
+    },
+    enabled: !!newToken
   })
   
   
@@ -144,10 +145,6 @@ export default function MainNavbar({ children }) {
     enabled: !!userID,
   })
 
-
-  const handleLogin = () => {
-    // Login mutation onSuccess: () => setShowLoginDialog(false)
-  }
   
   // Get refresh token
   const [myRefreshToken, setMyRefreshToken] = useState(null)

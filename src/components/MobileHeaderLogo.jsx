@@ -17,7 +17,7 @@ const MobileHeaderLogo = ({ darkMode }) => {
         <Link href="/" title="Creator's Hub">
         <Box sx={{ position: "relative", display: 'flex', alignItems: 'center'}}>
             <Image
-                src={darkMode === "dark" ? "/branding/dukaflani-creator-hub-white.png" : "/branding/dukaflani-creator-hub-blue.png"}
+                src="/branding/dukaflani-creator-hub-blue.png"
                 width={100}
                 height={30}
                 style={{objectFit: "contain"}}
