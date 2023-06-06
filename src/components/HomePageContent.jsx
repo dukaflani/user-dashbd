@@ -86,7 +86,7 @@ const HomePageContent = () => {
                             <Card>
                                 <Box sx={{ width:"100%", height: 155, position: "relative" }}>
                                     <Image
-                                        src="/media/diamond.png"
+                                        src="/media/welcome.png"
                                         fill={true}
                                         style={{objectFit: "contain"}}
                                         alt="NEW FEATURE RELEASE"
@@ -100,18 +100,18 @@ const HomePageContent = () => {
                                 /> */}
                                 <CardContent>
                                     <Stack>
-                                        <Typography gutterBottom variant='subtitle2'>NEW FEATURE RELEASE</Typography>
-                                        <Typography variant='body2'>dkdbkdu jkudkj jnjnc  sckjsub duckjnkb...</Typography>
+                                        <Typography gutterBottom variant='subtitle2'>WELCOME TO DUKAFLANI</Typography>
+                                        <Typography variant='body2'>Sell merchandise, event tickets & all things music</Typography>
                                     </Stack>
                                 </CardContent>
-                                <CardActions>
+                                {/* <CardActions>
                                     <Button size="small">Learn More</Button>
-                                </CardActions>
+                                </CardActions> */}
                             </Card>
                             <Card>
                                 <Box sx={{ width:"100%", height: 155, position: "relative" }}>
                                     <Image
-                                        src="/media/diamond.png"
+                                        src="/media/follow-us.png"
                                         fill={true}
                                         style={{objectFit: "contain"}}
                                         alt="NEW FEATURE RELEASE"
@@ -125,13 +125,13 @@ const HomePageContent = () => {
                                 /> */}
                                 <CardContent>
                                     <Stack>
-                                        <Typography gutterBottom variant='subtitle2'>NEW FEATURE RELEASE</Typography>
-                                        <Typography variant='body2'>dkdbkdu jkudkj jnjnc  sckjsub duckjnkb...</Typography>
+                                        <Typography gutterBottom variant='subtitle2'>FOLLOW DUKAFLANI</Typography>
+                                        <Typography variant='body2'>Follow us on social media for latest updates @dukaflani</Typography>
                                     </Stack>
                                 </CardContent>
-                                <CardActions>
+                                {/* <CardActions>
                                     <Button size="small">Learn More</Button>
-                                </CardActions>
+                                </CardActions> */}
                             </Card>
                     </Stack>
                 </Grid>
