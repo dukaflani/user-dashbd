@@ -69,7 +69,7 @@ const HomePageContent = () => {
                                     <Typography gutterBottom variant="h6">How to use Dukaflani:</Typography>
                                     <Box sx={{ width:"100%", paddingTop:"56.25%", position: "relative" }}>
                                         <Image
-                                            src="/media/diamond.png"
+                                            src="/media/coming-soon.png"
                                             fill={true}
                                             style={{objectFit: "contain"}}
                                             alt="How to videos"
@@ -92,12 +92,6 @@ const HomePageContent = () => {
                                         alt="NEW FEATURE RELEASE"
                                     />
                                 </Box>
-                                {/* <CardMedia
-                                component="img"
-                                height="130"
-                                image="/media/diamond.png"
-                                alt="NEW FEATURE RELEASE"
-                                /> */}
                                 <CardContent>
                                     <Stack>
                                         <Typography gutterBottom variant='subtitle2'>WELCOME TO DUKAFLANI</Typography>
@@ -117,12 +111,6 @@ const HomePageContent = () => {
                                         alt="NEW FEATURE RELEASE"
                                     />
                                 </Box>
-                                {/* <CardMedia
-                                component="img"
-                                height="130"
-                                image="/media/diamond.png"
-                                alt="NEW FEATURE RELEASE"
-                                /> */}
                                 <CardContent>
                                     <Stack>
                                         <Typography gutterBottom variant='subtitle2'>FOLLOW DUKAFLANI</Typography>
