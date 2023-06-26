@@ -174,6 +174,7 @@ const AddProductCard = ({ setOpenAddProductDialogue }) => {
         { id:3, title: 'Beauty Products', value: "Beauty" },
         { id:4, title: 'Wellness & Fitness', value: "Wellness" },
         { id:5, title: 'Electronics & Appliances', value: "Electronics" },
+        { id:6, title: 'Music Album', value: "Albums" },
     ]
 
     const productCategoryOptions = productCategoryArray?.map((option, index) => ({
