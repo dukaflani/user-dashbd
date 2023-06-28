@@ -243,7 +243,6 @@ const EditProductCard = ({ editProductObject, setOpenEditProductDialogue }) => {
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
-                                                    required
                                                     name="status_description" 
                                                     label="Product Status"
                                                     helperText={formik.errors.status_description && formik.touched.status_description ? formik.errors.status_description : null} 

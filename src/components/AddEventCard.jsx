@@ -111,7 +111,7 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
             title: Yup.string().required("Required"),
             country: Yup.string().required("Required"),
             event_organizer: Yup.string().required("Required"),
-            ticket_platform: Yup.string().required("Required"),
+            ticket_platform: Yup.string(),
             local_price: Yup.number().integer().typeError("Please enter a valid price"),
             city: Yup.string().required("Required"),
             description: Yup.string(),
@@ -129,7 +129,7 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
                 ),
             venue: Yup.string().required("Required"),
             location: Yup.string().required("Required"),
-            ticket_link: Yup.string().required("Required"),
+            ticket_link: Yup.string(),
         }),
         onSubmit: () => {
             addNewEvent({
@@ -332,7 +332,6 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
-                                                    required
                                                     name="local_price" 
                                                     label="Price"
                                                     helperText={formik.errors.local_price && formik.touched.local_price ? formik.errors.local_price : null} 
@@ -354,7 +353,6 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
                                             </Grid>
                                             <Grid xs={12} md={6} item> 
                                                 <MyTextField
-                                                    required
                                                     name="ticket_platform" 
                                                     label="Ticketing Platform"
                                                     helperText={formik.errors.ticket_platform && formik.touched.ticket_platform ? formik.errors.ticket_platform : null} 
@@ -415,7 +413,6 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
                                             </Grid>
                                             <Grid xs={12} item> 
                                                 <MyTextField
-                                                    required
                                                     name="ticket_link" 
                                                     label="Ticket Link"
                                                     helperText={formik.errors.ticket_link && formik.touched.ticket_link ? formik.errors.ticket_link : null} 

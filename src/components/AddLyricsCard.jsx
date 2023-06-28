@@ -41,6 +41,7 @@ const AddLyricsCard = () => {
     const [lyricsID, setLyricsID] = useState(null)
     const [verseVocalist, setVerseVocalist] = useState('')
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+    const [addedLyricsVerses, setAddedLyricsVerses] = useState([])
 
 
     const handleCloseMuiSnackbar = (event, reason) => {
@@ -92,6 +93,7 @@ const AddLyricsCard = () => {
 
     const { mutate: addNewLyricsVerse, isLoading: addVerseLoading } = useMutation(addLyricsVerse, {
         onSuccess: (data, _variables, _context) => {
+            setAddedLyricsVerses(prevVerses => [...prevVerses, data])
             setOpenLyricsVerseDialog(true)
             setVerseType(null)
             setVerseLyrics("")
@@ -117,10 +119,10 @@ const AddLyricsCard = () => {
         validationSchema: Yup.object({
             title: Yup.string().required("Required"),
             vocals: Yup.string().required("Required"),
-            bgvs: Yup.string().required("Required"),
+            bgvs: Yup.string(),
             audio: Yup.string().required("Required"),
             director: Yup.string().required("Required"),
-            writer: Yup.string().required("Required"),
+            writer: Yup.string(),
             producer: Yup.string().required("Required"),
             instruments: Yup.string(),
         }),
@@ -179,11 +181,24 @@ const AddLyricsCard = () => {
             <Box>
                 <Card variant="outlined">
                     <CardContent sx={ !showLyricsForm ? { display: 'block' } : { display: 'none' }}>
-                        <Stack spacing={2}>
-                            <Typography sx={{color: colors.grey[300]}} gutterBottom variant="h6">{lyricsTitle}</Typography>
-                            <Box>
-                                <Button fullWidth onClick={() => setOpenLyricsVerseDialog(true)} size="small" variant="contained">Add Verse</Button>
-                            </Box>
+                        <Stack spacing={1}>
+                            <Stack spacing={2}>
+                                <Typography sx={{color: colors.grey[300]}} gutterBottom variant="h6">{lyricsTitle}</Typography>
+                                <Box>
+                                    <Button fullWidth onClick={() => setOpenLyricsVerseDialog(true)} size="small" variant="contained">Add Verse</Button>
+                                </Box>
+                            </Stack>
+                            {addedLyricsVerses?.map((verse, i) => (
+                                <Box key={i} sx={{paddingTop: 2}}>
+                                    <Stack>
+                                        <Typography variant="button">{verse?.type.replace("_", " ")}</Typography>
+                                        {verse?.artist && <Box >
+                                        <Typography sx={{backgroundColor: colors.grey[100], color: colors.grey[700], padding: 0.5}} variant="caption" >{verse?.artist}</Typography>
+                                        </Box>}
+                                        <Typography sx={{whiteSpace: 'pre-line'}} variant="body2">{verse?.body}</Typography>
+                                    </Stack>
+                                </Box>
+                            ))}
                         </Stack>
                     </CardContent>
                     <CardContent sx={ showLyricsForm ? { display: 'block' } : { display: 'none' }}>
@@ -221,7 +236,6 @@ const AddLyricsCard = () => {
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
-                                                    required
                                                     name="bgvs" 
                                                     label="BGVs"
                                                     helperText={formik.errors.bgvs && formik.touched.bgvs ? formik.errors.bgvs : null} 
@@ -254,7 +268,6 @@ const AddLyricsCard = () => {
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
-                                                    required
                                                     name="writer" 
                                                     label="Writer"
                                                     helperText={formik.errors.writer && formik.touched.writer ? formik.errors.writer : null} 
@@ -265,7 +278,6 @@ const AddLyricsCard = () => {
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
-                                                    required
                                                     name="instruments" 
                                                     label="Instruments"
                                                     helperText={formik.errors.instruments && formik.touched.instruments ? formik.errors.instruments : null} 

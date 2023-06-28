@@ -5,7 +5,8 @@ import { useState, forwardRef } from "react"
 
 // MUI Imports
 import { Box, Button, Card, CardContent, Grid, 
-    Stack, TextField, Typography, colors, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material"
+    Stack, TextField, Typography, colors, CircularProgress, Dialog, DialogTitle, DialogContent, 
+    DialogActions, Divider } from "@mui/material"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
@@ -29,16 +30,17 @@ const Alert = forwardRef(function Alert(props, ref) {
 
 const AddSkizaTunesCard = () => {
     const accessToken = useSelector((state) => state.auth.token)
-    const [skizaTuneCountry, setSkizaTuneCountry] = useState(null) 
+    const [skizaTuneCountry, setSkizaTuneCountry] = useState('') 
     const [openSkizaTuneItemDialog, setOpenSkizaTuneItemDialog] = useState(false)
     const [showSkizaTunesForm, setShowSkizaTunesForm] = useState(true)
     const [skizaTunesTitle, setSkizaTunesTitle] = useState('')
-    const [skizaTuneID, setSkizaTuneID] = useState(null)
+    const [skizaTuneID, setSkizaTuneID] = useState('')
     const [skizaTuneCarrier, setSkizaTuneCarrier] = useState('')
-    const [skizaTuneCode, setSkizaTuneCode] = useState(null)
-    const [skizaTuneSMS, setSkizaTuneSMS] = useState(null)
-    const [skizaTuneUSSD, setSkizaTuneUSSD] = useState(null)
+    const [skizaTuneCode, setSkizaTuneCode] = useState('')
+    const [skizaTuneSMS, setSkizaTuneSMS] = useState('')
+    const [skizaTuneUSSD, setSkizaTuneUSSD] = useState('')
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+    const [addedSizaCodes, setAddedSizaCodes] = useState([])
 
 
     const handleCloseMuiSnackbar = (event, reason) => {
@@ -86,15 +88,16 @@ const AddSkizaTunesCard = () => {
 
     const { mutate: addNewSkizaTuneItem, isLoading: addSkizaItemLoading } = useMutation(addSkizaTuneItem, {
         onSuccess: (data, _variables, _context) => {
+            setAddedSizaCodes(prevCodes => [...prevCodes, data])
             setOpenSkizaTuneItemDialog(true)
-            setSkizaTuneCountry(null)
+            setSkizaTuneCountry('')
             setSkizaTuneCarrier('')
-            setSkizaTuneCode(null)
-            setSkizaTuneSMS(null)
-            setSkizaTuneUSSD(null)
+            setSkizaTuneCode('')
+            setSkizaTuneSMS('')
+            setSkizaTuneUSSD('')
         },
         onError: (error, _variables, _context) => {
-            console.log("skiza tune item added error:", error?.response?.data?.detail)
+            console.log("skiza tune item added error:", error?.response)
         }
     })
 
@@ -124,11 +127,13 @@ const AddSkizaTunesCard = () => {
         ussd: skizaTuneUSSD, 
     }
 
+
     const handleAddSkizaTuneItem = () => {
         setOpenSkizaTuneItemDialog(false)
         addNewSkizaTuneItem(newSkizaTuneItem)
     }
 
+    const lastSkizaCard = addedSizaCodes?.length - 1
     
   return (
     <>
@@ -136,11 +141,57 @@ const AddSkizaTunesCard = () => {
             <Box>
                 <Card variant="outlined">
                     <CardContent sx={ !showSkizaTunesForm ? { display: 'block' } : { display: 'none' }}>
-                        <Stack spacing={2}>
-                            <Typography sx={{color: colors.grey[300]}} gutterBottom variant="h6">{skizaTunesTitle}</Typography>
-                            <Box>
-                                <Button fullWidth onClick={() => setOpenSkizaTuneItemDialog(true)} size="small" variant="contained">Add Link</Button>
-                            </Box>
+                        <Stack>
+                            <Stack spacing={2}>
+                                <Typography sx={{color: colors.grey[300]}} gutterBottom variant="h6">{skizaTunesTitle}</Typography>
+                                <Box>
+                                    <Button fullWidth onClick={() => setOpenSkizaTuneItemDialog(true)} size="small" variant="contained">Add Link</Button>
+                                </Box>
+                            </Stack>
+                            {addedSizaCodes?.map((skizaTune, i) => (
+                                <Box key={i}>
+                                    <Box sx={{paddingBottom: 1, paddingTop: 3}}>
+                                        <Stack>
+                                            <Box>
+                                            <Typography sx={{color: 'whitesmoke', backgroundColor: colors.grey[800]}} variant='button'>{skizaTune?.country ? skizaTune?.country : "---"}</Typography>
+                                            </Box>
+                                            <Grid container>
+                                            <Grid xs={4} item>
+                                                <Typography variant='subtitle2' >Carrier</Typography>
+                                            </Grid>
+                                            <Grid xs={8} item>
+                                                <Typography variant='body2' >{skizaTune?.carrier ? skizaTune?.carrier : "---"}</Typography>
+                                            </Grid>
+                                            </Grid>
+                                            <Grid container>
+                                            <Grid xs={4} item>
+                                                <Typography variant='subtitle2' >Skiza Code</Typography>
+                                            </Grid>
+                                            <Grid xs={8} item>
+                                                <Typography variant='body2' >{skizaTune?.code ? skizaTune?.code : "---"}</Typography>
+                                            </Grid>
+                                            </Grid>
+                                            <Grid container>
+                                            <Grid xs={4} item>
+                                                <Typography variant='subtitle2' >SMS</Typography>
+                                            </Grid>
+                                            <Grid xs={8} item>
+                                                <Typography variant='body2' >{skizaTune?.sms ? skizaTune?.sms : "---"}</Typography>
+                                            </Grid>
+                                            </Grid>
+                                            <Grid container>
+                                            <Grid xs={4} item>
+                                                <Typography variant='subtitle2' >USSD</Typography>
+                                            </Grid>
+                                            <Grid xs={8} item>
+                                                <Typography variant='body2' >{skizaTune?.ussd ? skizaTune?.ussd : "---"}</Typography>
+                                            </Grid>
+                                            </Grid>
+                                        </Stack>
+                                    </Box>
+                                    <Divider sx={{display: i == lastSkizaCard ? 'none' : 'block'}}/>
+                                </Box>
+                            ))}
                         </Stack>
                     </CardContent>
                     <CardContent sx={ showSkizaTunesForm ? { display: 'block' } : { display: 'none' }}>

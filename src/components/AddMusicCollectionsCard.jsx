@@ -5,7 +5,7 @@ import { useState, useEffect, forwardRef } from "react"
 
 // MUI Imports
 import { Box, Button, Card, CardContent, Grid, CircularProgress,
-    Stack, TextField, Typography, colors, Autocomplete, Dialog, DialogTitle, DialogContent, Chip, DialogActions } from "@mui/material"
+    Stack, TextField, Typography, colors, Autocomplete, Dialog, DialogTitle, DialogContent, Chip, DialogActions, CardActionArea, Divider } from "@mui/material"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
@@ -44,6 +44,7 @@ const AddMusicCollectionsCard = () => {
     const [musicCollectionItemTitle, setMusicCollectionItemTitle] = useState('')
     const [albumStreamingOption, setAlbumStreamingOption] = useState(null)
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+    const [addedCollectionItems, setAddedCollectionItems] = useState([])
 
 
     const handleCloseMuiSnackbar = (event, reason) => {
@@ -95,6 +96,7 @@ const AddMusicCollectionsCard = () => {
 
     const { mutate: addNewMusicCollectionItem, isLoading: addAlbumTrackLoading } = useMutation(addMusicCollectionItem, {
         onSuccess: (data, _variables, _context) => {
+            setAddedCollectionItems(prevCollItems => [...prevCollItems, data])
             setOpenMusicCollectionDialog(true)
             setMusicCollectionItemVideoID(null)
             setFeaturedArtistList("")
@@ -115,8 +117,8 @@ const AddMusicCollectionsCard = () => {
         },
         validationSchema: Yup.object({
             title: Yup.string().required("Required"),
-            link: Yup.string().required("Required"),
-            link_title: Yup.string().required("Required"),
+            link: Yup.string(),
+            link_title: Yup.string(),
             cover:  Yup
             .mixed()
             .test(
@@ -218,11 +220,30 @@ const AddMusicCollectionsCard = () => {
             <Box>
                 <Card variant="outlined">
                     <CardContent sx={ !showMusicCollectionForm ? { display: 'block' } : { display: 'none' }}>
-                        <Stack spacing={2}>
-                            <Typography sx={{color: colors.grey[300]}} gutterBottom variant="h6">{musicCollectionTitle}</Typography>
-                            <Box>
-                                <Button fullWidth onClick={() => setOpenMusicCollectionDialog(true)} size="small" variant="contained">Add a Track</Button>
-                            </Box>
+                        <Stack>
+                            <Stack spacing={2}>
+                                <Typography sx={{color: colors.grey[300]}} gutterBottom variant="h6">{musicCollectionTitle}</Typography>
+                                <Box>
+                                    <Button fullWidth onClick={() => setOpenMusicCollectionDialog(true)} size="small" variant="contained">Add a Track</Button>
+                                </Box>
+                            </Stack>
+                            {addedCollectionItems?.map((albumTrack, i) => (
+                              <Box key={i}>
+                                  <Card variant='outlined' square sx={{marginTop: 1}}>
+                                    <CardActionArea>
+                                        <CardContent>
+                                            <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                                                <Stack sx={{width: '100%'}}>
+                                                <Typography className="line-clamp-1 line-clamp" variant='subtitle2'>{albumTrack?.title}</Typography>
+                                                <Divider/>
+                                                <Typography className="line-clamp-1 line-clamp" variant='caption'>{albumTrack?.featuring ? `ft. ${albumTrack?.featuring}` : "Solo Project"}</Typography>
+                                                </Stack>
+                                            </Box>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                              </Box>
+                          ))}
                         </Stack>
                     </CardContent>
                     <CardContent sx={ showMusicCollectionForm ? { display: 'block' } : { display: 'none' }}>
@@ -274,7 +295,6 @@ const AddMusicCollectionsCard = () => {
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
-                                                    required
                                                     name="link_title" 
                                                     label="Streaming Platform"
                                                     helperText={formik.errors.link_title && formik.touched.link_title ? formik.errors.link_title : null} 
@@ -285,7 +305,6 @@ const AddMusicCollectionsCard = () => {
                                             </Grid>
                                             <Grid xs={12}  item>
                                                 <MyTextField
-                                                    required
                                                     name="link" 
                                                     label="Link"
                                                     helperText={formik.errors.link && formik.touched.link ? formik.errors.link : null} 

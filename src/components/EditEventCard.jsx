@@ -340,7 +340,6 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
-                                                    required
                                                     name="local_price" 
                                                     label="Price"
                                                     helperText={formik.errors.local_price && formik.touched.local_price ? formik.errors.local_price : null} 
@@ -362,7 +361,6 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
-                                                    required
                                                     name="ticket_platform" 
                                                     label="Ticketing Platform"
                                                     helperText={formik.errors.ticket_platform && formik.touched.ticket_platform ? formik.errors.ticket_platform : null} 

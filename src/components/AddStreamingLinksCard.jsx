@@ -3,8 +3,11 @@
 // React Imports
 import { useState, forwardRef } from "react"
 
+// NextJS Imports
+import Image from "next/legacy/image";
+
 // MUI Imports
-import { Box, Button, Card, CardContent, Grid, CircularProgress,
+import { Box, Button, Card, CardContent, Grid, CircularProgress, CardActionArea,
     Stack, TextField, Typography, colors, Autocomplete, Dialog, DialogTitle, DialogContent, Chip, DialogActions } from "@mui/material"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -37,6 +40,7 @@ const AddStreamingLinksCard = () => {
     const [streamingLinksID, setStreamingLinksID] = useState(null)
     const [streamingServiceLink, setStreamingServiceLink] = useState('')
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+    const [addedStreamingLinks, setAddedStreamingLinks] = useState([])
 
 
     const handleCloseMuiSnackbar = (event, reason) => {
@@ -84,6 +88,7 @@ const AddStreamingLinksCard = () => {
 
     const { mutate: addNewStreamingLinkItem, isLoading: addingLinkLoading } = useMutation(addStreamingLinkItem, {
         onSuccess: (data, _variables, _context) => {
+            setAddedStreamingLinks(prevLinks => [...prevLinks, data])
             setOpenStreamingLinkItemDialog(true)
             setStreamingService(null)
             setStreamingServiceLink("")
@@ -162,10 +167,43 @@ const AddStreamingLinksCard = () => {
                 <Card variant="outlined">
                     <CardContent sx={ !showStreamingLinksForm ? { display: 'block' } : { display: 'none' }}>
                         <Stack spacing={2}>
-                            <Typography sx={{color: colors.grey[300]}} gutterBottom variant="h6">{streamingLinksTitle}</Typography>
-                            <Box>
-                                <Button fullWidth onClick={() => setOpenStreamingLinkItemDialog(true)} size="small" variant="contained">Add Link</Button>
-                            </Box>
+                            <Stack spacing={2}>
+                                <Typography sx={{color: colors.grey[300]}} gutterBottom variant="h6">{streamingLinksTitle}</Typography>
+                                <Box>
+                                    <Button fullWidth onClick={() => setOpenStreamingLinkItemDialog(true)} size="small" variant="contained">Add Link</Button>
+                                </Box>
+                            </Stack>
+                            {addedStreamingLinks?.map((streamingLink, i) => (
+                                <Box key={i} >
+                                    <Card variant="outlined" sx={{width: '100%', marginTop: 1, cursor: 'pointer'}}>
+                                        <CardActionArea>
+                                            <Box sx={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'start'}}>
+                                            <Box 
+                                                sx={{ backgroundColor: colors.grey[200], width: 260,  position: "relative", cursor:'pointer'}}
+                                                >
+                                                <Image 
+                                                    src={streamingLink?.logo}
+                                                    layout='responsive'
+                                                    alt={streamingLink?.streaming_service.replace('_', ' ')}
+                                                    width={260}
+                                                    height={170}
+                                                    />
+                                            </Box>
+                                            <CardContent sx={{width: '100%'}}>
+                                                <Box sx={{display: 'flex', alignItems: 'center', justifyContent: "space-between"}}>
+                                                <Box>
+                                                    <Stack>
+                                                    <Typography className="line-clamp-1 line-clamp" variant="subtitle2">{streamingLink?.streaming_service.replace('_', ' ')}</Typography>
+                                                    <Typography sx={{width: {xs:140, sm:200, md:70, lg:110}, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}} variant="caption">{streamingLink?.link ? streamingLink?.link : 'no link found'}</Typography>
+                                                    </Stack>
+                                                </Box>
+                                                </Box>
+                                            </CardContent>
+                                            </Box>
+                                        </CardActionArea>
+                                    </Card>
+                                </Box>
+                            ))}
                         </Stack>
                     </CardContent>
                     <CardContent sx={ showStreamingLinksForm ? { display: 'block' } : { display: 'none' }}>
