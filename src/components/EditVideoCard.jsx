@@ -122,7 +122,7 @@ const EditVideoCard = ({ editVideoObject, setOpenEditVideoDialogue }) => {
                 youtube_id: formik.values.youtube_id,
                 youtube_embed_link: `https://youtube.com/embed/${formik.values.youtube_id}`,
                 description: formik.values.description,
-                slug: slugify(formik.values.title, {lower: true}),
+                slug: slugify(formik.values.song_title, {lower: true}),
                 thumbnail: formik.values.thumbnail,
                 links: streamingLink?.id,
                 product: videoProduct?.id,
@@ -131,6 +131,7 @@ const EditVideoCard = ({ editVideoObject, setOpenEditVideoDialogue }) => {
                 skiza: videoSkizaTunes?.id,
                 genre: videoGenre?.id,
                 customuserprofile: editVideoObject?.customuserprofile,
+                video_username: currentUser?.username
             })
         }
     })

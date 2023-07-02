@@ -120,6 +120,7 @@ const VideoPageContent = () => {
       const columns = useMemo(
         () => [
             { field: 'id', headerName: 'ID', sortable: false, filterable: false },
+            { field: 'video_username', headerName: 'Username', sortable: false, filterable: false },
             {
                 field: 'thumbnail',
                 headerName: 'Thumbnail',
@@ -333,6 +334,7 @@ const VideoPageContent = () => {
                             album: false,
                             skiza: false,
                             genre: false,
+                            video_username: false,
                         }}
 
                         initialState={{

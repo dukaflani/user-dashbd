@@ -128,7 +128,7 @@ const AddVideoCard = ({ setOpenAddVideoDialogue }) => {
                 youtube_id: formik.values?.youtube_id,
                 youtube_embed_link: `https://www.youtube.com/embed/${formik.values?.youtube_id}`,
                 description: formik.values.description,
-                slug: slugify(formik.values?.title, {lower: true}),
+                slug: slugify(formik.values?.song_title, {lower: true}),
                 thumbnail: formik.values?.thumbnail,
                 links: streamingLink === null ? 1 : streamingLink?.id,
                 product: videoProduct === null ? 1 : videoProduct?.id,
@@ -137,6 +137,7 @@ const AddVideoCard = ({ setOpenAddVideoDialogue }) => {
                 skiza: videoSkizaTunes === null ? 1 : videoSkizaTunes?.id,
                 genre: videoGenre === null ? 1 : videoGenre?.id,
                 customuserprofile: user_profile?.id,
+                video_username: currentUser?.username
             })
         }
     })
