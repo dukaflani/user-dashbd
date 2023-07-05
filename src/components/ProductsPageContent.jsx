@@ -143,6 +143,15 @@ const ProductsPageContent = () => {
             editable: false
         },
         {
+            field: 'views_count',
+            headerName: 'Views Count',
+            width: 50,
+            sortable: true,
+            type: 'number',
+              renderCell: (params) => params.row.views_count < 1000 || params.row.views_count % 10 === 0 ? numeral(params.row.views_count).format('0a') : numeral(params.row.views_count).format('0.0a'),
+            editable: false
+        },
+        {
             field: 'status_description',
             headerName: 'Status',
         //   width: 100,
