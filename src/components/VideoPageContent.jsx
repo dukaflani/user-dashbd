@@ -146,7 +146,7 @@ const VideoPageContent = () => {
             {
               field: 'views_count',
               headerName: 'Views',
-              width:50,
+              width:80,
               sortable: true,
               type: 'number',
               renderCell: (params) => params.row.views_count < 1000 || params.row.views_count % 10 === 0 ? numeral(params.row.views_count).format('0a') : numeral(params.row.views_count).format('0.0a'),
