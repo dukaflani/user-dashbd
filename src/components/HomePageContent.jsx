@@ -2,11 +2,14 @@
 import Image from 'next/image';
 
 // MUI Imports
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Grid, Stack, Typography } from "@mui/material"
+import { Box,  Card,  CardContent,  Grid, Stack, Typography } from "@mui/material"
 
 // NPM Imports
 import { useSelector } from 'react-redux';
 import numeral from "numeral";
+
+// Project Imports
+import AccountAnalytics from './AccountAnalytics';
 
 
 
@@ -15,7 +18,7 @@ const HomePageContent = () => {
 
 
   return (
-    <Box>
+    <Box sx={{overflowY: 'hidden'}}>
         <Stack rowGap={1}>
             <Typography variant='h6'>My Uploads:</Typography>
             <Grid container spacing={3}>
@@ -66,14 +69,9 @@ const HomePageContent = () => {
                         <Grid container>
                             <Grid item xs={12}>
                                 <Stack>
-                                    <Typography gutterBottom variant="h6">How to use Dukaflani:</Typography>
-                                    <Box sx={{ width:"100%", paddingTop:"56.25%", position: "relative" }}>
-                                        <Image
-                                            src="/media/coming-soon.png"
-                                            fill={true}
-                                            style={{objectFit: "contain"}}
-                                            alt="How to videos"
-                                        />
+                                    <Typography gutterBottom variant="h6">Analytics:</Typography>
+                                    <Box sx={{ width:"100%"}}>
+                                        <AccountAnalytics />
                                     </Box>
                                 </Stack>
                             </Grid>
