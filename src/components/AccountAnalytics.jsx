@@ -132,68 +132,6 @@ const AccountAnalytics = () => {
         },
       ];
 
-    const streamingLinksViews = [
-        {
-          name: 'YouTube',
-          views: profileAnalytics?.youtube_views_count,
-        },
-        {
-          name: 'Spotify',
-          views: profileAnalytics?.spotify_views_count,
-        },
-        {
-          name: 'Boomplay',
-          views: profileAnalytics?.boomplay_views_count,
-        },
-        {
-          name: 'Audiomack',
-          views: profileAnalytics?.audiomack_views_count,
-        },
-        {
-          name: 'Amazon Music',
-          views: profileAnalytics?.amazon_views_count,
-        },
-        {
-          name: 'iTunes',
-          views: profileAnalytics?.itunes_views_count,
-        },
-        {
-          name: 'Apple Music',
-          views: profileAnalytics?.apple_music_views_count,
-        },
-        {
-          name: 'Deezer',
-          views: profileAnalytics?.deezer_views_count,
-        },
-        {
-          name: 'Google Play',
-          views: profileAnalytics?.google_play_views_count,
-        },
-        {
-          name: 'Tik Tok',
-          views: profileAnalytics?.tiktok_views_count,
-        },
-        {
-          name: 'YouTube Music',
-          views: profileAnalytics?.youtube_music_views_count,
-        },
-        {
-          name: 'Pandora',
-          views: profileAnalytics?.pandora_views_count,
-        },
-        {
-          name: 'Qobuz',
-          views: profileAnalytics?.qobuz_views_count,
-        },
-        {
-          name: 'Napster',
-          views: profileAnalytics?.napster_views_count,
-        },
-        {
-          name: 'Tidal',
-          views: profileAnalytics?.tidal_views_count,
-        },
-      ];
 
     const viewsByCountryArray = viewsByCountry?.map((option, index) => ({
       name: `${countriesChoices?.filter((country) => country.code === option?.country)[0]?.label}`,
