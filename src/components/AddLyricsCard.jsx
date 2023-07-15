@@ -87,7 +87,7 @@ const AddLyricsCard = () => {
             setLyricsID(data.id)
         },
         onError: (error, _variables, _context) => {
-            console.log("lyrics added error:", error?.response?.data?.detail)
+            // console.log("lyrics added error:", error?.response?.data?.detail)
         }
     })
 
@@ -100,7 +100,7 @@ const AddLyricsCard = () => {
             setVerseVocalist("")
         },
         onError: (error, _variables, _context) => {
-            console.log("lyrics verse added error:", error?.response?.data?.detail)
+            // console.log("lyrics verse added error:", error?.response?.data?.detail)
         }
     })
 

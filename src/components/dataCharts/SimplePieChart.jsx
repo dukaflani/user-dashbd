@@ -8,13 +8,7 @@ import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
 import { Box } from '@mui/material'
 
 
-const data = [
-    { name: 'Facebook', value: 400 },
-    { name: 'Twitter', value: 300 },
-    { name: 'Google', value: 300 },
-    { name: 'Instagram', value: 200 },
-    { name: 'Others', value: 150 },
-  ];
+
 
 const renderActiveShape = (props) => {
 const RADIAN = Math.PI / 180;
@@ -64,7 +58,9 @@ return (
 
 
 
-const SimplePieChart = () => {
+const SimplePieChart = ({ data }) => {
+
+
     const [activeIndex, setActiveIndex] = useState(0)
 
     const onPieEnter = (_, index) => {
@@ -81,8 +77,8 @@ const SimplePieChart = () => {
                 data={data}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={80}
+                innerRadius={70}
+                outerRadius={90}
                 fill="#8884d8"
                 dataKey="value"
                 onMouseEnter={onPieEnter}

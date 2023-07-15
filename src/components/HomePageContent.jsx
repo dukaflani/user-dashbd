@@ -69,7 +69,8 @@ const HomePageContent = () => {
                         <Grid container>
                             <Grid item xs={12}>
                                 <Stack>
-                                    <Typography gutterBottom variant="h6">Analytics:</Typography>
+                                    <Typography variant="h6">Analytics:</Typography>
+                                    <Typography gutterBottom variant="subtitle2">(C.T.R) click-through rate is the ratio of clicks to the number of lifetime page views</Typography>
                                     <Box sx={{ width:"100%"}}>
                                         <AccountAnalytics />
                                     </Box>

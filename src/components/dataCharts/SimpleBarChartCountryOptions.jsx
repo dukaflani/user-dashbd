@@ -4,13 +4,13 @@ import { Box } from '@mui/material'
 // NPM Imports
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const SimpleBarChart = ({ data, others }) => {
+const SimpleBarChart = ({ data }) => {
 
   return (
     <Box sx={{width: '100%', height: 400}}>
         <ResponsiveContainer>
         <BarChart
-          data={others > 0 ? [...data, {name: "Others", views: others}] : data}
+          data={data}
           margin={{
             top: 5,
             right: 30,

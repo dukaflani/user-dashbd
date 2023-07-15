@@ -79,7 +79,7 @@ const MobileSKizaTunesPageContent = () => {
             setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
-            console.log("SkizaTunes deleted error:", error?.response?.data?.detail)
+            // console.log("SkizaTunes deleted error:", error?.response?.data?.detail)
         }
     })
 

@@ -80,7 +80,7 @@ const StreamingLinksPageContent = () => {
         setOpenMuiSnackbar(true)
       },
       onError: (error, _variables, _context) => {
-          console.log("StreamingLinks deleted error:", error?.response?.data?.detail)
+        //   console.log("StreamingLinks deleted error:", error?.response?.data?.detail)
       }
   })
 

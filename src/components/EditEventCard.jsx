@@ -38,8 +38,6 @@ const EditEventCard = ({ editEventObject, setOpenEditEventDialogue }) => {
     const [eventTime, setEventTime] = useState(null)
     // const [eventDate, setEventDate] = useState(editEventObject?.raw_date)  
     // const [eventTime, setEventTime] = useState(editEventObject?.raw_time)
-    console.log("raw date:", editEventObject?.raw_date)
-    console.log("raw time:", editEventObject?.raw_time)
 
     const [ticketInfo, setTicketInfo] = useState({ 
         id:editEventObject?.event_ticket_info_id, 

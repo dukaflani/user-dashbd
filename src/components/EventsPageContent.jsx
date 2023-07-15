@@ -100,7 +100,7 @@ const EventsPageContent = () => {
             setOpenMuiSnackbar(true)
       },
       onError: (error, _variables, _context) => {
-          console.log("event deleted error:", error?.response?.data?.detail)
+        //   console.log("event deleted error:", error?.response?.data?.detail)
       }
   })
 

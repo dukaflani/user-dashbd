@@ -44,8 +44,6 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const [eventTime, setEventTime] = useState(null)
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
 
-    console.log("Date:", eventDate)
-    console.log("Time:", eventTime)
 
 
     const handleCloseMuiSnackbar = (event, reason) => {

@@ -98,7 +98,7 @@ const MobileVideoPageContent = () => {
           setOpenMuiSnackbar(true)
       },
       onError: (error, _variables, _context) => {
-          console.log("video deleted error:", error?.response?.data?.detail)
+          // console.log("video deleted error:", error?.response?.data?.detail)
       }
   })
 

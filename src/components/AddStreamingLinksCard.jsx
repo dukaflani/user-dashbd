@@ -82,7 +82,7 @@ const AddStreamingLinksCard = () => {
             setStreamingLinksID(data.id)
         },
         onError: (error, _variables, _context) => {
-            console.log("streaming links added error:", error?.response?.data?.detail)
+            // console.log("streaming links added error:", error?.response?.data?.detail)
         }
     })
 
@@ -94,7 +94,7 @@ const AddStreamingLinksCard = () => {
             setStreamingServiceLink("")
         },
         onError: (error, _variables, _context) => {
-            console.log("streaming links item added error:", error?.response?.data?.detail)
+            // console.log("streaming links item added error:", error?.response?.data?.detail)
         }
     })
 

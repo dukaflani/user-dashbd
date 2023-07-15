@@ -82,7 +82,7 @@ const AddSkizaTunesCard = () => {
             setSkizaTuneID(data.id)
         },
         onError: (error, _variables, _context) => {
-            console.log("skiza tune added error:", error?.response?.data?.detail)
+            // console.log("skiza tune added error:", error?.response?.data?.detail)
         }
     })
 
@@ -97,7 +97,7 @@ const AddSkizaTunesCard = () => {
             setSkizaTuneUSSD('')
         },
         onError: (error, _variables, _context) => {
-            console.log("skiza tune item added error:", error?.response)
+            // console.log("skiza tune item added error:", error?.response)
         }
     })
 

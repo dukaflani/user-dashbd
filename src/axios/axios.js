@@ -486,3 +486,31 @@ export const getGenres = async ( ) => {
     const response = await api.get(`/store/genre/`)
     return response.data
 }
+
+
+export const getProfileAnalytics = async ( profileID ) => {
+    const year = new Date().getFullYear()
+    const profile_id = profileID?.queryKey[1]
+    const response = await api.get(`/store/user-profile-analytics/${profile_id}/?jan=${year}-01&feb=${year}-02&mar=${year}-03&apr=${year}-04&may=${year}-05&jun=${year}-06&jul=${year}-07&aug=${year}-08&sep=${year}-09&oct=${year}-10&nov=${year}-11&dec=${year}-12`)
+    return response.data
+}
+
+
+export const getViewsByCountry = async ( profileID ) => {
+    const profile_id = profileID?.queryKey[1]
+    const response = await api.get(`/store/views-by-country/?pid=${profile_id}`)
+    return response.data
+}
+
+
+export const getViewsByReferrer = async ( profileID ) => {
+    const profile_id = profileID?.queryKey[1]
+    const response = await api.get(`/store/views-by-referrer/?pid=${profile_id}`)
+    return response.data
+}
+
+export const getStreamingViewsByPlatform = async ( profileID ) => {
+    const profile_id = profileID?.queryKey[1]
+    const response = await api.get(`/store/streaming-views-by-platform/?pid=${profile_id}`)
+    return response.data
+}

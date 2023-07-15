@@ -99,7 +99,7 @@ const MobileProductsPageContent = () => {
         setOpenMuiSnackbar(true)
       },
       onError: (error, _variables, _context) => {
-          console.log("product deleted error:", error?.response?.data?.detail)
+        //   console.log("product deleted error:", error?.response?.data?.detail)
       }
   })
 

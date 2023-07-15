@@ -90,7 +90,7 @@ const AddMusicCollectionsCard = () => {
             setAlbumID(data.id)
         },
         onError: (error, _variables, _context) => {
-            console.log("music collection added error:", error?.response?.data?.detail)
+            // console.log("music collection added error:", error?.response?.data?.detail)
         }
     })
 
@@ -103,7 +103,7 @@ const AddMusicCollectionsCard = () => {
             setMusicCollectionItemTitle("")
         },
         onError: (error, _variables, _context) => {
-            console.log("music collection item added error:", error?.response?.data?.detail)
+            // console.log("music collection item added error:", error?.response?.data?.detail)
         }
     })
 

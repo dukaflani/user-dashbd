@@ -84,7 +84,7 @@ const MusicCollectionPageContent = () => {
         setOpenMuiSnackbar(true)
       },
       onError: (error, _variables, _context) => {
-          console.log("MusicCollection deleted error:", error?.response?.data?.detail)
+        //   console.log("MusicCollection deleted error:", error?.response?.data?.detail)
       }
   })
 

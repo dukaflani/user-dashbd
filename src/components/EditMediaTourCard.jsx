@@ -82,7 +82,7 @@ const EditMediaTourCard = ({ editMediaTourObject, setOpenEditMediaTourDialogue }
             setOpenMuiSnackbar(true)
         },
         onError: (error, _variables, _context) => {
-            console.log("media tour edited error:", error?.response?.data?.detail)
+            // console.log("media tour edited error:", error?.response?.data?.detail)
         }
     })
 
@@ -147,31 +147,6 @@ const EditMediaTourCard = ({ editMediaTourObject, setOpenEditMediaTourDialogue }
         }
     })  
 
-    console.log("edit media tour:", {
-        accessToken,
-        id: editMediaTourObject?.id,
-        title: formik.values?.title,
-        country: formik.values?.country,
-        station_name: formik.values?.station_name,
-        show_host: formik.values?.show_host,
-        show_title: formik.values?.show_title,
-        poster: formik.values?.poster,
-
-        date: format(new Date(mediaTourDate), "yyyy-MM-dd"),
-        raw_date: mediaTourDate ? mediaTourDate : editMediaTourObject?.raw_date,
-        from_time: formatISO9075(new Date(mediaTourStartTime), { representation: 'time' }),
-        raw_from_time: mediaTourStartTime ? mediaTourStartTime : editMediaTourObject?.raw_from_time,
-        to_time: formatISO9075(new Date(mediaTourEndTime), { representation: 'time' }),
-        raw_to_time: mediaTourEndTime ? mediaTourEndTime : editMediaTourObject?.raw_to_time,
-
-        station_type: mediumType?.value,
-        station_type_id: mediumType?.id, 
-        station_type_title: mediumType?.label,
-        
-        url_id: nanoID,
-        slug: slugify(formik.values?.title, {lower: true}),
-        // customuserprofile: editMediaTourObject?.customuserprofile
-    })
 
 
     const mediumArray = [
