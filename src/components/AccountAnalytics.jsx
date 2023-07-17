@@ -12,10 +12,10 @@ import numeral from 'numeral'
 // Project Imports
 import { countriesChoices } from "@/data/countries"
 import SimpleAreaChart from "./dataCharts/SimpleAreaChart";
-import SimpleBarChart from "./dataCharts/SimpleBarChart";
-import SimplePieChart from "./dataCharts/SimplePieChart";
-import SimpleBarChartCountryOptions from "./dataCharts/SimpleBarChartCountryOptions"
 import { getProfileAnalytics, getViewsByCountry, getViewsByReferrer, getStreamingViewsByPlatform } from "@/axios/axios";
+import StreamingPlatformAnalyticsCard from "./StreamingPlatformAnalyticsCard";
+import CountriesAnalyticsCard from "./CountriesAnalyticsCard";
+import ReferrerAnalyticsCard from "./ReferrerAnalyticsCard";
 
 const AccountAnalytics = () => {
     const userProfile = useSelector((state) => state.auth.profileInfo) 
@@ -27,6 +27,7 @@ const AccountAnalytics = () => {
 
 
 
+    
     const profileID = userProfile?.id 
     const { data: profileAnalytics, isLoading: loadingProfileAnalytics } = useQuery(["user-profile-analytics", profileID], (profileID) => getProfileAnalytics(profileID), {
     onSuccess: (data, _variables, _context) => {
@@ -134,23 +135,31 @@ const AccountAnalytics = () => {
 
 
     const viewsByCountryArray = viewsByCountry?.map((option, index) => ({
-      name: `${countriesChoices?.filter((country) => country.code === option?.country)[0]?.label}`,
+      name: option?.country,
       views: Number(option?.views_per_country)
     }))
+
+    // Sort by number of views descending
+    const viewsByCountryArrayDesc = viewsByCountryArray?.sort((a, b) => parseFloat(b.views) - parseFloat(a.views));
 
     let totalViewsFromTopCountries = viewsByCountryArray?.reduce((acc,cur) => acc + cur.views, 0);
     const otherCountriesViewCount = profileAnalytics?.page_views_count - totalViewsFromTopCountries
 
-    const viewsByCountryArray2 = viewsByCountryArray?.filter(
-      (obj, index) =>
-      viewsByCountryArray?.findIndex((item) => item.name === obj.name) === index
-    );
+    // Remove duplicates
+    // const viewsByCountryArray2 = viewsByCountryArray?.filter(
+    //   (obj, index) =>
+    //   viewsByCountryArray?.findIndex((item) => item.name === obj.name) === index
+    // );
 
 
     const viewsByReferrerArray = viewsByReferrer?.map((option, index) => ({
-    name: option?.referral_url?.slice(8, 30),
-    value: Number(option?.views_per_referrer) 
+    name: option?.referral_url,
+    views: Number(option?.views_per_referrer) 
     }))
+
+
+    // Sort by number of views descending
+    const viewsByReferrerArrayDesc = viewsByReferrerArray?.sort((a, b) => parseFloat(b.views) - parseFloat(a.views));
 
 
     const streamingViewsByPlatformArray = streamingViewsByPlatform?.map((option, index) => ({
@@ -158,13 +167,17 @@ const AccountAnalytics = () => {
       views: Number(option?.views_per_platform)
     }))
 
+    // Sort by number of views descending
+    const streamingViewsByPlatformArrayDesc = streamingViewsByPlatformArray?.sort((a, b) => parseFloat(b.views) - parseFloat(a.views));
+
     let totalViewsFromTopPlatforms = streamingViewsByPlatformArray?.reduce((acc,cur) => acc + cur.views, 0);
     const otherPlatformsViewCount = profileAnalytics?.streaming_platforms_clicks_count - totalViewsFromTopPlatforms
 
-    const streamingViewsByPlatformArray2 = streamingViewsByPlatformArray?.filter(
-      (obj, index) =>
-      streamingViewsByPlatformArray?.findIndex((item) => item.name === obj.name) === index
-    );
+    // Remove duplicates
+    // const streamingViewsByPlatformArray2 = streamingViewsByPlatformArray?.filter(
+    //   (obj, index) =>
+    //   streamingViewsByPlatformArray?.findIndex((item) => item.name === obj.name) === index
+    // );
 
 
     const totalPageViews = profileAnalytics?.page_views_count + profileAnalytics?.product_views_count + profileAnalytics?.event_views_count;
@@ -228,15 +241,19 @@ const AccountAnalytics = () => {
                         <Tab  iconPosition='start' label="Referrers" />
                     </Tabs>
                 </Box>
-                {loadingProfileAnalytics ? (<Typography variant="subtitle2">Loading analytics. Please wait...</Typography>)
+                {loadingProfileAnalytics ? (
+                  <Box sx={{paddingY: 2}}>
+                    <Typography variant="subtitle2">Loading analytics. Please wait...</Typography>
+                  </Box>
+                  )
                  : 
                  (<Box sx={{paddingY: 2}}>
                   {
                     {
-                      0: profileAnalytics?.page_views_count == 0 && profileAnalytics?.product_views_count == 0 && profileAnalytics?.event_views_count == 0 ? <Typography variant="subtitle2">You don&apos;t have any views yet</Typography> : <Typography variant="subtitle2">Hover over the graph to get the number of views per month</Typography>,
-                      1: profileAnalytics?.streaming_platforms_clicks_count == 0 && profileAnalytics?.default_streaming_platforms_clicks_count == 0 ? <Typography variant="subtitle2">You don&apos;t have any streaming views yet</Typography> : <Typography variant="subtitle2">Hover over the bars to get the number of views per platform</Typography>,
-                      2: profileAnalytics?.page_views_count == 0 ? <Typography variant="subtitle2">You don&apos;t have any views yet</Typography> : <Typography variant="subtitle2">Hover over the bars to get the number of views per country</Typography>,
-                      3: viewsByReferrer?.length == 0 ? <Typography variant="subtitle2">You don&apos;t have any views yet</Typography> : <Typography variant="subtitle2">Hover over the chart to see where your traffic is coming from</Typography>,
+                      0: profileAnalytics?.page_views_count == 0 && profileAnalytics?.product_views_count == 0 && profileAnalytics?.event_views_count == 0 ? <Typography variant="subtitle2">You don&apos;t have any views yet</Typography> : <Typography variant="subtitle2">Hover over the graph to get the number of lifetime page views per month</Typography>,
+                      1: profileAnalytics?.streaming_platforms_clicks_count == 0 && profileAnalytics?.default_streaming_platforms_clicks_count == 0 ? <Typography variant="subtitle2">There&apos;s not enough platform data to show analytics</Typography> : <Typography variant="subtitle2">Number of clicks per platform</Typography>,
+                      2: profileAnalytics?.page_views_count == 0 ? <Typography variant="subtitle2">There&apos;s not enough country data to show analytics</Typography> : <Typography variant="subtitle2">Number of views per country</Typography>,
+                      3: viewsByReferrer?.length == 0 ? <Typography variant="subtitle2">There&apos;s not enough data to show analytics</Typography> : <Typography variant="subtitle2">See where your traffic is coming from</Typography>,
                     }[tabPosition]
                   }
                 </Box>)}
@@ -244,12 +261,15 @@ const AccountAnalytics = () => {
                     {
                         {
                             0: <SimpleAreaChart data={pageProductsEventsViews} />,
-                            1: <SimpleBarChart data={streamingViewsByPlatformArray2} others={otherPlatformsViewCount} />,
-                            2: <SimpleBarChart data={viewsByCountryArray2} others={otherCountriesViewCount} />,
-                            3: <SimplePieChart data={viewsByReferrerArray} />,
+                            1: <StreamingPlatformAnalyticsCard  data={streamingViewsByPlatformArrayDesc}  />,
+                            2: <CountriesAnalyticsCard data={viewsByCountryArrayDesc} />,
+                            3: <ReferrerAnalyticsCard data={viewsByReferrerArrayDesc} />,
                         }[tabPosition]
                     }
                 </Box>
+                {/* <SimpleBarChart data={streamingViewsByPlatformArray2} others={otherPlatformsViewCount} /> */}
+                {/* <SimpleBarChart data={viewsByCountryArray2} others={otherCountriesViewCount} /> */}
+                {/* <SimplePieChart data={viewsByReferrerArray} /> */}
             </Stack>
         </Box>
     )
