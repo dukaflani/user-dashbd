@@ -1,6 +1,5 @@
 // NextJs Imports
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation'
 
 // MUI Imports
 import { Box,  Card,  CardContent,  Grid, Stack, Typography } from "@mui/material"
@@ -16,10 +15,6 @@ import AccountAnalytics from './AccountAnalytics';
 
 const HomePageContent = () => {
     const userProfile = useSelector((state) => state.auth.profileInfo) 
-    const searchParams = useSearchParams()
-    const hostURL = searchParams.get('host')
-
-    console.log("host search params:", hostURL)
 
 
   return (
