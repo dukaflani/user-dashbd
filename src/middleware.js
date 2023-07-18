@@ -28,6 +28,9 @@ export function middleware(NextRequest) {
   // let darkModeCookie = NextRequest.cookies.get('LightMode')?.value;
   // let countryCode = NextRequest.geo.country
 
+  // Getting host from headers
+  let hostURL = NextRequest.headers.get("host")
+
 
   const originalPathName = NextRequest.nextUrl.pathname
   
@@ -36,7 +39,7 @@ export function middleware(NextRequest) {
   // const viewport = 'mobile'
   
   //Update the expected url
-  // NextRequest.nextUrl.searchParams.set('LightMode', darkModeCookie)
+  NextRequest.nextUrl.searchParams.set('host', hostURL)
   NextRequest.nextUrl.pathname = `/${viewport}${originalPathName}`
 
   // Return rewritten response
