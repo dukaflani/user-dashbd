@@ -345,7 +345,7 @@ export default function MainNavbar({ children }) {
               }
               <DesktopHeaderLogo  darkMode={darkMode} setDarkMode={setDarkMode}  />
               <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                {darkMode === "dark" ? (<Tooltip title="Light Mode"><IconButton
+                {/* {darkMode === "dark" ? (<Tooltip title="Light Mode"><IconButton
                   // color="inherit"
                   aria-label="toggle dark mode"
                   edge="start"
@@ -359,7 +359,7 @@ export default function MainNavbar({ children }) {
                   onClick={handleSetDarkMode}
                 >
                   <Brightness4Sharp/>
-                </IconButton></Tooltip>)}
+                </IconButton></Tooltip>)} */}
                 <Tooltip title="More Options">
                   <IconButton
                     id="basic-button"

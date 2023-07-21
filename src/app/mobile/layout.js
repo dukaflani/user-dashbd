@@ -331,7 +331,7 @@ function MobileNavbar(props) {
               <MobileHeaderLogo  darkMode={darkMode} setDarkMode={setDarkMode}  />
             </Box>
             <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-              {darkMode === "dark" ? (<IconButton
+              {/* {darkMode === "dark" ? (<IconButton
                 // color="inherit"
                 aria-label="toggle dark mode"
                 edge="start"
@@ -345,7 +345,7 @@ function MobileNavbar(props) {
                 onClick={handleSetDarkMode}
               >
                 <Brightness4Sharp/>
-              </IconButton>)}
+              </IconButton>)} */}
               <Tooltip title="More Options">
                   <IconButton
                     id="basic-button"
