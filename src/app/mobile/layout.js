@@ -150,7 +150,8 @@ function MobileNavbar(props) {
    
    const darkTheme = useMemo(() => createTheme({
      palette: {
-       mode: darkMode === "dark" || prefersDarkMode === true ? "dark" : darkMode === "light" && prefersDarkMode === true ? "light" : "light"
+      //  mode: darkMode === "dark" || prefersDarkMode === true ? "dark" : darkMode === "light" && prefersDarkMode === true ? "light" : "light"
+      mode: "dark"
      }
    }), [darkMode, prefersDarkMode])
 

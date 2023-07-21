@@ -205,7 +205,8 @@ export default function MainNavbar({ children }) {
   
   const darkTheme = useMemo(() => createTheme({
     palette: {
-      mode: darkMode === "dark" || prefersDarkMode === true ? "dark" : darkMode === "light" && prefersDarkMode === true ? "light" : "light"
+      // mode: darkMode === "dark" || prefersDarkMode === true ? "dark" : darkMode === "light" && prefersDarkMode === true ? "light" : "light"
+      mode: "dark"
     }
   }), [darkMode, prefersDarkMode])
   
