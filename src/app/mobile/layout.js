@@ -115,7 +115,7 @@ function MobileNavbar(props) {
 
 
    // Dark Mode
-   const [darkMode, setDarkMode] = useState("")
+   const [darkMode, setDarkMode] = useState("dark")
    const [cookie, setCookie] = useCookies(["Mode"])
    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
    
