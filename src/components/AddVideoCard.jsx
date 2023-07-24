@@ -5,7 +5,7 @@ import { useState, useEffect, forwardRef } from "react"
 
 // MUI Imports
 import { Autocomplete, Box, Button, Card, CardContent, Grid, CircularProgress, DialogActions,
-    Stack, TextField, Typography, colors, Chip, Dialog, DialogTitle } from "@mui/material"
+    Stack, TextField, Typography, colors, Chip, Dialog, DialogTitle, DialogContent } from "@mui/material"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
@@ -22,6 +22,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 // Icons
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
@@ -51,14 +52,14 @@ const AddVideoCard = ({ setOpenAddVideoDialogue }) => {
     const [showShortLinkInfoDialog, setShowShortLinkInfoDialog] = useState(false)
     const [addedVideoObject, setAddedVideoObject] = useState(null)
     const [urlCopied, setUrlCopied] = useState(false)
-    const [copyButtonText, setCopyButtonText] = useState("copy")
+    const [copyButtonText, setCopyButtonText] = useState("Copy Link")
 
 
     useEffect(() => {
       if (urlCopied) {
-          setCopyButtonText("Copied!")
+          setCopyButtonText("Link Copied!")
           setTimeout(() => {
-              setCopyButtonText("Copy")
+              setCopyButtonText("Copy Link")
               setUrlCopied(false)
           }, 2000);    
       }
