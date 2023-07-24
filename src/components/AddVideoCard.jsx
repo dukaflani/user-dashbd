@@ -4,8 +4,8 @@
 import { useState, useEffect, forwardRef } from "react"
 
 // MUI Imports
-import { Autocomplete, Box, Button, Card, CardContent, Grid, CircularProgress,
-    Stack, TextField, Typography, colors, Chip } from "@mui/material"
+import { Autocomplete, Box, Button, Card, CardContent, Grid, CircularProgress, DialogActions,
+    Stack, TextField, Typography, colors, Chip, Dialog, DialogTitle } from "@mui/material"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
@@ -15,9 +15,13 @@ import {  useFormik } from "formik"
 import * as Yup from 'yup'
 import slugify from 'slugify'
 import { nanoid } from 'nanoid'
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 // Tanstack Query
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+
+// Icons
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 // Project Imports
 import MyTextField from "./formComponents/MyTextField"
@@ -44,6 +48,21 @@ const AddVideoCard = ({ setOpenAddVideoDialogue }) => {
     const [videoAlbum, setVideoAlbum] = useState(null)
     const [videoGenre, setVideoGenre] = useState(null)
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+    const [showShortLinkInfoDialog, setShowShortLinkInfoDialog] = useState(false)
+    const [addedVideoObject, setAddedVideoObject] = useState(null)
+    const [urlCopied, setUrlCopied] = useState(false)
+    const [copyButtonText, setCopyButtonText] = useState("copy")
+
+
+    useEffect(() => {
+      if (urlCopied) {
+          setCopyButtonText("Copied!")
+          setTimeout(() => {
+              setCopyButtonText("Copy")
+              setUrlCopied(false)
+          }, 2000);    
+      }
+  }, [urlCopied])
 
     
 
@@ -85,6 +104,8 @@ const AddVideoCard = ({ setOpenAddVideoDialogue }) => {
             queryClient.invalidateQueries('current-user-videos')
             // setOpenAddVideoDialogue(false)
             setOpenMuiSnackbar(true)
+            setShowShortLinkInfoDialog(true)
+            setAddedVideoObject(data)
         },
         onError: (error, _variables, _context) => {
             // console.log("video added error:", error?.response?.data?.detail)
@@ -137,7 +158,7 @@ const AddVideoCard = ({ setOpenAddVideoDialogue }) => {
                 skiza: videoSkizaTunes === null ? 1 : videoSkizaTunes?.id,
                 genre: videoGenre === null ? 1 : videoGenre?.id,
                 customuserprofile: user_profile?.id,
-                video_username: currentUser?.username
+                video_username: currentUser?.username   
             })
         }
     })
@@ -442,6 +463,45 @@ const AddVideoCard = ({ setOpenAddVideoDialogue }) => {
                 </Card>
             </Box>
         </form>
+
+        {/* Short Link Info Dialog */}
+        <Dialog
+            open={showShortLinkInfoDialog}
+            aria-labelledby="alert-dialog-title"    
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+            {"Video added successfully!"}
+            </DialogTitle>
+            <DialogContent>
+                <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", padding: 5}}>
+                    <Stack spacing={3} sx={{display: 'flex', justifyContent: "center", alignItems: "center"}}>
+                      <Box>
+                        <Stack spacing={1}>
+                          <Typography variant="subtitle2">Your Branded Short Link</Typography> 
+                          <Typography variant="caption">{`https://${addedVideoObject?.video_username}.duka.to/${addedVideoObject?.slug}`}</Typography>
+                        </Stack>
+                      </Box>
+                      <CopyToClipboard
+                        text={`https://${addedVideoObject?.video_username}.duka.to/${addedVideoObject?.slug}`}
+                        onCopy={() => setUrlCopied(true)}
+                      >
+                        <Button variant="text" startIcon={<ContentCopyOutlinedIcon fontSize="inherit" />}>{copyButtonText}</Button>
+                      </CopyToClipboard>
+                      <Stack sx={{display: 'flex', alignItems: 'start', justifyContent:'center', paddingTop: 1}} spacing={1} >
+                            <Stack direction='row'  spacing={1}>
+                                <InfoOutlinedIcon fontSize='small' />
+                                <Typography variant="caption">NOTE:</Typography>
+                            </Stack>
+                            <Typography variant="caption">{`You can also copy this branded short link from the share button on the ${addedVideoObject?.title} video page.`}</Typography>
+                        </Stack>
+                    </Stack>
+                </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowShortLinkInfoDialog(false)}>Close</Button>
+            </DialogActions>
+        </Dialog>
 
         {/* Mui Success Snackbar */} 
         <Snackbar 
