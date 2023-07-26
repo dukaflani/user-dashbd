@@ -53,7 +53,7 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const [profile_nationality, setProfile_nationality] = useState(null)
 console.log("country code from middleware:", userCountryCode)
 console.log("profile nationality object:", profile_nationality)
-// console.log("all search params:", allParams)
+console.log("light mode params:", LightMode)
 
     useEffect(() => {
       if (userCountryCode?.length > 0) {
