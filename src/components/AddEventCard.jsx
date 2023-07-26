@@ -3,9 +3,6 @@
 // React Imports
 import { useState, useEffect, forwardRef } from "react"
 
-// NextJS Imports
-import { useSearchParams } from 'next/navigation'
-
 // MUI Imports
 import { Autocomplete, Box, Button, Card, CardContent, Grid, 
     Stack, TextField, Typography, colors, Chip, CircularProgress } from "@mui/material"
@@ -38,10 +35,6 @@ const Alert = forwardRef(function Alert(props, ref) {
 
 
 const AddEventCard = ({ setOpenAddEventDialogue }) => {
-    const searchParams = useSearchParams()
-    const userCountryCode = searchParams.get('UserCountryCode')
-    const LightMode = searchParams.get('LightMode')
-    // const allParams = searchParams.getAll()
     const accessToken = useSelector((state) => state.auth.token)
     const currentLoggedInUserProfile = useSelector((state) => state.auth.profileInfo) 
     const [nanoID, setNanoID] = useState("")
@@ -51,16 +44,6 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const [eventDate, setEventDate] = useState(null)  
     const [eventTime, setEventTime] = useState(null)
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
-    const [profile_nationality, setProfile_nationality] = useState(null)
-console.log("country code from middleware:", userCountryCode)
-console.log("profile nationality object:", profile_nationality)
-console.log("light mode params:", LightMode)
-
-    useEffect(() => {
-      if (userCountryCode?.length > 0) {
-        setProfile_nationality(countriesChoices.filter((country) => country.code === userCountryCode))
-      }
-    }, [userCountryCode])
     
 
 
@@ -113,7 +96,7 @@ console.log("light mode params:", LightMode)
     const formik = useFormik({
         initialValues: {
             title: '',
-            country: profile_nationality,
+            country: null,
             event_organizer: '',
             ticket_platform: '',
             local_price: '',
@@ -186,6 +169,40 @@ console.log("light mode params:", LightMode)
         }
     })
 
+    console.log("add event:", {
+        accessToken,
+        title: formik.values?.title,
+        country: formik.values?.country,
+        event_organizer: formik.values?.event_organizer,
+        ticket_platform: formik.values?.ticket_platform,
+        local_price: formik.values?.local_price,
+        city: formik.values?.city,
+        poster: formik.values?.poster,
+        description: formik.values?.description,
+        venue: formik.values?.venue,
+        location: formik.values?.location,
+        date: format(new Date(eventDate), "yyyy-MM-dd"), 
+        raw_date: eventDate,
+        time: formatISO9075(new Date(eventTime), { representation: 'time' }),
+        raw_time: eventTime,
+        ticket_link: formik.values?.ticket_link,
+
+        event_category: ticketCategory ? ticketCategory?.value : '',  
+        event_category_id: ticketCategory ? ticketCategory?.id : '',  
+        event_category_title: ticketCategory ? ticketCategory?.label : '',  
+
+        event_ticket_info: ticketInfo ? ticketInfo?.value : '',
+        event_ticket_info_id: ticketInfo ? ticketInfo?.id : '',
+        event_ticket_info_title: ticketInfo ? ticketInfo?.label : '',
+
+        local_currency: ticketCurrency ? ticketCurrency?.symbol : '',
+        local_currency_id: ticketCurrency ? ticketCurrency?.id : '',
+        local_currency_title: ticketCurrency ? ticketCurrency?.label : '',
+        
+        customuserprofile: currentLoggedInUserProfile?.id,
+        url_id: nanoID,
+        slug: slugify(formik.values.title, {lower: true}),
+    })
 
 
     const currencyArray = [
