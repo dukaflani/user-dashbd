@@ -25,6 +25,7 @@ export function middleware(NextRequest) {
 
   // Getting country code
   let userCountry = NextRequest.geo?.country ?? ""
+  console.log("from middleware file:", userCountry)
 
   // Check darkMode cookie
   // let darkModeCookie = NextRequest.cookies.get('LightMode')?.value;

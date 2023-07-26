@@ -40,7 +40,7 @@ const Alert = forwardRef(function Alert(props, ref) {
 const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const searchParams = useSearchParams()
     const userCountryCode = searchParams.get('UserCountryCode')
-    const allParams = searchParams.getAll()
+    // const allParams = searchParams.getAll()
     const accessToken = useSelector((state) => state.auth.token)
     const currentLoggedInUserProfile = useSelector((state) => state.auth.profileInfo) 
     const [nanoID, setNanoID] = useState("")
@@ -53,7 +53,7 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const [profile_nationality, setProfile_nationality] = useState(null)
 console.log("country code from middleware:", userCountryCode)
 console.log("profile nationality object:", profile_nationality)
-console.log("all search params:", allParams)
+// console.log("all search params:", allParams)
 
     useEffect(() => {
       if (userCountryCode?.length > 0) {
