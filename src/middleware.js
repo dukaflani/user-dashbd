@@ -23,10 +23,11 @@ export function middleware(NextRequest) {
   // Parse user agent
   const { device } = userAgent(NextRequest)
 
+  // Getting country code
+  let userCountry = NextRequest.geo?.country ?? ""
 
   // Check darkMode cookie
   // let darkModeCookie = NextRequest.cookies.get('LightMode')?.value;
-  let countryCode = NextRequest.geo.country
 
 
   const originalPathName = NextRequest.nextUrl.pathname
@@ -36,8 +37,8 @@ export function middleware(NextRequest) {
   // const viewport = 'mobile'
   
   //Update the expected url
-  // NextRequest.nextUrl.searchParams.set('LightMode', darkModeCookie)
-  NextRequest.nextUrl.searchParams.set('UserCountryCode', countryCode)
+  NextRequest.nextUrl.searchParams.set('LightMode', "darkModeCookie")
+  NextRequest.nextUrl.searchParams.set('UserCountryCode', userCountry)
   NextRequest.nextUrl.pathname = `/${viewport}${originalPathName}`
 
   // Return rewritten response
