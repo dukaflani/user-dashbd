@@ -40,9 +40,9 @@ const UserAccountInfo = () => {
                 <Typography variant="subtitle2">Account Notification:</Typography>
                 <Typography variant="body2">
                   {userProfile?.role == "USER" ? 
-                  "A 'USER' account does not have enough privillages to add content on Dukaflani. Please upgrade to an 'ARTIST', 'VENDOR' or 'PROMOTER' account." 
+                  "A 'USER' account does not have enough privillages to add content on Dukaflani. Please upgrade to an 'ARTIST' account." 
                   : 
-                  "Welcome to the Dukaflani Creator's Hub."}
+                  "Welcome to the Dukaflani Creator's Hub. To have your products added to the 'SHOP' page or events to the 'EVENTS' page, contact us on +254 723-353-630. To get a better user experience, please use the desktop version of your dashboard."}
                   </Typography>
               </Stack>
            </CardContent>
