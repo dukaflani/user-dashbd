@@ -26,6 +26,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import MyTextField from "./formComponents/MyTextField"
 import MyTextArea from "./formComponents/MyTextArea"
 import { addEvent } from "@/axios/axios"
+import { countriesChoices } from "@/data/countries"
 
 
 const Alert = forwardRef(function Alert(props, ref) {
@@ -244,7 +245,7 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
                                                 />
                                             </Grid>
                                             <Grid xs={12} md={6} item>
-                                                <MyTextField
+                                                {/* <MyTextField
                                                     required
                                                     name="country" 
                                                     label="Country"
@@ -252,7 +253,39 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
                                                     error={formik.errors.country && formik.touched.country ? true : false} 
                                                     {...textFieldConfig} 
                                                     {...formik.getFieldProps("country")}
-                                                />
+                                                /> */}
+                                                <Stack spacing={2}>
+                                                    <Autocomplete
+                                                        name="country"
+                                                        options={countriesChoices}
+                                                        size="small"
+                                                        value={formik.values.country}
+                                                        onChange={(event, newValue) => formik.setFieldValue("country", newValue)}
+                                                        getOptionLabel={(option) => option.label}
+                                                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                        renderOption={(props, option) => (
+                                                        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                                                            <img
+                                                            loading="lazy"
+                                                            width="20"
+                                                            src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                                                            srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                                                            alt=""
+                                                            />
+                                                            {option.label} ({option.code}) +{option.phone}
+                                                        </Box>
+                                                        )}
+                                                        renderInput={(params) => (
+                                                            <TextField 
+                                                                helperText={formik.errors.country && formik.touched.country ? formik.errors.country : null} 
+                                                                error={formik.errors.country && formik.touched.country ? true : false}
+                                                                {...params} 
+                                                                label="Country" 
+                                                            />
+                                                        )}
+                                                    >
+                                                    </Autocomplete>
+                                                </Stack>
                                             </Grid>
                                             <Grid xs={12} md={6} item>
                                                 <MyTextField
