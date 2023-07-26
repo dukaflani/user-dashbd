@@ -131,8 +131,7 @@ export default function MainNavbar({ children }) {
     onError: (error, _variables, _context) => {
       setShowAuthDialog(false)
       setShowLoginDialog(true)
-    },
-    enabled: !!newToken
+    }
   })
   
   

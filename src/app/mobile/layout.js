@@ -75,8 +75,7 @@ function MobileNavbar(props) {
      onError: (error, _variables, _context) => {
        setShowAuthDialog(false)
        setShowLoginDialog(true)
-     },
-     enabled: !!newToken
+     }
    })
    
    
