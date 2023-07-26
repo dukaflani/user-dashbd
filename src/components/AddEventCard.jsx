@@ -277,6 +277,7 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
                                                         )}
                                                         renderInput={(params) => (
                                                             <TextField 
+                                                                required
                                                                 helperText={formik.errors.country && formik.touched.country ? formik.errors.country : null} 
                                                                 error={formik.errors.country && formik.touched.country ? true : false}
                                                                 {...params} 
