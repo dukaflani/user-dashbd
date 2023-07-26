@@ -3,6 +3,9 @@
 // React Imports
 import { useState, useEffect, forwardRef } from "react"
 
+// NextJS Imports
+import { useSearchParams } from 'next/navigation'
+
 // MUI Imports
 import { Autocomplete, Box, Button, Card, CardContent, Grid, 
     Stack, TextField, Typography, colors, Chip, CircularProgress } from "@mui/material"
@@ -35,6 +38,8 @@ const Alert = forwardRef(function Alert(props, ref) {
 
 
 const AddEventCard = ({ setOpenAddEventDialogue }) => {
+    const searchParams = useSearchParams()
+    const userCountryCode = searchParams.get('UserCountryCode')
     const accessToken = useSelector((state) => state.auth.token)
     const currentLoggedInUserProfile = useSelector((state) => state.auth.profileInfo) 
     const [nanoID, setNanoID] = useState("")
@@ -44,6 +49,15 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const [eventDate, setEventDate] = useState(null)  
     const [eventTime, setEventTime] = useState(null)
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
+    const [profile_nationality, setProfile_nationality] = useState(null)
+
+
+    useEffect(() => {
+      if (userCountryCode?.length > 0) {
+        setProfile_nationality(countriesChoices.filter((country) => country.code === userCountryCode))
+      }
+    }, [userCountryCode])
+    
 
 
 
@@ -95,7 +109,7 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const formik = useFormik({
         initialValues: {
             title: '',
-            country: '',
+            country: profile_nationality,
             event_organizer: '',
             ticket_platform: '',
             local_price: '',
