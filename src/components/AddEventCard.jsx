@@ -40,6 +40,7 @@ const Alert = forwardRef(function Alert(props, ref) {
 const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const searchParams = useSearchParams()
     const userCountryCode = searchParams.get('UserCountryCode')
+    const LightMode = searchParams.get('LightMode')
     // const allParams = searchParams.getAll()
     const accessToken = useSelector((state) => state.auth.token)
     const currentLoggedInUserProfile = useSelector((state) => state.auth.profileInfo) 
