@@ -51,6 +51,7 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
     const [openMuiSnackbar, setOpenMuiSnackbar] = useState(false)
     const [profile_nationality, setProfile_nationality] = useState(null)
 console.log("country code from middleware:", userCountryCode)
+console.log("profile nationality object:", profile_nationality)
 
     useEffect(() => {
       if (userCountryCode?.length > 0) {
