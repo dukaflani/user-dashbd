@@ -135,7 +135,7 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
             addNewEvent({
                 accessToken,
                 title: formik.values?.title,
-                country: formik.values?.country,
+                country: formik.values?.country?.code,
                 event_organizer: formik.values?.event_organizer,
                 ticket_platform: formik.values?.ticket_platform,
                 local_price: formik.values?.local_price,
@@ -172,7 +172,7 @@ const AddEventCard = ({ setOpenAddEventDialogue }) => {
     console.log("add event:", {
         accessToken,
         title: formik.values?.title,
-        country: formik.values?.country,
+        country: formik.values?.country?.code,
         event_organizer: formik.values?.event_organizer,
         ticket_platform: formik.values?.ticket_platform,
         local_price: formik.values?.local_price,
