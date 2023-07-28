@@ -25,13 +25,7 @@ export default function LinearDeterminate({ darkMode, prefersDarkMode }) {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <LinearProgress color={
-        darkMode == "dark" || prefersDarkMode == true ?  "inherit" 
-      : 
-      darkMode == "light" && prefersDarkMode == true ? "primary" 
-      : 
-      "primary"
-      } variant="determinate" value={progress} />
+      <LinearProgress color="primary" variant="determinate" value={progress} />
     </Box>
   );
 }
