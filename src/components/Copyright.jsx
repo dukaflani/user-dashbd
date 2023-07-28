@@ -15,7 +15,7 @@ const Copyright = () => {
   return (
     <Box sx={{paddingTop: 2, paddingBottom: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
       <Stack spacing={0.5}>
-        <Typography variant='caption'>&copy; {year} Jidraff Gathura. All Rights Reserved</Typography>
+        <Typography variant='caption'>&copy; {year} Dukaflani. All Rights Reserved</Typography>
         <Typography variant='caption'>#PluggingBusinessToMusic</Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <Stack spacing={1} direction='row'>
